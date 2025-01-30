@@ -23,3 +23,18 @@ Technology for data storage (mysimbdp-coredms) of the platform is Apache Cassand
 Tenant data sources are (e.g. the IoT taxi trip data) ingested into the data storage of the platform using Apache Kafka, distributed event streaming platform. Tenants send the generated data with Kafka Producer into the Kafka server this platform provides, using predetermined Kafka topics and configurations.
 
 The platform is focused on real-time data streams. Out of the 4Vs in big data, this platform serves especially for Velocity: the platform is optimized to handle lots of data coming in real-time. The platform also supports Variety and Veracity, as the data units handled are not required to be strictly in the same structure. The data storage of the platform handles the Volume, as the amount of data gathered can grow huge.
+
+2. Design and explain the interactions among main platform components in your architecture of mysimbdp. Explain how would the data from the sources will be ingested into the platform. Explain which would be the third parties (services/infrastructures) that you do not develop for your platform
+
+The platform consists of two components:
+
+* **mysimbdp-dataingest**: this component is responsible ETL. It ingests the source data from tenants into the platform. Ensures reliable data transmission and does the necessary processing including modifying data types and column names to match Cassandra table schemas.
+* **mysimbdp-coredms**: this component is responsible for managing and storing the data.
+
+Data ingestion pipeline:
+
+Tenants use Kafka Producer Python library provided by [Confluent](https://developer.confluent.io/get-started/python/#introduction) to send the source data into mysimbdp-dataingest, which hosts a Kafka server and Kafka Consumer (by Confluent). The consumer subscribes and listens to the relevant topics continuously. Upon receiving the raw data, the consumer parses, validates and transforms it and inserts the data into a corresponding Cassandra table of mysimbdp-coredms.
+
+The services not developed to the platform at this point include external data processing and analytics components. Additionally, proper security and logging mechanisms are not developed.
+
+![Platform architecture](../architecture.png)
