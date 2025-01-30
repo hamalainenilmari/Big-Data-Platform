@@ -38,3 +38,12 @@ Tenants use Kafka Producer Python library provided by [Confluent](https://develo
 The services not developed to the platform at this point include external data processing and analytics components. Additionally, proper security and logging mechanisms are not developed.
 
 ![Platform architecture](../architecture.png)
+
+3. Explain a conguration of a cluster of nodes for mysimbdp-coredms so that you prevent a singlepoint-of-failure problem for mysimbdp-coredms for your tenants. (1 point)
+
+be deployed across 2 data centers. This ensures that if one node goes down in a data center, there will be another node available to serve data in the data center. Additionally, even if an entire data center fails, there will still be nodes serving in the other data center left ensuring high availability and fault tolerance.
+Nodes are dependent only on nodes within same data center, meaning scaling up or down the data centers won’t affect other centers or nodes. While this configuration provides good availability and fault tolerance, there could be more nodes and data centers configured for even better availability and fault tolerance, however in this case hardware limits the amount of nodes to 4.
+
+4. You decide a pre-dened level of data replication for your tenants/customers. Explain the level of replication in your design, how many nodes are needed in the deployment of mysimbdp-coredms for your choice so that this component can work property (e.g., the system still supports redundancy in the case of a failure of a node). (1 point)
+
+In this design, the replication factor for Cassandra is chosen to be 3, which means that each data unit will be replicated on three different nodes in the Cassandra cluster. For this replication to work, there will need to at least 4 Cassandra nodes deployed to ensure that data is replicated to 3 nodes even if one node fails and there are still multiple nodes left to serve the data. This replication ensures high availability and fault tolerance. Cassandra is configured to use NetworkTopologyStrategy where 2 replicas are chosen to be in the data center 1 and 1 replica in data center 2.
