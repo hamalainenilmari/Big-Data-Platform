@@ -55,4 +55,68 @@ Pros of deploying dataingest in cloud contain especially the scalability. As sou
 
 Hosting dataingest on a cloud service would also enable possibility to distribute the servers geographically across continents, enabling faster communication between geographically distributed tenants and the servers. Cloud services also enable monitoring and automation of components with less work.
 
-Cons of deploying in the cloud contain the high costs of hosting the ingesting component and if the servers are not geographically distributed enough, there may be communication latencies with some tenants.
+Cons of deploying in the cloud contain the high costs of hosting the ingesting component and if the servers are not geographically distributed enough, there may be communication latencies with some tenants. There can also be issues with data regulation when storing data in different continents. Also energy efficiency of the hosting hardware infrastructure may vary.
+
+## Part 2 - Implementation
+
+1. Design, implement and explain one example of the data schema/structure for a tenant whose data will be stored into mysimbdp-coredms.
+
+An example source data of tenant will be taxi trip data from Chicago, USA. The tenant owns multiple taxi service companys. The taxis will produce the raw data with following attributes and data types:
+
+`Trip ID,Taxi ID, Trip Start Timestamp, Trip End Timestamp, Trip Seconds, Trip Miles, Pickup Census Tract, Dropoff Census Tract, Pickup Community Area, Dropoff Community Area, Fare, Tips, Tolls, Extras, Trip Total, Payment Type,  Company, Pickup Centroid Latitude, Pickup Centroid Longitude, Pickup Centroid Location, Dropoff Centroid Latitude, Dropoff Centroid Longitude, Dropoff Centroid Location`
+
+The platform will ingest the raw data and do some simple data wrangling and drop some attributes. The attributes to skip are Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location,
+Dropoff Centroid  Location. These values are produced by the IoT machines but important enough to store in the platform.
+
+The final data unit to be stored in the platforms data storage is the following:
+
+* Trip ID: text
+* Taxi ID: text
+* Trip Start Timestamp: timestamp
+* Trip End Timestamp: timestamp
+* Trip Seconds: int
+* Trip Miles: float
+* Pickup Community Area: float
+* Dropoff Community Area: float
+* Fare: float
+* Tips: float
+* Tolls: float
+* Extras: float
+* Trip Total: float
+* Payment Type: text
+* Company: text
+* Pickup Centroid Latitude: double
+* Pickup Centroid Longitude: double
+* Dropoff Centroid Latitude: double
+* Dropoff Centroid Longitude: double
+
+The schema contains 19 attributes. The schema contains basic trip information: identifying of the trip and taxi, the time statistics of the trip, the trip length and pickup/dropoff points and cost information. Additionally, the schema contains payment type and taxi company providing the trip. The schema also contains exact coordinates of pickup and dropoff points for precise demand analysis.
+
+Given the data schema/structure of the tenant (Part 2, Point 1), design a strategy for data
+partitioning/sharding, explain the goal of the strategy (performance, data regulation and/or what),
+and explain your implementation for data partitioning/sharding together with your design for
+replication in Part 1, Point 4, in mysimbdp-coredms.
+
+The taxi trip data will be partitioned across multiple Cassandra nodes using **Pickup Community Area** as the partitioning key.
+This partitioning will distribute the data based by the geographical location of start of the taxi trip. All trips with the same staring location will
+be stored in the same node, meaning more efficient queries of taxi trips based on the location. This will enable efficient analysis of in-demand areas
+enabling the tenant to locate taxis nearby.
+
+The data storage is composed of 4 Cassandra nodes with a replication factor of 3. The data is partitioned by the geographical pickup location and
+each partition is replicated across 3 different Cassandra nodes in 2 data centers.
+
+3. Assume that you play the role of the tenant, emulate the data sources with the real selected dataset
+and write a mysimbdp-dataingest that takes data from your selected sources and stores the data into
+mysimbdp-coredms. Explain what would be the atomic data element/unit to be stored. Explain
+possible consistency options for writing data in your mysimdbp-dataingest
+
+
+
+The consistency level in Cassandra means the number of replicas/nodes must acknowledge a read or write operation before it is succesful.
+Consistency level can bet set for both read and write operations. The consistency level for both read and write is chosen to be Quorum,
+which means out of all the replication nodes, majority must respond before the operation is succesful.
+This means in this platform out of the 3 data replication nodes, 2 nodes must respond. This consistency level enables balance between availability and risk of data loss, and hence
+is a good option for this domain.
+
+Alternative consistency levels would be All and and One. All would mean that all 3 replication nodes must acknowledge the operation. In case of node failures
+this would mean that the operation wont go through, which decreases the platforms availability. As the data domain is transportation and not, example financial transactions, this consistency level would be unnecessarily high. Consistency level of one would enable the fastest reads, but could return stale data.
