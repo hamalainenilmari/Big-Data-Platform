@@ -1,8 +1,8 @@
 version: '3.9'
 x-cassandra: &cassandras
   CASSANDRA_CLUSTER_NAME: TaxiCluster
-  CASSANDRA_SEEDS: cassandra1
-  HEAP_NEWSIZE: 1M
+  CASSANDRA_SEEDS: cassandra1, cassandra2, cassandra3, cassandra4 # every node for availability
+  HEAP_NEWSIZE: 1M # memorys are low because of test environment
   MAX_HEAP_SIZE: 512M
   CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
     
@@ -48,17 +48,31 @@ services:
     hostname: cassandra3
     environment: 
       <<: *cassandras
-      CASSANDRA_DC: DC2 
+      CASSANDRA_DC: DC2
     volumes:
       - cassandra3-data:/var/lib/cassandra
     expose: *exposes
     restart: always
-    depends_on: 
-      - cassandra1    
     ports: 
       - "9044:9042"
+
+  cassandra4:
+    image: cassandra:latest
+    hostname: cassandra4
+    environment: 
+      <<: *cassandras
+      CASSANDRA_DC: DC2
+    volumes:
+      - cassandra4-data:/var/lib/cassandra
+    expose: *exposes
+    restart: always
+    depends_on: 
+      - cassandra3    
+    ports: 
+      - "9045:9042"
       
 volumes:
   cassandra1-data:
   cassandra2-data:
   cassandra3-data:
+  cassandra4-data:
