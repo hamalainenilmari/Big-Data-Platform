@@ -110,7 +110,8 @@ and write a mysimbdp-dataingest that takes data from your selected sources and s
 mysimbdp-coredms. Explain what would be the atomic data element/unit to be stored. Explain
 possible consistency options for writing data in your mysimdbp-dataingest
 
-
+The tenant dataset is the [taxi trip data of Chicago](https://data.cityofchicago.org/Transportation/Taxi-Trips-2024-/ajtu-isnz/about_data).
+The implementation for the mysimbdp-dataingest can be found on *code/mysimbdp-dataingest/*.
 
 The consistency level in Cassandra means the number of replicas/nodes must acknowledge a read or write operation before it is succesful.
 Consistency level can bet set for both read and write operations. The consistency level for both read and write is chosen to be Quorum,
