@@ -121,3 +121,28 @@ is a good option for this domain.
 
 Alternative consistency levels would be All and and One. All would mean that all 3 replication nodes must acknowledge the operation. In case of node failures
 this would mean that the operation wont go through, which decreases the platforms availability. As the data domain is transportation and not, example financial transactions, this consistency level would be unnecessarily high. Consistency level of one would enable the fastest reads, but could return stale data.
+
+4. Given your deployment environment, measure and show the performance (e.g., response time,
+throughput, and failure) of the tests for 1,5, 10, .., n of concurrent mysimbdp-dataingest writing data
+into mysimbdp-coredms with dierent speeds/velocities together with the change of the number of
+nodes of mysimbdp-coredms. Indicate any performance dierences due to the choice of consistency
+options. (1 point)
+
+3 Kafka brokers
+
+Response time (time it took to insert data (10 000 rows))
+
+1,5,10,20 concurrent producers:
+* 1 message / s
+* 5 message / s
+* 10 message / s
+
+1,5,10,20 concurrent consumers:
+
+* 1 message / s
+* 5 message / s
+* 10 message / s
+
+5. Observing the performance and failure problems when you push a lot of data into mysimbdpcoredms (you do not need to worry about duplicated data in mysimbdp), propose the change of your
+deployment to avoid such problems (or explain why you do not have any problem with your
+deployment). (1 point)
