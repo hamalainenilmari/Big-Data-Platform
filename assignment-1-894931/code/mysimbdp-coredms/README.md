@@ -1,8 +1,8 @@
 Use these following Cassandra settings:
 
-CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;
+CREATE KEYSPACE taxiservices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;
 
-CREATE TABLE taxiServices.trips (
+CREATE TABLE taxiservices.trips (
     trip_id text,
     taxi_id text,
     trip_start_timestamp timestamp,
