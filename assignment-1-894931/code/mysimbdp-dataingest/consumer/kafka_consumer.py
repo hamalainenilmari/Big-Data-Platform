@@ -1,37 +1,24 @@
 '''
-This simple code illustrates a Kafka producer:
-- read data from a topic in a Kafka system.
-- print out the data
-
-We test with a producer using the data at:
-https://github.com/rdsea/bigdataplatforms/tree/master/data/onudata
-
-However, it should work with any data as long as the data is in JSON (or you modify the code to handle other types of data)
-
 We use python client library from https://docs.confluent.io/clients-confluent-kafka-python/current/overview.html.
 Also see https://github.com/confluentinc/confluent-kafka-python
 '''
 from confluent_kafka import Consumer
 from cassandra.cluster import Cluster
-from cassandra.query import SimpleStatement
+from cassandra.query import SimpleStatement, ConsistencyLevel
 import argparse
 import json
 from dotenv import load_dotenv
 import os
-
-'''
-Check other documents for starting Kafka, e.g.
-see https://github.com/rdsea/bigdataplatforms/tree/master/tutorials/basickafka
-$docker-compose -f docker-compose3.yml up
-'''
+import logging
+import time
 
 if __name__ == '__main__':
     load_dotenv()
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-t', '--topic', help='kafka topic')
-    parser.add_argument('-g', '--consumer_group', help='kafka topic')
+    parser.add_argument('-t', '--topic', default="taxiTrips", help='kafka topic')
+    parser.add_argument('-g', '--consumer_group', default="g1", help='kafka topic')
     parser.add_argument('--security_protocol', default='SASL_PLAINTEXT', help='security protocol')
     parser.add_argument('--sasl_mechanism', default='PLAIN', help='security protocol')
     parser.add_argument('--sasl_username', help='sasl user name')
@@ -58,15 +45,6 @@ if __name__ == '__main__':
     kafka_consumer = Consumer(kafka_conf)
     kafka_consumer.subscribe([args.topic])
 
-
-    # cassandra config
-    """
-    cassandra_hosts = [
-        'localhost:9042',
-        'localhost:9043', 
-        'localhost:9044'
-    ]
-    """
     keyspace = os.getenv("CASSANDRA_KEYSPACE")
     table = os.getenv("CASSANDRA_TABLE")
     ip = os.getenv("CASSANDRA_IP")
@@ -74,35 +52,60 @@ if __name__ == '__main__':
         [ip]
     )
     session = cluster.connect(keyspace)
-    
-    '''
-    Just wait and receive data, you shall test with different conditions
-    '''
-    while True:
-        # consume a message from kafka, wait 1 second
-        msg = kafka_consumer.poll(1.0)
-        if msg is None:
-            continue
-        if msg.error():
-            print(f'Consumer error: {msg.error()}')
-            continue
+    session.default_consistency_level = ConsistencyLevel.QUORUM # set the consistency for session
 
-        json_value =json.loads(msg.value().decode('utf-8'))
-        print(f'Received message')
-        columns = []
-        for key in json_value.keys():
-            columns.append(key.lower().replace("  ", "_").replace(" ", "_"))
-        
-        columns = ', '.join(columns)
-        placeholders = ', '.join(['%s'] * len(json_value))
-        
-        query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
-        statement = SimpleStatement(query)
-        
-        # Execute insert
-        session.execute(statement, list(json_value.values()))
-        
-
-        #print(f"inserted: {json_value.values()}")
+    logging.basicConfig(filename='ingest.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
+    rowsConsumed = 0
+    fails = 0
+
+    print("Starting to ingest data")
+    logging.info(f"Starting to ingest data")
+    start_time = time.time()
+    try:
+        while True:
+            # consume a message from kafka, wait 1 second
+            msg = kafka_consumer.poll(1.0)
+            if msg is None:
+                continue
+            if msg.error():
+                logging.error(f"KAFKA ERROR: Exception during kafka consuming: {msg.error()}")
+                print(f'Consumer error: {msg.error()}')
+                continue
+
+            json_value =json.loads(msg.value().decode('utf-8'))
+
+            keysToDelete = ["Pickup Census Tract", "Dropoff Census Tract", "Pickup Centroid Location", "Dropoff Centroid  Location"]
+            for key in keysToDelete:
+                if key in json_value:
+                    del json_value[key]
+
+            columns = []
+            # turn keys from 'key example' to 'key_example'
+            for key in json_value.keys():
+                columns.append(key.lower().replace("  ", "_").replace(" ", "_"))
+            
+            columns = ', '.join(columns)
+            placeholders = ', '.join(['%s'] * len(json_value))
+            try:
+                query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+                statement = SimpleStatement(query)
+                
+                result = session.execute(statement, list(json_value.values()))
+                rowsConsumed += 1
+            except Exception as e:
+                logging.error(f"CASSANDRA ERROR: Exception during database insert: {e}\ndata row: {json_value}")
+                fails += 1
+                print(f"fail: {e}\nrow: {json_value}")
+    except KeyboardInterrupt:
+        end_time = time.time()
+        logging.info(f"Stopped ingesting - statistics:")
+        logging.info(f"Time taken: {end_time - start_time:.2f} s")
+        logging.info(f"Rows succesfully inserted: {rowsConsumed}")
+        logging.info(f"Number of exceptions: {fails}")
+        logging.info("------------------------------------------------")
+        exit(0)
+    finally:
+        kafka_consumer.close()
