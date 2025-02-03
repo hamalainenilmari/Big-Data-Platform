@@ -1,8 +1,8 @@
 x-cassandra: &cassandras
   CASSANDRA_CLUSTER_NAME: TaxiCluster
   CASSANDRA_SEEDS: cassandra1, cassandra2, cassandra3, cassandra4 # every node for availability
-  HEAP_NEWSIZE: 1G # 1M used for local testing 
-  MAX_HEAP_SIZE: 8G # 512M used for local testing
+  HEAP_NEWSIZE: 256M # these are max values our cloud deployment machines can handle
+  MAX_HEAP_SIZE: 4G # these are max values our cloud deployment machines can handle
   CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
     
 x-expose: &exposes
