@@ -11,6 +11,10 @@ from dotenv import load_dotenv
 import os
 import logging
 import time
+import signal
+
+def exitFromShell(signum, frame):
+    stopIngest()
 
 def stopIngest():
     end_time = time.time()
@@ -74,27 +78,29 @@ if __name__ == '__main__':
     cassandraError = 0
     kafkaError = 0
 
-    print("Starting to ingest data")
-    logging.info(f"Starting to ingest data")
+    print("Starting to listen for data")
+    logging.info(f"Starting to listen for data")
     start_time = time.time()
-    inactivity_timeout = 60  # timeout in seconds to end ingesting
-    last_message_time = time.time()
+    ingestionStarted = False
+
+    signal.signal(signal.SIGINT, exitFromShell)
+    signal.signal(signal.SIGTERM, exitFromShell)
+
     try:
         while True:
             # consume a message from kafka, wait 1 second
             msg = kafka_consumer.poll(1.0)
             current_time = time.time()
             if msg is None:
-                if current_time - last_message_time > inactivity_timeout:
-                    logging.info(f"No new messages for {inactivity_timeout} seconds. Stopping ingestion.")
-                    stopIngest()
                 continue
             if msg.error():
                 #logging.error(f"KAFKA ERROR: Exception during kafka consuming: {msg.error()}")
                 kafkaError += 1
                 #print(f'Consumer error: {msg.error()}')
                 continue
-
+            if not ingestionStarted:
+                print("Found message: ingestion started")
+            ingestionStarted = True
             messagesReceived += 1
 
             json_value =json.loads(msg.value().decode('utf-8'))
@@ -105,7 +111,7 @@ if __name__ == '__main__':
                     del json_value[key]
 
             columns = []
-            # turn keys from 'key example' to 'key_example'
+            # simple data processing: turn keys from 'key example' to 'key_example'
             for key in json_value.keys():
                 columns.append(key.lower().replace("  ", "_").replace(" ", "_"))
             
@@ -116,7 +122,11 @@ if __name__ == '__main__':
                 statement = SimpleStatement(query)
                 
                 result = session.execute(statement, list(json_value.values()))
-                rowsConsumed += 1
+                if result:
+                    cassandraError += 1
+                else:  
+                    rowsConsumed += 1
+                
             except Exception as e:
                 #logging.error(f"CASSANDRA ERROR: Exception during database insert: {e}\ndata row: {json_value}")
                 cassandraError += 1
