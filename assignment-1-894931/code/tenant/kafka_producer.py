@@ -66,13 +66,13 @@ if __name__ == '__main__':
         now process each chunk
         '''
         #chunk=chunk_data.dropna()
-        print(f'DEBUG: Send data to Kafka - chuck: {i}')
+        #print(f'DEBUG: Send data to Kafka - chuck: {i}')
         for index, row in chunk_data.iterrows():
             json_data=json.dumps(row.to_dict(), default=datetime_converter)
             
             kafka_producer.produce(KAFKA_TOPIC, json_data.encode('utf-8'), callback=kafka_delivery_error)
             kafka_producer.flush()
-            time.sleep(sleeptime)
+            #time.sleep(sleeptime)
         i += 1
     end_time = time.time()
     print(f"finished producing input data at {end_time}, total runtime: {end_time - start_time:.2f} s")
