@@ -128,21 +128,96 @@ into mysimbdp-coredms with dierent speeds/velocities together with the change of
 nodes of mysimbdp-coredms. Indicate any performance dierences due to the choice of consistency
 options. (1 point)
 
-3 Kafka brokers
+Avg. data produce velocity for each of these test case (runtime of a single producer): finished producing input data at 1738592753.3659682, total runtime: 80.86 s
+(different log mechanism)
+Each consumer polls for new messages every second
 
-Response time (time it took to insert data (10 000 rows))
+**Different number of data coming in and different number of kafka consumers:**
 
-1,5,10,20 concurrent producers:
-* 1 message / s
-* 5 message / s
-* 10 message / s
+3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum
 
-1,5,10,20 concurrent consumers:
+1 Kafka Producers producing 5 000 rows of data each (), 1 Kafka Consumers (poll 1s)
+- log0.log
 
-* 1 message / s
-* 5 message / s
-* 10 message / s
+5 Kafka Producers producing 5 000 rows of data each (), 5 Kafka Consumers (poll 1s)
+- log1.log
 
-5. Observing the performance and failure problems when you push a lot of data into mysimbdpcoredms (you do not need to worry about duplicated data in mysimbdp), propose the change of your
+10 Kafka Producers producing 5 000 rows of data each , 10 Kafka Consumers (poll 1s)
+- log2.log
+
+15 Kafka Producers producing 10 000 rows of data each (), 15 Kafka Consumers (poll 1s)
+- log3.log
+
+20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers (poll 1s)
+- log4.log
+
+20 Kafka Producers producing 10 000 rows of data each (), 30 Kafka Consumers poll poll 0.1s
+- log8.log
+
+**Different poll time of consumers:**
+
+3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers (poll 1s)
+- log4.log
+
+3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers poll every 0.1s
+- log5.log
+=> 10%? increase in speed
+
+3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers poll every 0.01s
+- log6.log
+=> no notable speed increase anymore
+
+3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers poll every 2s
+- log7.log
+=> not much difference to 1s poll time
+
+**Different write consistencies:**
+
+3 Kafka brokers, 4 Cassandra nodes, 5 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 0.1s
+
+Consistency: Any
+- log9.log
+
+Consistency: One
+- log10.log
+ 
+Consistency: Quorum
+- log11.log
+
+Consistency: All
+- log12.10
+
+**Different number of Cassandra nodes:**
+
+3 Kafka brokers, Consistency: Quorum, 5 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 0.1s
+
+2 Cassandra nodes (2 in DC1)
+
+3 Cassandra nodes (3 in DC1)
+
+4 Cassandra nodes (2 in DC1, 2 in DC2)
+
+
+5 Cassandra nodes (3 in DC1, 2 in DC2)
+=> VM cant take it anymore with the memory configurations, changed HEAP_NEWSIZE: 128M and MAX_HEAP_SIZE: 2G -- not working still
+
+6 Cassandra nodes
+
+
+1. Observing the performance and failure problems when you push a lot of data into mysimbdpcoredms (you do not need to worry about duplicated data in mysimbdp), propose the change of your
 deployment to avoid such problems (or explain why you do not have any problem with your
 deployment). (1 point)
+
+Not many failures happened apart from the individual incorrect data types in source data.
+
+## Part 3 Extension
+
+1. Using your mysimbdp-coredms, a single tenant can run mysimbdp-dataingest to create many
+dierent databases/datasets. The tenant would like to record basic lineage of the ingested data,
+explain what types of metadata about data lineage you would like to support and how would you do
+this. Provide one example of a lineage data. (1 point)
+
+* tenant user who starting ingesting
+* what kind of data wrangling done
+* 
+  
