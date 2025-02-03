@@ -63,11 +63,17 @@ if __name__ == '__main__':
     print("Starting to ingest data")
     logging.info(f"Starting to ingest data")
     start_time = time.time()
+    inactivity_timeout = 60  # timeout in seconds to end ingesting
+    last_message_time = time.time()
     try:
         while True:
             # consume a message from kafka, wait 1 second
             msg = kafka_consumer.poll(1.0)
+            current_time = time.time()
             if msg is None:
+                if current_time - last_message_time > inactivity_timeout:
+                    logging.info(f"No new messages for {inactivity_timeout} seconds. Stopping ingestion.")
+                    break
                 continue
             if msg.error():
                 logging.error(f"KAFKA ERROR: Exception during kafka consuming: {msg.error()}")
