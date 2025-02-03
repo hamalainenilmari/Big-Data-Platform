@@ -22,8 +22,7 @@ CREATE TABLE taxiservices.trips (
     pickup_centroid_longitude double,
     dropoff_centroid_latitude double,
     dropoff_centroid_longitude double,
-	PRIMARY KEY (pickup_community_area, trip_start_timestamp)
-	WITH CLUSTERING ORDER BY (trip_start_timestamp DESC);
+    PRIMARY KEY (pickup_community_area, trip_id)
 );
 
 Clustering key trip_start_timestamp sorts the taxi trips by start time in descending order, enabling efficient queries of latest trips. Good for optimizating rides.
