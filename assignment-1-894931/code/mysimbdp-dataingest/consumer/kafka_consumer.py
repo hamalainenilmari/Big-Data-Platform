@@ -12,6 +12,16 @@ import os
 import logging
 import time
 
+def stopIngest():
+    end_time = time.time()
+    logging.info(f"Stopped ingesting - statistics:")
+    logging.info(f"Time taken: {end_time - start_time:.2f} s")
+    logging.info(f"Rows succesfully inserted: {rowsConsumed}")
+    logging.info(f"Number of exceptions: {fails}")
+    logging.info("------------------------------------------------")
+    exit(0)
+
+
 if __name__ == '__main__':
     load_dotenv()
     # Parse arguments
@@ -73,7 +83,7 @@ if __name__ == '__main__':
             if msg is None:
                 if current_time - last_message_time > inactivity_timeout:
                     logging.info(f"No new messages for {inactivity_timeout} seconds. Stopping ingestion.")
-                    break
+                    stopIngest()
                 continue
             if msg.error():
                 logging.error(f"KAFKA ERROR: Exception during kafka consuming: {msg.error()}")
@@ -105,12 +115,6 @@ if __name__ == '__main__':
                 fails += 1
                 print(f"fail: {e}\nrow: {json_value}")
     except KeyboardInterrupt:
-        end_time = time.time()
-        logging.info(f"Stopped ingesting - statistics:")
-        logging.info(f"Time taken: {end_time - start_time:.2f} s")
-        logging.info(f"Rows succesfully inserted: {rowsConsumed}")
-        logging.info(f"Number of exceptions: {fails}")
-        logging.info("------------------------------------------------")
-        exit(0)
+        stopIngest()
     finally:
         kafka_consumer.close()
