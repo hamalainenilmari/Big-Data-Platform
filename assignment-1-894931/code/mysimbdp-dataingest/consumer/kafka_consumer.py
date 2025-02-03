@@ -16,8 +16,10 @@ def stopIngest():
     end_time = time.time()
     logging.info(f"Stopped ingesting - statistics:")
     logging.info(f"Time taken: {end_time - start_time:.2f} s")
+    logging.info(f"Number of Kafka messages received: {messagesReceived}")
     logging.info(f"Rows succesfully inserted: {rowsConsumed}")
-    logging.info(f"Number of exceptions: {fails}")
+    logging.info(f"Number of Cassandra errors: {cassandraError}")
+    logging.info(f"Number of Kafka errors: {kafkaError}")
     logging.info("------------------------------------------------")
     exit(0)
 
@@ -66,9 +68,10 @@ if __name__ == '__main__':
     logging.basicConfig(filename='ingest.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-
+    messagesReceived = 0
     rowsConsumed = 0
-    fails = 0
+    cassandraError = 0
+    kafkaError = 0
 
     print("Starting to ingest data")
     logging.info(f"Starting to ingest data")
@@ -86,9 +89,12 @@ if __name__ == '__main__':
                     stopIngest()
                 continue
             if msg.error():
-                logging.error(f"KAFKA ERROR: Exception during kafka consuming: {msg.error()}")
-                print(f'Consumer error: {msg.error()}')
+                #logging.error(f"KAFKA ERROR: Exception during kafka consuming: {msg.error()}")
+                kafkaError += 1
+                #print(f'Consumer error: {msg.error()}')
                 continue
+
+            messagesReceived += 1
 
             json_value =json.loads(msg.value().decode('utf-8'))
 
@@ -111,9 +117,9 @@ if __name__ == '__main__':
                 result = session.execute(statement, list(json_value.values()))
                 rowsConsumed += 1
             except Exception as e:
-                logging.error(f"CASSANDRA ERROR: Exception during database insert: {e}\ndata row: {json_value}")
-                fails += 1
-                print(f"fail: {e}\nrow: {json_value}")
+                #logging.error(f"CASSANDRA ERROR: Exception during database insert: {e}\ndata row: {json_value}")
+                cassandraError += 1
+                #print(f"fail: {e}\nrow: {json_value}")
     except KeyboardInterrupt:
         stopIngest()
     finally:
