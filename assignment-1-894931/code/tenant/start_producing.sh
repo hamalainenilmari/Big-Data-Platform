@@ -1,8 +1,8 @@
 #!/bin/bash
 
-for i in {0..9}
+for i in $(seq 0 $1)
 do
-  python3 kafka_producer.py -i ../../data/sample$i.csv &
+  python3 kafka_producer.py -b $2 -i ../../data/sample$i.csv &
 done
 
-wait
+#wait
