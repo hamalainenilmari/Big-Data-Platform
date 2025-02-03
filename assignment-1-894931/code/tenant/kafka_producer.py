@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-i', '--input_file', default="../../code/taxiTrips.csv", help='Input file')
+    parser.add_argument('-i', '--input_file', default="../../data/taxiTrips.csv", help='Input file')
     parser.add_argument('-c', '--chunksize', default=10, help='chunk size for big file')
     parser.add_argument('-s', '--sleeptime', default=0, help='sleep time in second')
     parser.add_argument('-t', '--topic', default="taxiTrips", help='kafka topic')
@@ -72,7 +72,7 @@ if __name__ == '__main__':
             
             kafka_producer.produce(KAFKA_TOPIC, json_data.encode('utf-8'), callback=kafka_delivery_error)
             kafka_producer.flush()
-            #time.sleep(sleeptime)
+            time.sleep(sleeptime)
         i += 1
     end_time = time.time()
     print(f"finished producing input data at {end_time}, total runtime: {end_time - start_time:.2f} s")
