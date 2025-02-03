@@ -12,7 +12,7 @@ if __name__ == '__main__':
         fileCount = 0
         while fileCount < 10:
             chunk = [header]
-            for _ in range(10000):
+            for _ in range(100000): # edit this to control how many rows per one input data file
                 chunk.append(next(reader))
 
             currentFile = f"sample{fileCount}.csv"
