@@ -1,0 +1,9 @@
+2025-02-03 14:24:28,971 - INFO - Starting to listen for data
+2025-02-03 14:31:32,258 - INFO - Stopped ingesting - statistics:
+2025-02-03 14:31:32,258 - INFO - Time taken: 423.23 s
+2025-02-03 14:31:32,258 - INFO - Number of Kafka messages received: 200000
+2025-02-03 14:31:32,258 - INFO - Rows succesfully inserted: 199620
+2025-02-03 14:31:32,258 - INFO - Rows succesfully inserted / s: 471.6566369776627
+2025-02-03 14:31:32,258 - INFO - Number of Cassandra errors: 380
+2025-02-03 14:31:32,258 - INFO - Number of Kafka errors: 0
+2025-02-03 14:31:32,258 - INFO - ------------------------------------------------

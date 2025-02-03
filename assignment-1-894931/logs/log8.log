@@ -1,0 +1,10 @@
+2025-02-03 15:07:40,194 - INFO - Starting to listen for data
+2025-02-03 15:07:40,204 - WARNING - Host 172.18.0.4:9042 has been marked down
+2025-02-03 15:13:54,951 - INFO - Stopped ingesting - statistics:
+2025-02-03 15:13:54,952 - INFO - Time taken: 374.67 s
+2025-02-03 15:13:54,952 - INFO - Number of Kafka messages received: 200000
+2025-02-03 15:13:54,952 - INFO - Rows succesfully inserted: 199620
+2025-02-03 15:13:54,952 - INFO - Rows succesfully inserted / s: 532.7934382335702
+2025-02-03 15:13:54,952 - INFO - Number of Cassandra errors: 380
+2025-02-03 15:13:54,952 - INFO - Number of Kafka errors: 0
+2025-02-03 15:13:54,952 - INFO - ------------------------------------------------
