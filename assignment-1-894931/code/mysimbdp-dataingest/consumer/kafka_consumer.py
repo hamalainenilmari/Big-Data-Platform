@@ -41,7 +41,6 @@ if __name__ == '__main__':
             'sasl.password': args.sasl_password
         }
         
-    # declare the topic and consumer group
     kafka_consumer = Consumer(kafka_conf)
     kafka_consumer.subscribe([args.topic])
 
