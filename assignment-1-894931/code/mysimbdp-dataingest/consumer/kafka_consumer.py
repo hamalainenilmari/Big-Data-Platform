@@ -18,6 +18,7 @@ def stopIngest():
     logging.info(f"Time taken: {end_time - start_time:.2f} s")
     logging.info(f"Number of Kafka messages received: {messagesReceived}")
     logging.info(f"Rows succesfully inserted: {rowsConsumed}")
+    logging.info(f"Rows succesfully inserted / s: {rowsConsumed / (end_time - start_time)}")
     logging.info(f"Number of Cassandra errors: {cassandraError}")
     logging.info(f"Number of Kafka errors: {kafkaError}")
     logging.info("------------------------------------------------")
