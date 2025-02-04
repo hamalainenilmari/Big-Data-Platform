@@ -35,7 +35,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
     parser.add_argument('-t', '--topic', default="taxiTrips", help='kafka topic')
-    parser.add_argument('-g', '--consumer_group', default="g1", help='kafka topic')
+    parser.add_argument('-g', '--consumer_group', default="g1", help='consumer group')
     parser.add_argument('--security_protocol', default='SASL_PLAINTEXT', help='security protocol')
     parser.add_argument('--sasl_mechanism', default='PLAIN', help='security protocol')
     parser.add_argument('--sasl_username', help='sasl user name')
@@ -79,6 +79,7 @@ if __name__ == '__main__':
     kafkaError = 0
 
     print("Starting to listen for data")
+    logging.info(f"Succesfully connected to Cassandra")
     logging.info(f"Starting to listen for data")
     start_time = time.time()
     ingestionStarted = False
