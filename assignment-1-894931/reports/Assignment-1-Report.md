@@ -134,25 +134,29 @@ Each consumer polls for new messages every second
 
 **Different number of data coming in and different number of kafka consumers:**
 
-3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum
+Number of consumers	At least as many partitions as consumers for parallelism. We use as 1.5x number of consumers
+Kafka broker is a server that stores and serves messages. Brokers work together in a Kafka cluster.
+Kafka replication factor is 3.
 
-1 Kafka Producers producing 5 000 rows of data each (), 1 Kafka Consumers (poll 1s)
+partitions: 15
+
+5 Kafka brokers, 4 Cassandra nodes (DC1: 2, DC2: 2, replication DC1: 2, DC2: 1), Consistency: Quorum, Kafka consumers poll every second
+
+1 Kafka Producers producing 10 000 rows of data each, 1 Kafka Consumers
 - log0.log
 
-5 Kafka Producers producing 5 000 rows of data each (), 5 Kafka Consumers (poll 1s)
+1 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers
 - log1.log
 
-10 Kafka Producers producing 5 000 rows of data each , 10 Kafka Consumers (poll 1s)
+10 Kafka Producers producing 5 000 rows of data each, 10 Kafka Consumers
 - log2.log
 
-15 Kafka Producers producing 10 000 rows of data each (), 15 Kafka Consumers (poll 1s)
+10 Kafka Producers producing 10 000 rows of data each, 15 Kafka Consumers
 - log3.log
 
-20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers (poll 1s)
+30 Kafka Producers producing 10 000 rows of data each, 30 Kafka Consumers
 - log4.log
 
-20 Kafka Producers producing 10 000 rows of data each (), 30 Kafka Consumers poll poll 0.1s
-- log8.log
 
 **Different poll time of consumers:**
 
@@ -192,10 +196,26 @@ Consistency: All
 3 Kafka brokers, Consistency: Quorum, 5 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 0.1s
 
 2 Cassandra nodes (2 in DC1)
+- log13.log
+- => CREATE KEYSPACE taxiServices WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};
 
-3 Cassandra nodes (3 in DC1)
+3 Cassandra nodes (3 in DC1) => CREATE KEYSPACE taxiServices WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
+- log14.log
+
+3 Cassandra nodes (3 in DC1) => CREATE KEYSPACE taxiServices WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};
+- log15.log
+=> less replication, more fast? only a little
+
+3 Cassandra nodes (2 in DC1, 1 in DC1), CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;
+- log16.log
+=> 
+
+3 Cassandra nodes (2 in DC1, 1 in DC1), CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 1, 'DC2': 1} AND durable_writes = true;
+- log17.log
+=> 
 
 4 Cassandra nodes (2 in DC1, 2 in DC2)
+- log1.log
 
 
 5 Cassandra nodes (3 in DC1, 2 in DC2)
@@ -217,7 +237,66 @@ dierent databases/datasets. The tenant would like to record basic lineage of the
 explain what types of metadata about data lineage you would like to support and how would you do
 this. Provide one example of a lineage data. (1 point)
 
-* tenant user who starting ingesting
-* what kind of data wrangling done
-* 
+The platform could support multiple types of metadata for the data ingested into it. An example of a data lineage for a taxi service provider which sends their raw
+data to this platform's data ingestion would following:
+
+The tenant information would be stored, containing which tenant and which user of tenant has stored specific data.
+For example, when the tenant starts producing the source data by Kafka Producer from their server, the user who started the action
+would be stored. Also the source data type would be stored, with the schema of the data units. Then the processing done by the mysimbdp-dataingest
+would be stored, which could include ignoring unnecessary (if predetermined) columns, changing data types (e.g. timestamps, int to float) and data filtering.
+Then the ingestion result data would be stored, which would contain total numbers of input data ingested, total number of succesful data storage inserts and
+errors. Additionally, the ingestion start timestamp and end timestamps would be stored. Also the used Cassandra keyspace(s) and table(s) would be stored.
+
+The data lineage could be stored in JSON format like:
+
+{
+  "tenant_id": "tenant_a",
+  "user_id": "user_1",
+  "source": {
+    "schema": ["trip_id", "taxi_id", "trip_start_timestamp", "trip_end_timestamp", "trip_seconds",  
+        "trip_miles", "pickup_community_area", "dropoff_community_area", "fare", "tips",  
+        "tolls", "extras", "trip_total", "payment_type", "company",  
+        "pickup_centroid_latitude", "pickup_centroid_longitude",  
+        "dropoff_centroid_latitude", "dropoff_centroid_longitude"],
+    "type": "csv"
+  },
+  "processing": {
+    "trip_start_timestamp": "modify_to_timestamp",
+    "trip_end_timestamp": "modify_to_timestamp",
+    "trip_miles": "modify_to_int",
+    "dropoff_centroid_latitude": "drop"
+    "dropoff_centroid_longitude": "drop"
+  },
+  "ingestion_result": {
+    "total_rows_processed": 10000,
+    "total_rows_discarded": 0,
+    "successful_db_inserts": 9990,
+    "failed_db_inserts": 10,
+    "success_rate": "99.9%",
+    "rows_inserted_per_second": 555
+  },
+  "ingestion_start": "2025-02-04T20:00:15Z",
+  "ingestion_end": "2025-02-04T22:00:00Z",
+  "cassandra_keyspaces": ["taxiservices"],
+  "cassandra_tables": ["trips"]
+}
   
+2. Assume that each of your tenants/users will need a dedicated mysimbdp-coredms. Design the data
+schema of service and data discovery information for mysimbdp-coredms that can be published into
+an existing registry (like ZooKeeper, consul or etcd) so that you can nd information about which
+mysimbdp-coredms is for which tenants/users. (1 point)
+
+1. Explain how you would change the implementation of mysimbdp-dataingest (in Part 2) to integrate a
+service and data discovery feature (no implementation is required). (1 point)
+
+1. Assume that you have to introduce a new key component, called mysimbdp-daas, of which APIs can
+be called by external data producers/consumers to store/read data into/from mysimbdp-coredms.
+This component is a platform-as-a-service. Tenants can get shared or dedicated instances of
+mysimbdp-daas for their usage. Assume that now only mysimbdp-daas can read and write data into
+mysimbdp-coredms, how would you change your mysimbdp-dataingest (in Part 2) to work with
+mysimbdp-daas, draw the updated architecture of your mysimbdp? (1 point)
+
+1. Assume that the platform allows the customer to dene which types of data should be stored in a hot
+space and which in a cold space in the mysimbdp-coredms. Provide one example of constraints based
+on characteristics of data for data in a hot space vs in a cold space. Explain how would you support
+automatically moving/extracting data from a hot space to a cold space. (1 point)
