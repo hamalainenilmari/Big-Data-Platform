@@ -289,16 +289,18 @@ mysimbdp-coredms is for which tenants/users. (1 point)
 For managing multiple mysimbdp-coredms instances, the platform would need to handle and store the schema of service and data
 discovery information for each tenant in a configuration synchronization service like Apache ZooKeeper. These kind of services
 enable centralized and consistent way for managing configuration and metadata about multiple services like mysimbdp-coredms'.
-The configuration could be stored in a JSON file. The tenant's mysimbdp-coredms information would contain essential information about the tenant such as
-tenant name, id and users. Information about the specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
+A tenant's mysimbdp-coredms information would contain essential information about the tenant such as
+tenant name, id and users. Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
 Information about the VM instance running the coredms would contain the addresss (ip:port),
 firewall rules (protocols accepted, ports etc), hardware specs (CPU, RAM etc) and the cost of the machine. Also metadata such as tenant creation date, location would be stored.
+Also coredms status would be stored, including active, stopped, removed.
 
 The tenant information could be stored in JSON like:
 
 {
     "tenant_name": "taxi_service_provider_abc",
     "tenant_id": "abc123",
+    "status": "active",
     "users": [
         {
             "user_id": "id123",
@@ -315,8 +317,9 @@ The tenant information could be stored in JSON like:
             "tables": ["trips", "reviews"],
         }
     ],
+    "db_nodes": 4,
     "replication": 3,
-    "data_centers: ["DC1", "DC2"],
+    "db_data_centers: ["DC1", "DC2"],
     "virtual_machine": {
         "ip": "127.0.0.1",
         "cassandra_port": 9042,
@@ -331,9 +334,17 @@ The tenant information could be stored in JSON like:
     "location": "USA"
 }
 
-
 1. Explain how you would change the implementation of mysimbdp-dataingest (in Part 2) to integrate a
 service and data discovery feature (no implementation is required). (1 point)
+
+Currently, mysimbdp-dataingest contains hardcoded environmental variables to use when connecting to the specific mysimbdp-coredms instance.
+This means that the coredms instanece ip and port are manually inserted, and cassandra keyspace and table are manually inserted. The use of the tenant service and data discovery
+feature would enable retrieving these values from the centralized configuration management service (e.g. ZooKeeper) and automatically inserting the correspoding coredms data into
+mysimbdp-dataingest configurations.
+This would be implemented in a way, where the platform would also host ZooKeeper service, and the dataingest would ask for the configurations from there.
+Mysimbdp-dataingest would query for the corresponding coredms data by the tenant id, and the ZooKeeper service would return it, if values are right, for example status is active.
+When dataingest receives new data from tenant data sources, it would first query the data by tenant id, and then if the source data matches the configurations in the tenant data,
+the data is inserted (e.g. the corresponding table exists?)
 
 1. Assume that you have to introduce a new key component, called mysimbdp-daas, of which APIs can
 be called by external data producers/consumers to store/read data into/from mysimbdp-coredms.
@@ -341,6 +352,12 @@ This component is a platform-as-a-service. Tenants can get shared or dedicated i
 mysimbdp-daas for their usage. Assume that now only mysimbdp-daas can read and write data into
 mysimbdp-coredms, how would you change your mysimbdp-dataingest (in Part 2) to work with
 mysimbdp-daas, draw the updated architecture of your mysimbdp? (1 point)
+
+The mysimbdp-daas would be implemented as a platform-as-a-service inside a platform. The source data ingestion would still be done
+by the mysimdp-dataingest. The daas would provide APIs for tenants to use for ingesting data. The underlying technology would still be Kafka.
+The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API.
+
+![Platform architecture with daas](../architecture_daas.png)
 
 1. Assume that the platform allows the customer to dene which types of data should be stored in a hot
 space and which in a cold space in the mysimbdp-coredms. Provide one example of constraints based
