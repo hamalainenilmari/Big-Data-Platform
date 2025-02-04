@@ -286,6 +286,52 @@ schema of service and data discovery information for mysimbdp-coredms that can b
 an existing registry (like ZooKeeper, consul or etcd) so that you can nd information about which
 mysimbdp-coredms is for which tenants/users. (1 point)
 
+For managing multiple mysimbdp-coredms instances, the platform would need to handle and store the schema of service and data
+discovery information for each tenant in a configuration synchronization service like Apache ZooKeeper. These kind of services
+enable centralized and consistent way for managing configuration and metadata about multiple services like mysimbdp-coredms'.
+The configuration could be stored in a JSON file. The tenant's mysimbdp-coredms information would contain essential information about the tenant such as
+tenant name, id and users. Information about the specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
+Information about the VM instance running the coredms would contain the addresss (ip:port),
+firewall rules (protocols accepted, ports etc), hardware specs (CPU, RAM etc) and the cost of the machine. Also metadata such as tenant creation date, location would be stored.
+
+The tenant information could be stored in JSON like:
+
+{
+    "tenant_name": "taxi_service_provider_abc",
+    "tenant_id": "abc123",
+    "users": [
+        {
+            "user_id": "id123",
+            "role": "admin"
+        },
+        {
+            "user_id": "id456",
+            "role": "user"
+        }
+    ],
+    "databases": [
+        {
+            "keyspace:": "taxiservices",
+            "tables": ["trips", "reviews"],
+        }
+    ],
+    "replication": 3,
+    "data_centers: ["DC1", "DC2"],
+    "virtual_machine": {
+        "ip": "127.0.0.1",
+        "cassandra_port": 9042,
+        "ports_listened_on": ["9042", "9042", "9044"],
+        "protocols": ["http", "https"],
+        "vm_cost_annual_euro": 10000,
+        "cpu_cores": 4,
+        "memory": 16,
+        "disk": 400
+    },
+    "creation_date": "2025-02-04T20:00:15Z",
+    "location": "USA"
+}
+
+
 1. Explain how you would change the implementation of mysimbdp-dataingest (in Part 2) to integrate a
 service and data discovery feature (no implementation is required). (1 point)
 
