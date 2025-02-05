@@ -1,10 +1,10 @@
 x-cassandra: &cassandras
   CASSANDRA_CLUSTER_NAME: TaxiCluster
-  CASSANDRA_SEEDS: cassandra1, cassandra2, cassandra3, cassandra4 # every node for availability
+  CASSANDRA_SEEDS: cassandra1, cassandra2, cassandra3, cassandra4 # all nodes as seeds for better availability
   HEAP_NEWSIZE: 256M # these are max values our cloud deployment machines can handle
   MAX_HEAP_SIZE: 4G # these are max values our cloud deployment machines can handle
   CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-    
+
 x-expose: &exposes
     - "7000" # intra-node communication
     - "7001" # TLS intra node communication
@@ -12,64 +12,77 @@ x-expose: &exposes
     - "9042" # CQL
     - "9142" # CQL TLS
     - "9160" # Thrift
-services: 
+
+networks:
+  cassandra_cluster:
+    driver: bridge
+
+services:
   cassandra1:
     image: cassandra:latest
     hostname: cassandra1
-    environment: 
+    environment:
       <<: *cassandras
       CASSANDRA_DC: DC1
     volumes:
       - cassandra1-data:/var/lib/cassandra
     expose: *exposes
-    ports: 
+    ports:
       - "9042:9042"
     restart: always
+    networks:
+      - cassandra_cluster
 
   cassandra2:
     image: cassandra:latest
     hostname: cassandra2
-    environment: 
+    environment:
       <<: *cassandras
-      CASSANDRA_DC: DC1   
+      CASSANDRA_DC: DC1
     expose: *exposes
     volumes:
       - cassandra2-data:/var/lib/cassandra
-    ports: 
+    ports:
       - "9043:9042"
     restart: always
-    depends_on: 
+    depends_on:
       - cassandra1
-    
+    networks:
+      - cassandra_cluster
 
   cassandra3:
     image: cassandra:latest
     hostname: cassandra3
-    environment: 
+    environment:
       <<: *cassandras
       CASSANDRA_DC: DC2
     volumes:
       - cassandra3-data:/var/lib/cassandra
     expose: *exposes
     restart: always
-    ports: 
+    ports:
       - "9044:9042"
+    networks:
+      - cassandra_cluster
 
   cassandra4:
     image: cassandra:latest
     hostname: cassandra4
-    environment: 
+    environment:
       <<: *cassandras
       CASSANDRA_DC: DC2
     volumes:
       - cassandra4-data:/var/lib/cassandra
     expose: *exposes
     restart: always
-    depends_on: 
-      - cassandra3    
-    ports: 
+    depends_on:
+      - cassandra3
+    ports:
       - "9045:9042"
-      
+    networks:
+      - cassandra_cluster
+
+
 volumes:
   cassandra1-data:
   cassandra2-data:
