@@ -1,0 +1,471 @@
+2025-02-05 11:03:11,866 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:11,867 - INFO - Starting to listen for data
+2025-02-05 11:03:11,894 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:11,894 - INFO - Starting to listen for data
+2025-02-05 11:03:11,912 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:11,912 - INFO - Starting to listen for data
+2025-02-05 11:03:14,913 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,913 - INFO - Starting to listen for data
+2025-02-05 11:03:14,913 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,913 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,913 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,914 - INFO - Starting to listen for data
+2025-02-05 11:03:14,914 - INFO - Starting to listen for data
+2025-02-05 11:03:14,914 - INFO - Starting to listen for data
+2025-02-05 11:03:14,912 - WARNING - Failed to create connection pool for new host 172.18.0.5:9042:
+Traceback (most recent call last):
+  File "cassandra/cluster.py", line 3234, in cassandra.cluster.Session.add_or_renew_pool.run_add_or_renew_pool
+  File "cassandra/pool.py", line 406, in cassandra.pool.HostConnection.__init__
+  File "cassandra/cluster.py", line 1670, in cassandra.cluster.Cluster.connection_factory
+  File "cassandra/connection.py", line 846, in cassandra.connection.Connection.factory
+  File "/home/ilmari_hamalainen/.local/lib/python3.8/site-packages/cassandra/io/asyncorereactor.py", line 354, in __init__
+    self._connect_socket()
+  File "cassandra/connection.py", line 951, in cassandra.connection.Connection._connect_socket
+OSError: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:14,914 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,912 - WARNING - Failed to create connection pool for new host 172.18.0.5:9042:
+Traceback (most recent call last):
+  File "cassandra/cluster.py", line 3234, in cassandra.cluster.Session.add_or_renew_pool.run_add_or_renew_pool
+  File "cassandra/pool.py", line 406, in cassandra.pool.HostConnection.__init__
+  File "cassandra/cluster.py", line 1670, in cassandra.cluster.Cluster.connection_factory
+  File "cassandra/connection.py", line 846, in cassandra.connection.Connection.factory
+  File "/home/ilmari_hamalainen/.local/lib/python3.8/site-packages/cassandra/io/asyncorereactor.py", line 354, in __init__
+    self._connect_socket()
+  File "cassandra/connection.py", line 951, in cassandra.connection.Connection._connect_socket
+OSError: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:14,914 - INFO - Starting to listen for data
+2025-02-05 11:03:14,914 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,914 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:03:14,912 - WARNING - Failed to create connection pool for new host 172.18.0.5:9042:
+Traceback (most recent call last):
+  File "cassandra/cluster.py", line 3234, in cassandra.cluster.Session.add_or_renew_pool.run_add_or_renew_pool
+  File "cassandra/pool.py", line 406, in cassandra.pool.HostConnection.__init__
+  File "cassandra/cluster.py", line 1670, in cassandra.cluster.Cluster.connection_factory
+  File "cassandra/connection.py", line 846, in cassandra.connection.Connection.factory
+  File "/home/ilmari_hamalainen/.local/lib/python3.8/site-packages/cassandra/io/asyncorereactor.py", line 354, in __init__
+    self._connect_socket()
+  File "cassandra/connection.py", line 951, in cassandra.connection.Connection._connect_socket
+OSError: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:14,914 - INFO - Starting to listen for data
+2025-02-05 11:03:14,914 - INFO - Starting to listen for data
+2025-02-05 11:03:14,914 - WARNING - Host 172.18.0.5:9042 has been marked down
+2025-02-05 11:03:14,914 - WARNING - Host 172.18.0.5:9042 has been marked down
+2025-02-05 11:03:14,914 - WARNING - Host 172.18.0.5:9042 has been marked down
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.3 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.98 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.84 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.76 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.82 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.12 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.2 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,984 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.22 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,985 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.02 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:17,985 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.14 seconds: [Errno 113] Tried connecting to [('172.18.0.5', 9042)]. Last error: No route to host
+2025-02-05 11:03:19,868 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,868 - INFO - Time taken: 8.00 s
+2025-02-05 11:03:19,868 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,868 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,868 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,868 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,868 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,868 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,869 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,869 - INFO - Time taken: 8.00 s
+2025-02-05 11:03:19,869 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,869 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,869 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,869 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,869 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,869 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,895 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,895 - INFO - Time taken: 8.00 s
+2025-02-05 11:03:19,895 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,895 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,895 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,895 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,895 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,895 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,896 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,896 - INFO - Time taken: 8.00 s
+2025-02-05 11:03:19,896 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,896 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,896 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,896 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,896 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,896 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,913 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,914 - INFO - Time taken: 8.00 s
+2025-02-05 11:03:19,914 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,914 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,914 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,914 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,914 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,914 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,914 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,914 - INFO - Time taken: 8.00 s
+2025-02-05 11:03:19,914 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,914 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,914 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,914 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,914 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,914 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,914 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,914 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,914 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,914 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,914 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,914 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,914 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,914 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,914 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,914 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,914 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,915 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,915 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,915 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,915 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,915 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,915 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,915 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,915 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,915 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,915 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,915 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,915 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,915 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,915 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,915 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,915 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,915 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,915 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,915 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,915 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,915 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,915 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,915 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,915 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,915 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,916 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,916 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,916 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,916 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,916 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,916 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,916 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,916 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,916 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,916 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,916 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,916 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,916 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,916 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,916 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,916 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,916 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,916 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,916 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,916 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,916 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,916 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,916 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,916 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,916 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,916 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,916 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,917 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,917 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,917 - INFO - Number of Cassandra errors: 0
+2025-02-05 11:03:19,917 - INFO - Number of Kafka errors: 0
+2025-02-05 11:03:19,917 - INFO - ------------------------------------------------
+2025-02-05 11:03:19,917 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:03:19,917 - INFO - Time taken: 5.00 s
+2025-02-05 11:03:19,917 - INFO - Number of Kafka messages received: 0
+2025-02-05 11:03:19,917 - INFO - Rows succesfully inserted: 0
+2025-02-05 11:03:19,917 - INFO - Rows succesfully inserted / s: 0.0
+2025-02-05 11:03:19,917 - INFO - Number of Cassandra errors: 0
+2025-02-052025-02-05 11:05:52,824 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,824 - INFO - Starting to listen for data
+2025-02-05 11:05:52,834 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,834 - INFO - Starting to listen for data
+2025-02-05 11:05:52,862 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,862 - INFO - Starting to listen for data
+2025-02-05 11:05:52,870 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,870 - INFO - Starting to listen for data
+2025-02-05 11:05:52,891 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,891 - INFO - Starting to listen for data
+2025-02-05 11:05:52,903 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,903 - INFO - Starting to listen for data
+2025-02-05 11:05:52,953 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,953 - INFO - Starting to listen for data
+2025-02-05 11:05:52,964 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,964 - INFO - Starting to listen for data
+2025-02-05 11:05:52,968 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:52,968 - INFO - Starting to listen for data
+2025-02-05 11:05:53,005 - INFO - Succesfully connected to Cassandra
+2025-02-05 11:05:53,005 - INFO - Starting to listen for data
+2025-02-05 11:05:53,825 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.14 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:53,894 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.9 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:53,937 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.1 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:53,952 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.94 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:53,958 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.96 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:53,969 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.16 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:53,969 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.82 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:54,102 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 2.3 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:54,163 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.94 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:54,204 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 1.92 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:55,799 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 3.76 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:55,873 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 3.92 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:55,957 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 4.4 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:55,963 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 4.12 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:56,030 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 3.64 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:56,042 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 3.72 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:56,168 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 4.4 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:56,174 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 4.0 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:56,208 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 3.44 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:56,408 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 4.04 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:59,608 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 8.0 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:59,716 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 7.84 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:59,739 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 7.04 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:59,851 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 8.8 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:05:59,882 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 7.28 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:00,173 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 6.8 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:00,183 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 7.68 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:00,368 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 7.12 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:00,517 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 7.52 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:00,578 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 8.32 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:06,857 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 15.84 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:07,008 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 15.52 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:07,205 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 14.4 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:07,494 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 17.6 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:07,627 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 14.72 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:07,637 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 15.36 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:07,904 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 17.12 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:08,136 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 16.16 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:08,672 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 16.64 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:08,902 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 15.04 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:21,655 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 36.8 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:22,433 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 30.72 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:22,600 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 27.84 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:22,744 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 30.4 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:23,022 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 32.96 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:23,987 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 32.96 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:24,329 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 31.36 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:25,075 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 28.16 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:25,096 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 27.2 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:25,368 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 29.44 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:50,489 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 60.16 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:52,384 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 62.72 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:53,150 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 69.76 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:53,182 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 60.8 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:53,250 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 71.04 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:54,813 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 71.04 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:55,706 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 64.0 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:55,995 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 58.88 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:56,994 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 65.28 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:06:58,499 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 65.92 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:07:50,680 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 124.16 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:07:54,071 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 110.08 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:07:54,878 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 121.6 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:07:55,175 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 129.28 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:07:59,719 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 121.6 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:08:02,292 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 112.64 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:08:02,971 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 120.32 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:08:04,376 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 139.52 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:08:04,502 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 142.08 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:08:05,933 - WARNING - Error attempting to reconnect to 172.18.0.5:9042, scheduling retry in 119.04 seconds: [Errno 111] Tried connecting to [('172.18.0.5', 9042)]. Last error: Connection refused
+2025-02-05 11:08:55,149 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,149 - INFO - Time taken: 182.26 s
+2025-02-05 11:08:55,149 - INFO - Number of Kafka messages received: 39653
+2025-02-05 11:08:55,149 - INFO - Rows succesfully inserted: 39568
+2025-02-05 11:08:55,149 - INFO - Rows succesfully inserted / s: 217.0996843427636
+2025-02-05 11:08:55,149 - INFO - Number of Cassandra errors: 85
+2025-02-05 11:08:55,149 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,149 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,161 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,162 - INFO - Time taken: 182.27 s
+2025-02-05 11:08:55,162 - INFO - Number of Kafka messages received: 39653
+2025-02-05 11:08:55,162 - INFO - Rows succesfully inserted: 39568
+2025-02-05 11:08:55,162 - INFO - Rows succesfully inserted / s: 217.08464601765039
+2025-02-05 11:08:55,162 - INFO - Number of Cassandra errors: 85
+2025-02-05 11:08:55,162 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,162 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,205 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,205 - INFO - Time taken: 182.33 s
+2025-02-05 11:08:55,205 - INFO - Number of Kafka messages received: 19907
+2025-02-05 11:08:55,205 - INFO - Rows succesfully inserted: 19861
+2025-02-05 11:08:55,205 - INFO - Rows succesfully inserted / s: 108.9259435438091
+2025-02-05 11:08:55,205 - INFO - Number of Cassandra errors: 46
+2025-02-05 11:08:55,205 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,205 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,212 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,212 - INFO - Time taken: 182.34 s
+2025-02-05 11:08:55,212 - INFO - Number of Kafka messages received: 19907
+2025-02-05 11:08:55,212 - INFO - Rows succesfully inserted: 19861
+2025-02-05 11:08:55,212 - INFO - Rows succesfully inserted / s: 108.92195151807739
+2025-02-05 11:08:55,212 - INFO - Number of Cassandra errors: 46
+2025-02-05 11:08:55,212 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,212 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,219 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,220 - INFO - Time taken: 182.32 s
+2025-02-05 11:08:55,220 - INFO - Number of Kafka messages received: 39448
+2025-02-05 11:08:55,220 - INFO - Rows succesfully inserted: 39357
+2025-02-05 11:08:55,220 - INFO - Rows succesfully inserted / s: 215.87182473014664
+2025-02-05 11:08:55,220 - INFO - Number of Cassandra errors: 91
+2025-02-05 11:08:55,220 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,220 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,224 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,225 - INFO - Time taken: 182.32 s
+2025-02-05 11:08:55,225 - INFO - Number of Kafka messages received: 39448
+2025-02-05 11:08:55,225 - INFO - Rows succesfully inserted: 39357
+2025-02-05 11:08:55,225 - INFO - Rows succesfully inserted / s: 215.86580994333502
+2025-02-05 11:08:55,225 - INFO - Number of Cassandra errors: 91
+2025-02-05 11:08:55,225 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,225 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,239 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,240 - INFO - Time taken: 182.42 s
+2025-02-05 11:08:55,240 - INFO - Number of Kafka messages received: 19987
+2025-02-05 11:08:55,240 - INFO - Rows succesfully inserted: 19953
+2025-02-05 11:08:55,240 - INFO - Rows succesfully inserted / s: 109.38243768447369
+2025-02-05 11:08:55,240 - INFO - Number of Cassandra errors: 34
+2025-02-05 11:08:55,240 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,240 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,245 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,245 - INFO - Time taken: 182.42 s
+2025-02-05 11:08:55,245 - INFO - Number of Kafka messages received: 19987
+2025-02-05 11:08:55,245 - INFO - Rows succesfully inserted: 19953
+2025-02-05 11:08:55,245 - INFO - Rows succesfully inserted / s: 109.37907112577432
+2025-02-05 11:08:55,245 - INFO - Number of Cassandra errors: 34
+2025-02-05 11:08:55,245 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,245 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,285 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,285 - INFO - Time taken: 182.42 s
+2025-02-05 11:08:55,285 - INFO - Number of Kafka messages received: 19924
+2025-02-05 11:08:55,285 - INFO - Rows succesfully inserted: 19869
+2025-02-05 11:08:55,285 - INFO - Rows succesfully inserted / s: 108.91756599832644
+2025-02-05 11:08:55,285 - INFO - Number of Cassandra errors: 55
+2025-02-05 11:08:55,285 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,285 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,291 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,291 - INFO - Time taken: 182.43 s
+2025-02-05 11:08:55,291 - INFO - Number of Kafka messages received: 19924
+2025-02-05 11:08:55,291 - INFO - Rows succesfully inserted: 19869
+2025-02-05 11:08:55,291 - INFO - Rows succesfully inserted / s: 108.91399026339036
+2025-02-05 11:08:55,291 - INFO - Number of Cassandra errors: 55
+2025-02-05 11:08:55,291 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,291 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,343 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,343 - INFO - Time taken: 182.34 s
+2025-02-05 11:08:55,343 - INFO - Number of Kafka messages received: 40281
+2025-02-05 11:08:55,343 - INFO - Rows succesfully inserted: 40194
+2025-02-05 11:08:55,343 - INFO - Rows succesfully inserted / s: 220.43662333491858
+2025-02-05 11:08:55,343 - INFO - Number of Cassandra errors: 87
+2025-02-05 11:08:55,343 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,343 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,348 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,348 - INFO - Time taken: 182.34 s
+2025-02-05 11:08:55,348 - INFO - Number of Kafka messages received: 40281
+2025-02-05 11:08:55,348 - INFO - Rows succesfully inserted: 40194
+2025-02-05 11:08:55,348 - INFO - Rows succesfully inserted / s: 220.43047689986287
+2025-02-05 11:08:55,348 - INFO - Number of Cassandra errors: 87
+2025-02-05 11:08:55,348 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,348 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,358 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,358 - INFO - Time taken: 182.39 s
+2025-02-05 11:08:55,358 - INFO - Number of Kafka messages received: 19715
+2025-02-05 11:08:55,358 - INFO - Rows succesfully inserted: 19672
+2025-02-05 11:08:55,358 - INFO - Rows succesfully inserted / s: 107.85468878463537
+2025-02-05 11:08:55,358 - INFO - Number of Cassandra errors: 43
+2025-02-05 11:08:55,358 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,358 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,363 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,363 - INFO - Time taken: 182.40 s
+2025-02-05 11:08:55,363 - INFO - Number of Kafka messages received: 19715
+2025-02-05 11:08:55,363 - INFO - Rows succesfully inserted: 19672
+2025-02-05 11:08:55,363 - INFO - Rows succesfully inserted / s: 107.85154183297712
+2025-02-05 11:08:55,363 - INFO - Number of Cassandra errors: 43
+2025-02-05 11:08:55,363 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,363 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,371 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,371 - INFO - Time taken: 182.54 s
+2025-02-05 11:08:55,371 - INFO - Number of Kafka messages received: 39913
+2025-02-05 11:08:55,371 - INFO - Rows succesfully inserted: 39828
+2025-02-05 11:08:55,371 - INFO - Rows succesfully inserted / s: 218.1917261395075
+2025-02-05 11:08:55,371 - INFO - Number of Cassandra errors: 85
+2025-02-05 11:08:55,371 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,371 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,376 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,376 - INFO - Time taken: 182.54 s
+2025-02-05 11:08:55,376 - INFO - Number of Kafka messages received: 39913
+2025-02-05 11:08:55,376 - INFO - Rows succesfully inserted: 39828
+2025-02-05 11:08:55,377 - INFO - Rows succesfully inserted / s: 218.18542008436734
+2025-02-05 11:08:55,377 - INFO - Number of Cassandra errors: 85
+2025-02-05 11:08:55,377 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,377 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,388 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,388 - INFO - Time taken: 182.42 s
+2025-02-05 11:08:55,388 - INFO - Number of Kafka messages received: 39444
+2025-02-05 11:08:55,388 - INFO - Rows succesfully inserted: 39356
+2025-02-05 11:08:55,388 - INFO - Rows succesfully inserted / s: 215.744994669536
+2025-02-05 11:08:55,388 - INFO - Number of Cassandra errors: 88
+2025-02-05 11:08:55,388 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,388 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,393 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,393 - INFO - Time taken: 182.42 s
+2025-02-05 11:08:55,393 - INFO - Number of Kafka messages received: 39444
+2025-02-05 11:08:55,393 - INFO - Rows succesfully inserted: 39356
+2025-02-05 11:08:55,393 - INFO - Rows succesfully inserted / s: 215.73888839182837
+2025-02-05 11:08:55,393 - INFO - Number of Cassandra errors: 88
+2025-02-05 11:08:55,393 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,393 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,402 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,403 - INFO - Time taken: 182.45 s
+2025-02-05 11:08:55,403 - INFO - Number of Kafka messages received: 19916
+2025-02-05 11:08:55,403 - INFO - Rows succesfully inserted: 19890
+2025-02-05 11:08:55,403 - INFO - Rows succesfully inserted / s: 109.01632976277081
+2025-02-05 11:08:55,403 - INFO - Number of Cassandra errors: 26
+2025-02-05 11:08:55,403 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,403 - INFO - ------------------------------------------------
+2025-02-05 11:08:55,408 - INFO - Stopped ingesting - statistics:
+2025-02-05 11:08:55,409 - INFO - Time taken: 182.46 s
+2025-02-05 11:08:55,409 - INFO - Number of Kafka messages received: 19916
+2025-02-05 11:08:55,409 - INFO - Rows succesfully inserted: 19890
+2025-02-05 11:08:55,409 - INFO - Rows succesfully inserted / s: 109.01274662141358
+2025-02-05 11:08:55,409 - INFO - Number of Cassandra errors: 26
+2025-02-05 11:08:55,409 - INFO - Number of Kafka errors: 0
+2025-02-05 11:08:55,409 - INFO - ------------------------------------------------
