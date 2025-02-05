@@ -1,0 +1,150 @@
+2025-02-05 17:32:45,436 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,436 - INFO - Starting to listen for data
+2025-02-05 17:32:45,457 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,458 - INFO - Starting to listen for data
+2025-02-05 17:32:45,468 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,468 - INFO - Starting to listen for data
+2025-02-05 17:32:45,521 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,521 - INFO - Starting to listen for data
+2025-02-05 17:32:45,536 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,536 - INFO - Starting to listen for data
+2025-02-05 17:32:45,539 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,540 - INFO - Starting to listen for data
+2025-02-05 17:32:45,565 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,565 - INFO - Starting to listen for data
+2025-02-05 17:32:45,570 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,570 - INFO - Starting to listen for data
+2025-02-05 17:32:45,571 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,571 - INFO - Starting to listen for data
+2025-02-05 17:32:45,571 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,571 - INFO - Starting to listen for data
+2025-02-05 17:32:45,580 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,580 - INFO - Starting to listen for data
+2025-02-05 17:32:45,591 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,592 - INFO - Starting to listen for data
+2025-02-05 17:32:45,597 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,598 - INFO - Starting to listen for data
+2025-02-05 17:32:45,598 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,598 - INFO - Starting to listen for data
+2025-02-05 17:32:45,610 - INFO - Succesfully connected to Cassandra
+2025-02-05 17:32:45,610 - INFO - Starting to listen for data
+2025-02-05 17:45:00,067 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,067 - INFO - Time taken: 734.55 s
+2025-02-05 17:45:00,067 - INFO - Number of Kafka messages received: 66872
+2025-02-05 17:45:00,067 - INFO - Rows succesfully inserted: 66740
+2025-02-05 17:45:00,067 - INFO - Rows succesfully inserted / s: 90.85886055540605
+2025-02-05 17:45:00,067 - INFO - Number of Cassandra errors: 132
+2025-02-05 17:45:00,067 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,067 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,118 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,118 - INFO - Time taken: 734.55 s
+2025-02-05 17:45:00,118 - INFO - Number of Kafka messages received: 68483
+2025-02-05 17:45:00,118 - INFO - Rows succesfully inserted: 68332
+2025-02-05 17:45:00,118 - INFO - Rows succesfully inserted / s: 93.02614342271721
+2025-02-05 17:45:00,118 - INFO - Number of Cassandra errors: 151
+2025-02-05 17:45:00,118 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,118 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,132 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,132 - INFO - Time taken: 734.60 s
+2025-02-05 17:45:00,132 - INFO - Number of Kafka messages received: 67242
+2025-02-05 17:45:00,132 - INFO - Rows succesfully inserted: 67107
+2025-02-05 17:45:00,132 - INFO - Rows succesfully inserted / s: 91.35225085023735
+2025-02-05 17:45:00,132 - INFO - Number of Cassandra errors: 135
+2025-02-05 17:45:00,132 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,132 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,203 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,203 - INFO - Time taken: 734.66 s
+2025-02-05 17:45:00,203 - INFO - Number of Kafka messages received: 66284
+2025-02-05 17:45:00,203 - INFO - Rows succesfully inserted: 66166
+2025-02-05 17:45:00,203 - INFO - Rows succesfully inserted / s: 90.06300644667742
+2025-02-05 17:45:00,203 - INFO - Number of Cassandra errors: 118
+2025-02-05 17:45:00,203 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,203 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,218 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,218 - INFO - Time taken: 734.64 s
+2025-02-05 17:45:00,218 - INFO - Number of Kafka messages received: 66936
+2025-02-05 17:45:00,218 - INFO - Rows succesfully inserted: 66778
+2025-02-05 17:45:00,218 - INFO - Rows succesfully inserted / s: 90.89923836538179
+2025-02-05 17:45:00,218 - INFO - Number of Cassandra errors: 158
+2025-02-05 17:45:00,218 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,218 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,233 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,234 - INFO - Time taken: 734.67 s
+2025-02-05 17:45:00,234 - INFO - Number of Kafka messages received: 67157
+2025-02-05 17:45:00,234 - INFO - Rows succesfully inserted: 67024
+2025-02-05 17:45:00,234 - INFO - Rows succesfully inserted / s: 91.23028510088065
+2025-02-05 17:45:00,234 - INFO - Number of Cassandra errors: 133
+2025-02-05 17:45:00,234 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,234 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,249 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,249 - INFO - Time taken: 734.68 s
+2025-02-05 17:45:00,249 - INFO - Number of Kafka messages received: 65441
+2025-02-05 17:45:00,249 - INFO - Rows succesfully inserted: 65307
+2025-02-05 17:45:00,249 - INFO - Rows succesfully inserted / s: 88.89189442562743
+2025-02-05 17:45:00,249 - INFO - Number of Cassandra errors: 134
+2025-02-05 17:45:00,249 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,249 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,256 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,256 - INFO - Time taken: 734.65 s
+2025-02-05 17:45:00,256 - INFO - Number of Kafka messages received: 65986
+2025-02-05 17:45:00,256 - INFO - Rows succesfully inserted: 65854
+2025-02-05 17:45:00,256 - INFO - Rows succesfully inserted / s: 89.64047837957808
+2025-02-05 17:45:00,256 - INFO - Number of Cassandra errors: 132
+2025-02-05 17:45:00,256 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,256 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,271 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,271 - INFO - Time taken: 734.68 s
+2025-02-05 17:45:00,271 - INFO - Number of Kafka messages received: 65925
+2025-02-05 17:45:00,272 - INFO - Rows succesfully inserted: 65781
+2025-02-05 17:45:00,272 - INFO - Rows succesfully inserted / s: 89.53699828325404
+2025-02-05 17:45:00,272 - INFO - Number of Cassandra errors: 144
+2025-02-05 17:45:00,272 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,272 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,285 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,286 - INFO - Time taken: 734.71 s
+2025-02-05 17:45:00,286 - INFO - Number of Kafka messages received: 66519
+2025-02-05 17:45:00,286 - INFO - Rows succesfully inserted: 66407
+2025-02-05 17:45:00,286 - INFO - Rows succesfully inserted / s: 90.38475980031521
+2025-02-05 17:45:00,286 - INFO - Number of Cassandra errors: 112
+2025-02-05 17:45:00,286 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,286 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,307 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,307 - INFO - Time taken: 734.84 s
+2025-02-05 17:45:00,307 - INFO - Number of Kafka messages received: 65951
+2025-02-05 17:45:00,307 - INFO - Rows succesfully inserted: 65839
+2025-02-05 17:45:00,307 - INFO - Rows succesfully inserted / s: 89.59658571850926
+2025-02-05 17:45:00,307 - INFO - Number of Cassandra errors: 112
+2025-02-05 17:45:00,307 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,307 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,322 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,322 - INFO - Time taken: 734.72 s
+2025-02-05 17:45:00,323 - INFO - Number of Kafka messages received: 66203
+2025-02-05 17:45:00,323 - INFO - Rows succesfully inserted: 66069
+2025-02-05 17:45:00,323 - INFO - Rows succesfully inserted / s: 89.92356322425364
+2025-02-05 17:45:00,323 - INFO - Number of Cassandra errors: 134
+2025-02-05 17:45:00,323 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,323 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,922 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,922 - INFO - Time taken: 735.32 s
+2025-02-05 17:45:00,922 - INFO - Number of Kafka messages received: 66679
+2025-02-05 17:45:00,922 - INFO - Rows succesfully inserted: 66558
+2025-02-05 17:45:00,922 - INFO - Rows succesfully inserted / s: 90.51515311080489
+2025-02-05 17:45:00,922 - INFO - Number of Cassandra errors: 121
+2025-02-05 17:45:00,922 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,922 - INFO - ------------------------------------------------
+2025-02-05 17:45:00,968 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:00,968 - INFO - Time taken: 735.53 s
+2025-02-05 17:45:00,968 - INFO - Number of Kafka messages received: 67634
+2025-02-05 17:45:00,968 - INFO - Rows succesfully inserted: 67501
+2025-02-05 17:45:00,968 - INFO - Rows succesfully inserted / s: 91.77174462744206
+2025-02-05 17:45:00,968 - INFO - Number of Cassandra errors: 133
+2025-02-05 17:45:00,968 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:00,968 - INFO - ------------------------------------------------
+2025-02-05 17:45:01,001 - INFO - Stopped ingesting - statistics:
+2025-02-05 17:45:01,001 - INFO - Time taken: 735.54 s
+2025-02-05 17:45:01,001 - INFO - Number of Kafka messages received: 66688
+2025-02-05 17:45:01,001 - INFO - Rows succesfully inserted: 66546
+2025-02-05 17:45:01,001 - INFO - Rows succesfully inserted / s: 90.47187562390542
+2025-02-05 17:45:01,001 - INFO - Number of Cassandra errors: 142
+2025-02-05 17:45:01,001 - INFO - Number of Kafka errors: 0
+2025-02-05 17:45:01,001 - INFO - ------------------------------------------------
