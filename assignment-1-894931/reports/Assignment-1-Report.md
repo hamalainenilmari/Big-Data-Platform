@@ -138,95 +138,93 @@ Number of consumers	At least as many partitions as consumers for parallelism. We
 Kafka broker is a server that stores and serves messages. Brokers work together in a Kafka cluster.
 Kafka replication factor is 3.
 
-partitions: 15
+partitions: 15, so max 15 consumers can read
 
 5 Kafka brokers, 4 Cassandra nodes (DC1: 2, DC2: 2, replication DC1: 2, DC2: 1), Consistency: Quorum, Kafka consumers poll every second
 
-1 Kafka Producers producing 10 000 rows of data each, 1 Kafka Consumers
+30 Kafka Producers producing 10 000 rows of data each, 1 Kafka Consumers
 - log0.log
 
-1 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers
+30 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers
 - log1.log
 
-10 Kafka Producers producing 5 000 rows of data each, 10 Kafka Consumers
+30 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers
 - log2.log
 
-10 Kafka Producers producing 10 000 rows of data each, 15 Kafka Consumers
+30 Kafka Producers producing 10 000 rows of data each, 15 Kafka Consumers
 - log3.log
-
-30 Kafka Producers producing 10 000 rows of data each, 30 Kafka Consumers
-- log4.log
-
 
 **Different poll time of consumers:**
 
-3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers (poll 1s)
-- log4.log
+Using 5 Kafka consumers to point out the effect of the polling time
 
-3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers poll every 0.1s
-- log5.log
+5 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 30 Kafka Producers producing 10 000 rows of data each (), 5 Kafka Consumers 
+poll every second
+- log1.log
+
+poll every 0.1s
+- log4.log
 => 10%? increase in speed
 
-3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers poll every 0.01s
-- log6.log
-=> no notable speed increase anymore
-
-3 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 20 Kafka Producers producing 10 000 rows of data each (), 10 Kafka Consumers poll every 2s
-- log7.log
+poll every 2s
+- log5.log
 => not much difference to 1s poll time
+
+poll every 4s
+- log6.log
+
+poll every 8s
+- log7.log
+
+=> slower polling does not have much difference, maybe more CPU friendly?
 
 **Different write consistencies:**
 
-3 Kafka brokers, 4 Cassandra nodes, 5 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 0.1s
+5 Kafka brokers, 4 Cassandra nodes, 30 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers poll every 1.0s
 
 Consistency: Any
-- log9.log
+- log8.log
 
 Consistency: One
-- log10.log
+- log9.log
  
 Consistency: Quorum
-- log11.log
+- log1.log
 
 Consistency: All
-- log12.10
+- log10.10
 
 **Different number of Cassandra nodes:**
 
-3 Kafka brokers, Consistency: Quorum, 5 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 0.1s
-
-2 Cassandra nodes (2 in DC1)
-- log13.log
-- => CREATE KEYSPACE taxiServices WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};
-
-3 Cassandra nodes (3 in DC1) => CREATE KEYSPACE taxiServices WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
-- log14.log
-
-3 Cassandra nodes (3 in DC1) => CREATE KEYSPACE taxiServices WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 2};
-- log15.log
-=> less replication, more fast? only a little
-
-3 Cassandra nodes (2 in DC1, 1 in DC1), CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;
-- log16.log
-=> 
-
-3 Cassandra nodes (2 in DC1, 1 in DC1), CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 1, 'DC2': 1} AND durable_writes = true;
-- log17.log
-=> 
+5 Kafka brokers, Consistency: Quorum, 30 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 1s
+esting the effect of data distribution and replication across different configurations.
+CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;
 
 4 Cassandra nodes (2 in DC1, 2 in DC2)
 - log1.log
-
+=> is there impact when one more node, on the distribution/replication => performance
 
 5 Cassandra nodes (3 in DC1, 2 in DC2)
-=> VM cant take it anymore with the memory configurations, changed HEAP_NEWSIZE: 128M and MAX_HEAP_SIZE: 2G -- not working still
+=> same replication, one more node still
+-log11.log
 
-6 Cassandra nodes
+6 Cassandra nodes (3 in DC1, 3 in DC2)
+-log12.log
 
+7 Cassandra nodes (3 in DC1, 3 in DC2, 1 in DC3)
+
+When you increase the number of nodes in the Cassandra cluster, the data is distributed more widely. With more nodes, Cassandra has a better opportunity to distribute the write load across the cluster, leading to less congestion on any single node. This can result in higher throughput for writes, as the load is spread across more nodes.
+=> load balancing
 
 1. Observing the performance and failure problems when you push a lot of data into mysimbdpcoredms (you do not need to worry about duplicated data in mysimbdp), propose the change of your
 deployment to avoid such problems (or explain why you do not have any problem with your
 deployment). (1 point)
+
+50 producers generating 20 000 rows of input data (1M total rows) - average runtime of a producer appr. 380s (52 rows/s)
+On total producers generated 50 * 52 = 2600 rows/s.
+15 consumers
+
+The peak CPU usage of both dataingest and coredms VMs raised up to a little over 70 %.
 
 Not many failures happened apart from the individual incorrect data types in source data.
 
