@@ -142,17 +142,25 @@ partitions: 15, so max 15 consumers can read
 
 5 Kafka brokers, 4 Cassandra nodes (DC1: 2, DC2: 2, replication DC1: 2, DC2: 1), Consistency: Quorum, Kafka consumers poll every second
 
+On average, a source data producer sent 10 000 rows of data to the mysimbdp-coredms in 80 seconds (125 rows/s). 30 Producers generated 3750 rows of data in a second.
+Avg. data produce velocity for each of these test case (runtime of a single producer): finished producing input data at 1738592753.3659682, total runtime: 80.86 s
+
 30 Kafka Producers producing 10 000 rows of data each, 1 Kafka Consumers
-- log0.log
+- log file: ingest0.log
 
 30 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers
-- log1.log
+- ingest1.log
 
 30 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers
-- log2.log
+- ingest2.log
 
 30 Kafka Producers producing 10 000 rows of data each, 15 Kafka Consumers
-- log3.log
+- ingest3.log
+
+We can see, that the most radical effect is when increasing the number of concurrent Kafka Consumers happens when increasing
+from one to 5. After 5 consumers, adding more instances does not give any real boost when receiving 3750 rows of data in a second.
+
+![Kafka chart](../kafka_runtime_chart.png)
 
 **Different poll time of consumers:**
 
@@ -176,23 +184,33 @@ poll every 4s
 poll every 8s
 - log7.log
 
-=> slower polling does not have much difference, maybe more CPU friendly?
+No dramatic time differences. The changes in runtimes may be affected by network, latencies etc.
+What we can say is, that in this case having a bit bigger poll interval can benefit the platform, as the CPU usage wont be so high.
+
+[poll time](../poll_ingestion.png)
 
 **Different write consistencies:**
 
 5 Kafka brokers, 4 Cassandra nodes, 30 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers poll every 1.0s
 
 Consistency: Any
+- a write is succesful if any node in the cluster accepts it.
 - log8.log
 
 Consistency: One
+- a write is succesful if one replica (node which stores the replicated data) in the cluster accepts it.
 - log9.log
  
 Consistency: Quorum
+- a write is succesful when majority of replicas in the cluster accept it.
 - log1.log
 
 Consistency: All
+- a write is succesful only when all the replicas in the cluster have accepted it.
 - log10.10
+
+Consistency defines the level of guarantee on how many nodes in a cluster must acknowledge a read or write operation for it to be considered succesful.
+Consistency options provide tradeoff between availability, latency and data consistency.
 
 **Different number of Cassandra nodes:**
 
@@ -224,9 +242,18 @@ deployment). (1 point)
 On total producers generated 50 * 52 = 2600 rows/s.
 15 consumers
 
-The peak CPU usage of both dataingest and coredms VMs raised up to a little over 70 %.
+From the **ingest_huge.log** we can see that each of the 15 Kafka consumers inserted approximately 90 rows per second to the coredms. In log3 performance test, we had
+30 Kafka Producers producing 10 000 rows of data each (300 000 rows) and 15 Kafka Consumers and the rows succesfully inserted / s was approx. 144. The throughput speed in the large data set decrease
+was approximately 37.5 % compared to the smaller dataset. 
+
+The peak CPU usage of both dataingest and coredms VMs raised to up to little over 70 %.
+![VM CPU usages](../cpu_usage.png.png)
 
 Not many failures happened apart from the individual incorrect data types in source data.
+
+To prevent the consumers gettin overloaded and the VM CPU overload, we could scale the dataingest component horizontally. By using technologies like Kubernetes, we
+could add more parallel dataingest components to keep the throughput fast. Also some kind of mechanism would be needed to make sure that the dataingest does not
+get too many messages and fail completely.
 
 ## Part 3 Extension
 
