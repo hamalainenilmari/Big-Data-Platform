@@ -10,7 +10,7 @@ if __name__ == '__main__':
         header = next(reader)
 
         fileCount = 1
-        while fileCount < 51: # edit this modify number of sample sets created
+        while fileCount < 51: # edit this modify number of sample sets created. 2 means create 1, 11 means create 10, 51 means create 50 ...
             chunk = [header]
             for _ in range(20000): # edit this to control how many rows per one input data file
                 chunk.append(next(reader))
