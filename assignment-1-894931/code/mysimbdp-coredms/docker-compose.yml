@@ -1,8 +1,8 @@
 x-cassandra: &cassandras
   CASSANDRA_CLUSTER_NAME: TaxiCluster
   CASSANDRA_SEEDS: cassandra1, cassandra2, cassandra3, cassandra4 # all nodes as seeds for better availability
-  HEAP_NEWSIZE: 256M # these are max values our cloud deployment machines can handle
-  MAX_HEAP_SIZE: 4G # these are max values our cloud deployment machines can handle
+  HEAP_NEWSIZE: 1M #256M # these are max values our cloud deployment machines can handle, use lower for local run e.g. 1M
+  MAX_HEAP_SIZE: 512M #4G # these are max values our cloud deployment machines can handle, use lower for local run e.g. 512M
   CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
 
 x-expose: &exposes
