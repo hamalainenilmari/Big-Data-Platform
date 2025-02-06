@@ -1,59 +1,53 @@
 # Assignent 1 report - Building Your Big Data Platforms
 
-It is a free form. you can add:
-
-* your designs
-* your answers to questions in the assignment
-* your test results
-* etc.
-
-The best way is to have your report written in the form of point-to-point answering the assignment.
-
 ## Part 1 - Design
 
-1. Explain your choice of the application domain and generic types of data to be supported and
-technologies for mysimbdp-coredms. Explain your assumption about the tenant data sources and
-how one could get data from the sources. Explain under which situations/assumptions, your platform
-serves for big data workloads. (1 point)
+### 1. Application domain, data & technologies
 
-The application domain for this big data platform is transportation. The reason for this domain is the relevance, with multiple worldwide taxi services including Uber, Yango and Bolt dealing with massive volumes of real-time data. The platform supports structured and semi-structured data, which means that new fields/columns can be added to the data storage tables dynamically. This is because of the generated IoT data in transportation domain, as data unit structures may vary geologically and over time.
+The application domain for this big data platform is transportation. The reason for this domain is the relevance to big data concepts. Global taxi services like Uber, Yango and Bolt are handling massive volumes of real-time data, while also for example cargo and aviation industries use real-time location tracking. The platform supports both structured and semi-structured data, allowing new fields/columns to be dynamically added to the data storage tables without strict enforcement on data formats. This flexibility is essential for handling IoT-generated data in transportation domain, as data unit structures may vary geologically and evolve over time.
 
-Technology for data storage (mysimbdp-coredms) of the platform is Apache Cassandra, a distributed NoSQL database. Cassandra is chosen for this data storage as it offers scalability and high availability, which are essential assets for a serving as a big data -data storage. It also excels in high-speed write operations, which is essential in handling real-time data streams.
+Technology for the data storage component (mysimbdp-coredms) of the platform is chosen to be [Apache Cassandra](https://cassandra.apache.org/_/index.html), a distributed NoSQL database. Cassandra is designed for handling large volumes of data across multiple nodes. It offers scalability, high availability and fault tolerance, which are essential assets for a serving as a big data storage. Cassandra also excels in high-speed write operations, making it suitable for handling real-time data streams.
 
-Tenant data sources are (e.g. the IoT taxi trip data) ingested into the data storage of the platform using Apache Kafka, distributed event streaming platform. Tenants send the generated data with Kafka Producer into the Kafka server this platform provides, using predetermined Kafka topics and configurations.
+Tenant data sources (e.g. the IoT taxi trip data) are ingested into the data storage of the platform using Apache Kafka, distributed event streaming platform. Kafka is designed for handling high-throughput real-time data streams, suiting perfectly this platform's domain. Tenants send the generated data using Kafka Producers into the Kafka server this platform provides, using predetermined Kafka topics and configurations. The platform inserts the received data into the data storage.
 
-The platform is focused on real-time data streams. Out of the 4Vs in big data, this platform serves especially for Velocity: the platform is optimized to handle lots of data coming in real-time. The platform also supports Variety and Veracity, as the data units handled are not required to be strictly in the same structure. The data storage of the platform handles the Volume, as the amount of data gathered can grow huge.
+The platform is designed to handle real-time data streams efficiently. Of the 4Vs of big data, this platform serves especially for Velocity: the platform is optimized to handle large amounts of data in real-time streams using technologies such as Kafka. The platform supports receiving up to 2600 rows of data in a second (part 2.5) The platform also has support for Variety and Veracity, as the data structure formats are not strictly enforced and the data is processed in real-time during the ingestion. The scalable data storage of the platform handles the Volume, as the amount of data gathered can grow huge. By addressing these concepts, this platform is designed to handle large scale data workloads.
 
-2. Design and explain the interactions among main platform components in your architecture of mysimbdp. Explain how would the data from the sources will be ingested into the platform. Explain which would be the third parties (services/infrastructures) that you do not develop for your platform
+### 2. Platform architecture & data ingestion pipeline
 
-The platform consists of two components:
+The platform consists of two components in this part:
 
-* **mysimbdp-dataingest**: this component is responsible ETL. It ingests the source data from tenants into the platform. Ensures reliable data transmission and does the necessary processing including modifying data types and column names to match Cassandra table schemas.
-* **mysimbdp-coredms**: this component is responsible for managing and storing the data.
+* **Mysimbdp-dataingest**: this component is responsible for the ETL. The component ingests the source data from tenants data sources into the platform and inserts the data into the coredms. Dataingest ensures reliable data transmission and does the necessary simple data processing, including modifying data types and column names to match Cassandra table schemas.
+* **Mysimbdp-coredms**: this component is responsible for managing and storing the data across multiple Cassandra nodes with replication.
+
+The platform is deployed to Google Cloud Platform (GCP). The components are communicating in the shared GCP Virtual Private Network (VPC) with Kafka (TCP-protocol). The dataingest-component connects to the coredms using coredms VM port 9042, with the configured VM ip-address. The is dataingest is listening to data on port 9092, which is the port tenant data Producers connect to.
 
 Data ingestion pipeline:
 
-Tenants use Kafka Producer Python library provided by [Confluent](https://developer.confluent.io/get-started/python/#introduction) to send the source data into mysimbdp-dataingest, which hosts a Kafka server and Kafka Consumer (by Confluent). The consumer subscribes and listens to the relevant topics continuously. Upon receiving the raw data, the consumer parses, validates and transforms it and inserts the data into a corresponding Cassandra table of mysimbdp-coredms.
+Tenants use Kafka Producer Python library provided by [Confluent](https://developer.confluent.io/get-started/python/#introduction) to send the source data into mysimbdp-dataingest, which hosts a Kafka server and Kafka Consumer (by Confluent). The dataingest is listening on a specific ip and port, which are given to tenant. The consumer subscribes and listens to the relevant topics (predetermined with tenant) continuously. Upon receiving the raw data, the consumer parses, validates and transforms it and inserts the data into a corresponding Cassandra table of mysimbdp-coredms.
 
-The services not developed to the platform at this point include external data processing and analytics components. Additionally, proper security and logging mechanisms are not developed.
+The services not developed to the platform at this point include external data processing and analytics components. Additionally, proper security and logging (data lineage, metadata, VMs HW usage) mechanisms are not developed.
 
 ![Platform architecture](../architecture.png)
 
-3. Explain a conguration of a cluster of nodes for mysimbdp-coredms so that you prevent a singlepoint-of-failure problem for mysimbdp-coredms for your tenants. (1 point)
+### 3. Configuration of cluster of nodes in coredms & avoiding single point-of-failure
 
-be deployed across 2 data centers. This ensures that if one node goes down in a data center, there will be another node available to serve data in the data center. Additionally, even if an entire data center fails, there will still be nodes serving in the other data center left ensuring high availability and fault tolerance.
-Nodes are dependent only on nodes within same data center, meaning scaling up or down the data centers won’t affect other centers or nodes. While this configuration provides good availability and fault tolerance, there could be more nodes and data centers configured for even better availability and fault tolerance, however in this case hardware limits the amount of nodes to 4.
+The coredms constains a Cassandra cluster with 4 nodes deployed across 2 data centers. This design ensures availability and fault tolerance: if one node goes down in a data center, there will be another node available to serve data in this DC and tenant data ingestions are not stopped. Additionally, even if an entire data center fails, there will still be nodes serving in the other data center left. Nodes are dependent only on nodes within same data center, meaning scaling up or down the data centers won’t affect other centers or nodes. This configuration provides good balance availability, fault tolerance and costs in this context. While adding more nodes and data centers would achieve even better availability and fault tolerance, it would also require more hardware in the cloud, raising up the platform costs.
 
-4. You decide a pre-dened level of data replication for your tenants/customers. Explain the level of replication in your design, how many nodes are needed in the deployment of mysimbdp-coredms for your choice so that this component can work property (e.g., the system still supports redundancy in the case of a failure of a node). (1 point)
+The consistency level in Cassandra in chosen to be Quorum, which means majority of the replicas must acknowledge a write operation. It is a balance between performance and data consistency. Using a less strict consistency (e.g. ONE) would mean faster read and write operations for tenants, but the data could be stale or inconsistent. Using stronger consistency (e.g ALL) would ensure very strong consistency but lower the performance as writes and reads become slower to complete. To conclude, the coredms in configured to be a balance in tradeoffs between performance, costs and data consistency.
 
-In this design, the replication factor for Cassandra is chosen to be 3, which means that each data unit will be replicated on three different nodes in the Cassandra cluster. For this replication to work, there will need to at least 4 Cassandra nodes deployed to ensure that data is replicated to 3 nodes even if one node fails and there are still multiple nodes left to serve the data. This replication ensures high availability and fault tolerance. Cassandra is configured to use NetworkTopologyStrategy where 2 replicas are chosen to be in the data center 1 and 1 replica in data center 2.
+### 4. Data storage replication design
 
-5. Consider the data center hosting your platform, the locations of tenant data sources and the network between them. Explain where would you deploy mysimbdp-dataingest to allow your tenants using mysimbdp-dataingest to push data into mysimbdp, based on which assumptions you have. Explain the performance pros and cons of the deployment place, given the possibilities you have. (1 point)
+In this design, the replication factor for Cassandra is chosen to be 3, which means that each data unit will be replicated on three different nodes in the Cassandra cluster. For this replication to work, there will need to at least 4 Cassandra nodes deployed to ensure that data is replicated to 3 nodes even if one node fails and there are still multiple nodes left to serve the data. This replication ensures high availability and fault tolerance. The Cassandra cluster is configured to use NetworkTopologyStrategy for data distribution. In the configuration two replicas are chosen to be in the data center 1 and one replica in data center 2, which enchases also geographical redundancy.
 
-The platform is deployed and hosted in Google Cloud Platform with two virtual machines, one for mysimbdp-dataingest and one for mysimbdp-coredms. The tenant data sources are expected to be geographically distributed as the domain is transportation (taxi trips etc), meaning that the data would be sent to this platforms Kafka server from different locations. Alternatively, the transportation data could first be sent to a tenants own server, and then forwarded to this platforms Kafka server.
-Pros of deploying dataingest in cloud contain especially the scalability. As source data is coming in almost real-time, during high traffic peaks (huge events, holidays etc.) the number of Kafka brokers could be scaled up to ensure high availability and throughput. Additionally, during low traffic times (e.g. nighttime) dataingest could be scaled down to reduce cloud hosting costs.
+Alternative replication option would be a replication factor of 4, meaning the data would copied to all the nodes. As the platform domain is transportation with real-time data streams, such a high level of redundancy is not needed, as missing few data units has a very little effect on the data analysis. Higher replication factor would also mean slower performance, or the need for more hardware meaning higher infrastructure costs. The chosen replication factor of 3 gives a good balance between data availability, fault tolerance and costs.
 
-Hosting dataingest on a cloud service would also enable possibility to distribute the servers geographically across continents, enabling faster communication between geographically distributed tenants and the servers. Cloud services also enable monitoring and automation of components with less work.
+### 5. Platform deployment
+
+The platform is deployed and hosted in Google Cloud Platform with two virtual machines, one for mysimbdp-dataingest and one for mysimbdp-coredms. The tenant data sources are expected to be geographically distributed as the domain is transportation (taxi trips etc), meaning that the data would be sent to this platforms Kafka server from different locations. The platform is designed for ingesting real-time data streams data row by row. Network bandwith in the platform hosted in GCP is 16Gbps between the platform components (dataingest, coredms) and 7Gbps between the platform and tenants. If one data row was 80 bytes of size, this would theoretically mean approximately 10 million rows of data in a second. The platforms hardware can not handle this much of data, but we can say the the platform network bandwidth will not be a bottleneck.
+
+If there was only one tenant and it is located in the USA (e.g the Chicago Taxi Data), the platform would also be physically hosted on USA near Chicago in Google data centers. For multiple tenants located in multiple continents, the platform would also need to be distributed geographically. Additionally edge clouds could do some data processing first to enchase performance. The transportation data could also be first be sent to a tenants own server, and then forwarded to this platforms Kafka server.
+
+Pros of deploying the platform/dataingest-component in cloud contain especially the scalability. As source data is coming in almost real-time, during high traffic peaks (huge events, holidays etc.) the number of Kafka brokers could be scaled up to ensure high availability and throughput. Additionally, during low traffic times (e.g. nighttime) dataingest could be scaled down to reduce cloud hosting costs. Hosting dataingest on a cloud service would also enable possibility to distribute the servers geographically across continents, enabling faster communication between geographically distributed tenants and the servers. Cloud services also enable monitoring and automation of components with less work.
 
 Cons of deploying in the cloud contain the high costs of hosting the ingesting component and if the servers are not geographically distributed enough, there may be communication latencies with some tenants. There can also be issues with data regulation when storing data in different continents. Also energy efficiency of the hosting hardware infrastructure may vary.
 
