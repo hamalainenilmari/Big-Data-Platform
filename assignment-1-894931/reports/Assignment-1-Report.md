@@ -248,25 +248,23 @@ CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrate
 When you increase the number of nodes in the Cassandra cluster, the data is distributed more widely. With more nodes, Cassandra has a better opportunity to distribute the write load across the cluster, leading to less congestion on any single node. This can result in higher throughput for writes, as the load is spread across more nodes.
 => load balancing
 
-1. Observing the performance and failure problems when you push a lot of data into mysimbdpcoredms (you do not need to worry about duplicated data in mysimbdp), propose the change of your
-deployment to avoid such problems (or explain why you do not have any problem with your
-deployment). (1 point)
+### 5. Test ingestion of lots of data
 
-50 producers generating 20 000 rows of input data (1M total rows) - average runtime of a producer appr. 380s (52 rows/s)
-On total producers generated 50 * 52 = 2600 rows/s.
-15 consumers
+In this test we try the platform's performance when ingesting lots of data in real-time.
 
-From the **ingest_huge.log** we can see that each of the 15 Kafka consumers inserted approximately 90 rows per second to the coredms. In log3 performance test, we had
+We had 50 producers generating 20 000 rows of input data concurrently (1M total rows) - average runtime of a producer was spproximately 380s (52 rows/s).
+On total producers generated and send 50 * 52 = 2600 rows/s to the platform. The platform dataingest component had 15 concurrent Kafka Consumers reading the input data simultaneously.
+
+From the **ingest_huge.log** we can see that each of the 15 Kafka consumers inserted approximately 90 rows per second to the coredms. In ingest3.log performance test, we had
 30 Kafka Producers producing 10 000 rows of data each (300 000 rows) and 15 Kafka Consumers and the rows succesfully inserted / s was approx. 144. The throughput speed in the large data set decrease
-was approximately 37.5 % compared to the smaller dataset. 
+was approximately 37.5 % compared to the smaller dataset. Number of Kafka errors stayed 0 in this test, meaning that if there was single node fails, the number of excess nodes
+helped the components to stay running. Cassandra fails were must probably from the individual incorrect data types in source data as before.
 
 The peak CPU usage of both dataingest and coredms VMs raised to up to little over 70 %.
-![VM CPU usages](../cpu_usage.png.png)
+![VM CPU usages](../cpu_usage.png)
 
-Not many failures happened apart from the individual incorrect data types in source data.
-
-To prevent the consumers gettin overloaded and the VM CPU overload, we could scale the dataingest component horizontally. By using technologies like Kubernetes, we
-could add more parallel dataingest components to keep the throughput fast. Also some kind of mechanism would be needed to make sure that the dataingest does not
+We can see that both components are becoming a bottleneck in the same ratio when input data amount grows.
+To prevent the dataingest-consumers and coredms cluster from getting overloaded and the VMs CPUs overload, we could scale both components horizontally. By using technologies like Kubernetes, we could add more parallel dataingest and coredms components to keep the throughput fast. Also some kind of mechanism would be needed to make sure that the dataingest does not
 get too many messages and fail completely.
 
 ## Part 3 Extension
@@ -275,6 +273,8 @@ get too many messages and fail completely.
 dierent databases/datasets. The tenant would like to record basic lineage of the ingested data,
 explain what types of metadata about data lineage you would like to support and how would you do
 this. Provide one example of a lineage data. (1 point)
+
+### 1. Data lineage and metadata
 
 The platform could support multiple types of metadata for the data ingested into it. An example of a data lineage for a taxi service provider which sends their raw
 data to this platform's data ingestion would following:
@@ -319,17 +319,24 @@ The data lineage could be stored in JSON format like:
   "cassandra_keyspaces": ["taxiservices"],
   "cassandra_tables": ["trips"]
 }
-  
+
+This kind of data lineage support would be implemented by recording the data ingestion statistics (similar to the logging part). Also the tenant user would
+send some message to the platform that which user is starting the action. Then after specific time period where no messages have been ingested/stopped by the user, the ingestion
+record would be stored as the JSON. The source data, data processing and ingestion result, keyspace and table statistics would be logged from the data-ignest component.
+The data lineage would be stored in the coredms of the tenant, where they can fetch it from.
+
 2. Assume that each of your tenants/users will need a dedicated mysimbdp-coredms. Design the data
 schema of service and data discovery information for mysimbdp-coredms that can be published into
 an existing registry (like ZooKeeper, consul or etcd) so that you can nd information about which
 mysimbdp-coredms is for which tenants/users. (1 point)
 
+### 2. Data schema of service and data discovery information
+
 For managing multiple mysimbdp-coredms instances, the platform would need to handle and store the schema of service and data
 discovery information for each tenant in a configuration synchronization service like Apache ZooKeeper. These kind of services
 enable centralized and consistent way for managing configuration and metadata about multiple services like mysimbdp-coredms'.
 A tenant's mysimbdp-coredms information would contain essential information about the tenant such as
-tenant name, id and users. Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
+tenant name, id and users and the corresponding coredms id. Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
 Information about the VM instance running the coredms would contain the addresss (ip:port),
 firewall rules (protocols accepted, ports etc), hardware specs (CPU, RAM etc) and the cost of the machine. Also metadata such as tenant creation date, location would be stored.
 Also coredms status would be stored, including active, stopped, removed.
@@ -339,6 +346,7 @@ The tenant information could be stored in JSON like:
 {
     "tenant_name": "taxi_service_provider_abc",
     "tenant_id": "abc123",
+    "coredms_id": "dms_abc_123",
     "status": "active",
     "users": [
         {
@@ -373,26 +381,31 @@ The tenant information could be stored in JSON like:
     "location": "USA"
 }
 
-1. Explain how you would change the implementation of mysimbdp-dataingest (in Part 2) to integrate a
+3. Explain how you would change the implementation of mysimbdp-dataingest (in Part 2) to integrate a
 service and data discovery feature (no implementation is required). (1 point)
 
-Currently, mysimbdp-dataingest contains hardcoded environmental variables to use when connecting to the specific mysimbdp-coredms instance.
-This means that the coredms instanece ip and port are manually inserted, and cassandra keyspace and table are manually inserted. The use of the tenant service and data discovery
-feature would enable retrieving these values from the centralized configuration management service (e.g. ZooKeeper) and automatically inserting the correspoding coredms data into
-mysimbdp-dataingest configurations.
-This would be implemented in a way, where the platform would also host ZooKeeper service, and the dataingest would ask for the configurations from there.
-Mysimbdp-dataingest would query for the corresponding coredms data by the tenant id, and the ZooKeeper service would return it, if values are right, for example status is active.
-When dataingest receives new data from tenant data sources, it would first query the data by tenant id, and then if the source data matches the configurations in the tenant data,
-the data is inserted (e.g. the corresponding table exists?)
+## 3. How to integrate service and data discovery feature
 
-1. Assume that you have to introduce a new key component, called mysimbdp-daas, of which APIs can
+Currently, mysimbdp-dataingest contains hardcoded environmental variables to use when connecting to the specific mysimbdp-coredms instance.
+This means that the coredms instance VM ip and port are manually inserted, and cassandra keyspace and table where to store the data are manually inserted. The use of the tenant service and data discovery
+feature would enable retrieving these values from the centralized configuration management service (e.g. ZooKeeper) and automatically inserting the correspoding coredms data into
+mysimbdp-dataingest configurations. This way connecting dataingest component to coredms component could me automated.
+This would be implemented in a way, where the platform would also host ZooKeeper service, and the dataingest would ask for the configurations from there.
+Mysimbdp-dataingest would query for the corresponding coredms data by the tenant id, and the ZooKeeper service would return it, if values are right, for example status is active and
+the tenant user is allowed for this action.
+When dataingest receives new data from tenant data sources, it would first query the data by tenant id, and then if the source data matches the configurations in the tenant data,
+the data is inserted.
+
+4. Assume that you have to introduce a new key component, called mysimbdp-daas, of which APIs can
 be called by external data producers/consumers to store/read data into/from mysimbdp-coredms.
 This component is a platform-as-a-service. Tenants can get shared or dedicated instances of
 mysimbdp-daas for their usage. Assume that now only mysimbdp-daas can read and write data into
 mysimbdp-coredms, how would you change your mysimbdp-dataingest (in Part 2) to work with
 mysimbdp-daas, draw the updated architecture of your mysimbdp? (1 point)
 
-The mysimbdp-daas would be implemented as a platform-as-a-service inside a platform. The source data ingestion would still be done
+### 4. New component: Mysimbdp-daas
+
+The mysimbdp-daas would be implemented as a platform-as-a-service inside the mysimbdp-platform. The source data ingestion would still be done
 by the mysimdp-dataingest. The daas would provide APIs for tenants to use for ingesting data. The underlying technology would still be Kafka.
 The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API.
 
@@ -402,3 +415,17 @@ The daas would also provide APIs for reading the data. This would require a new 
 space and which in a cold space in the mysimbdp-coredms. Provide one example of constraints based
 on characteristics of data for data in a hot space vs in a cold space. Explain how would you support
 automatically moving/extracting data from a hot space to a cold space. (1 point)
+
+### 5. Hot space and cold space
+
+For the taxi service provider tenant the data split to hot and cold data would be straightforward. The tenant could for example decide to split
+the data based on the taxi trip timestamp. An example constraint would be if the taxi trip start timestamp
+is older than 24 hours, it would be cold data. And vice versa if the trip data timestamp is inside 24 hours compared to this moment, it would be hot data.
+This way we could store the hot data into separate tables, enabling more efficient queries for in-demand area analytics.
+After 24 hours we can assume that the demand would not be probably the same anymore on the location, and the data would not be needed in this kind of queries anymore,
+and could be inserted to cold space and removed from hot space.
+
+We could implement this automatically in a way, where there are hot and cold Cassandra Clusters for the tenant. We could have a scheduled job running for example every hour,
+and query the hot data tables and check which data are currently over the 24 hour line. Then these data units would be inserted into the cold cluster,
+and removed from the hot cluster. If the constraint is that only trips that are inside the current date (e.g. 06.02.2025) are in hot space, we could query every day
+at midnight and insert and remove the data of previous day.
