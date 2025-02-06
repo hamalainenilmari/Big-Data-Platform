@@ -12,9 +12,9 @@ Before running the docker compose file, run:
 
 and add the output into KAFKA_KRAFT_CLUSTER_ID in .env.
 
-Add KAFKA_CFG_ADVERTISED_LISTENERS=host.docker.internal to .env if needed.
+Add KAFKA_CFG_ADVERTISED_LISTENERS=localhost to .env if needed.
 
-After these two variables are in the .env, you can run docker compose up to start the kafka server.
+After these two variables are in the .env, you can run ``$ docker compose up`` to start the kafka server.
 After the kafka brokers in the cluster are up and healthy, add a Kafka topic by running:
 
 docker exec -it <container_name> kafka-topics.sh --create \

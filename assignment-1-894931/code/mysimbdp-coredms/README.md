@@ -2,16 +2,25 @@
 
 This component is the data storage of the platform. Technology is Apache Cassandra.
 The Cassandra cluster of 4 nodes can be started by running docker compose up.
-After the nodes are healthy and up you can enter one of them and create the following keyspace and table to the Cassandra cluster by running
+After the containers are healthy and up you can enter one of them and create the following keyspace and table to the Cassandra cluster by running
 
-``$ Docker exec -it <container_name> /bin/bash``
+``$ docker exec -it <container_name> /bin/bash``
+
+You can check the node status by running:
+
+``$ nodetool status``
+
+If everything is okay, each 4 nodes should be UN (status=UP, state=NORMAL)
+
+Then enter cassandra shell by running:
+
 ``$ cqlsh``
 
-Then inside cqlsh run:
+Then to create the keyspace run:
 
 ``$ CREATE KEYSPACE taxiservices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
 
-And:
+And then to create the table run:
 
 ``
 $ CREATE TABLE taxiservices.trips (
