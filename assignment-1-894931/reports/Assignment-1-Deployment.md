@@ -1,9 +1,9 @@
-# This is a deployment/installation guide
-
-It is a free form. you can use it to explain how to deploy/install and run  your code. Note that this deployment/installation guide ONLY helps to run your assignment. **It is not where you answer your solution for the assignment questions**
+# This is a deployment/installation guide for running this platform locally
 
 To run the platform, Docker and Docker compose must be installed. Python and pip must also be installed.
 The platform can be run locally by the following steps (use separate terminal for each):
+
+##### Note that if the component configurations are too much for your device, you can reduce the number of cassandra nodes and kafka brokers in the docker-compose files. 3 nodes and 3 brokers works just fine also.
 
 **coredms**:
 
@@ -22,7 +22,7 @@ After the Cassandra and Kafka containers and the kafka consumer are up and runni
 
 Download the source data set according to instructions in folder *data*. Create the sample data sets from the source data by the instructions.
 
-Go to *code/tenant*. Create .env file and add values from .env_example. Then run the data generators according to the instructions on the folder.
+Go to *code/tenant*. Then run the data generators according to the instructions on the folder.
 
 After completing these steps, you succesfully see:
 
@@ -31,4 +31,3 @@ After completing these steps, you succesfully see:
 
 The consumers will keep on listening to data until the shell script is stopped by control+C.
 You can check that the data is succesfully inserted by querying for it in one of the Cassandra nodes according to the instructions in *mysimbdp-coredms*.
-
