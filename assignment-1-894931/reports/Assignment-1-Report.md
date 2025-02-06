@@ -123,6 +123,9 @@ Trip ID,Taxi ID,Trip Start Timestamp,Trip End Timestamp,Trip Seconds,Trip Miles,
 0000184e7cd53cee95af32eba49c44e4d20adcd8,f538e6b729d1aaad4230e9dcd9dc2fd9a168826ddadbd67c2f79331875dc586863d73aa3169fb266dc5e5ed6cdc8687537de8071a51556146f5251d4d8e8237f,01/19/2024 05:00:00 PM,01/19/2024 06:00:00 PM,4051,17.12,17031980000,17031320100,76,32,45.50,10.00,0.00,4.00,60.00,Credit Card,Flash Cab,41.97907082,-87.903039661,POINT (-87.9030396611 41.9790708201),41.884987192,-87.620992913,POINT (-87.6209929134 41.8849871918)
 ``
 
+The final data unit to be stored after ingesting the source data and doing simple data processing is the following:
+
+![dataunit](../taxitrip_row.png)
 
 The consistency level in Cassandra means the number of replicas/nodes must acknowledge a read or write operation before it is succesful.
 Consistency level can bet set for both read and write operations. The consistency level for both read and write is chosen to be Quorum,
