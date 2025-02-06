@@ -5,9 +5,9 @@ for simulating ingesting with multiple writers at the same time
 import csv
 
 if __name__ == '__main__':
-    with open("Taxi_Trips__2024-__20250204.csv", "r", newline="") as f: # use here the source data set
+    with open("Taxi_Trips__2024-__20250204.csv", "r", newline="") as f: # edit here to match the source data set name of yours
         reader = csv.reader(f)
-        header = next(reader)  # header line
+        header = next(reader)
 
         fileCount = 1
         while fileCount < 51: # edit this modify number of sample sets created
