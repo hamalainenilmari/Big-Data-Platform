@@ -1,0 +1,17 @@
+# Tenant simulating instructions
+
+This component is the example tenant using the platform to ingest data into the coredms.
+Kafka_producer.py contains kafka producer which sends data to the platforms kafka server running on the dataingest component.
+
+To simulate producing data into the platform first run:
+
+``$ pip install -r requirements.txt``
+
+If you have not created the sample data sets, go to foldet *data* and create sample data set according to the instructions.
+
+Then using the shell script you can start the producers.
+
+``$ ./start_producing.sh 5 localhost:9092``
+
+The first argument is the number of concurrent producers (use max as many as you have sample data sets created in **data** folder).
+The second argument is the Kafka broker address.
