@@ -53,14 +53,15 @@ Cons of deploying in the cloud contain the high costs of hosting the ingesting c
 
 ## Part 2 - Implementation
 
-1. Design, implement and explain one example of the data schema/structure for a tenant whose data will be stored into mysimbdp-coredms.
+### 1. Example data structure design
 
-An example source data of tenant will be taxi trip data from Chicago, USA. The tenant owns multiple taxi service companys. The taxis will produce the raw data with following attributes and data types:
+An example tenant would be a taxi service provider managing multiple taxi service companys located in Chicago, USA. The taxis of the taxi services produce data of the trips in similar structures.
+The taxis will produce the raw data with the following attributes:
 
 `Trip ID,Taxi ID, Trip Start Timestamp, Trip End Timestamp, Trip Seconds, Trip Miles, Pickup Census Tract, Dropoff Census Tract, Pickup Community Area, Dropoff Community Area, Fare, Tips, Tolls, Extras, Trip Total, Payment Type,  Company, Pickup Centroid Latitude, Pickup Centroid Longitude, Pickup Centroid Location, Dropoff Centroid Latitude, Dropoff Centroid Longitude, Dropoff Centroid Location`
 
 The platform will ingest the raw data and do some simple data wrangling and drop some attributes. The attributes to skip are Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location,
-Dropoff Centroid  Location. These values are produced by the IoT machines but important enough to store in the platform.
+Dropoff Centroid  Location. These values are produced by the IoT machines but are not important enough to be stored in the platform.
 
 The final data unit to be stored in the platforms data storage is the following:
 
@@ -84,28 +85,44 @@ The final data unit to be stored in the platforms data storage is the following:
 * Dropoff Centroid Latitude: double
 * Dropoff Centroid Longitude: double
 
-The schema contains 19 attributes. The schema contains basic trip information: identifying of the trip and taxi, the time statistics of the trip, the trip length and pickup/dropoff points and cost information. Additionally, the schema contains payment type and taxi company providing the trip. The schema also contains exact coordinates of pickup and dropoff points for precise demand analysis.
+The schema contains 19 attributes. The schema contains basic trip information: identifying of the trip and taxi, the time statistics of the trip, the trip length and pickup/dropoff points and cost information. Additionally, the schema contains payment type and taxi company providing the trip. The schema also contains exact coordinates of pickup and dropoff points for precise indemand area analysis. Other values especially important for varying analysis tasks are taxi company, trip time and length. Taxi company information analysis can be used for finding insights about specific taxi company strategies (e.g. why so little demand?). Trip time and length data analysis can enable for example allocating lower fuel consumption cars for longer trips. The mandatory values are trip id, taxi id, start/end timestamps, trip length, pickup/dropoff areas, payment total and the taxi company. The optional values are trip seconds (can also be calculated from timestamps), fare, tips, toll, extras (payment total is most important), payment type and the coordinates (pickup areas are more important for location analysis).
 
-Given the data schema/structure of the tenant (Part 2, Point 1), design a strategy for data
-partitioning/sharding, explain the goal of the strategy (performance, data regulation and/or what),
-and explain your implementation for data partitioning/sharding together with your design for
-replication in Part 1, Point 4, in mysimbdp-coredms.
+### 2. Data partitioning strategy
 
-The taxi trip data will be partitioned across multiple Cassandra nodes using **Pickup Community Area** as the partitioning key.
-This partitioning will distribute the data based by the geographical location of start of the taxi trip. All trips with the same staring location will
-be stored in the same node, meaning more efficient queries of taxi trips based on the location. This will enable efficient analysis of in-demand areas
-enabling the tenant to locate taxis nearby.
+The taxi service provider tenant's taxi trip data will be partitioned across multiple Cassandra nodes using **Pickup Community Area** as the partitioning key.
+This partitioning will distribute the data based by the geographical location of start of the taxi trip. The reason behind this design choice is performance of indemand area queries. All trips with the same staring location will be stored in the same node, meaning more efficient queries of taxi trips based on the location. This enables efficient analysis of in-demand areas
+enabling the tenant to locate and allocate the taxis nearby for profit. Trip id is used as a clustering column in the Cassandra table, so duplicate trips would not be created
+based on the pickup community area alone.
 
-The data storage is composed of 4 Cassandra nodes with a replication factor of 3. The data is partitioned by the geographical pickup location and
-each partition is replicated across 3 different Cassandra nodes in 2 data centers.
+However, partitioning by the community area can lead to unequal node sizes, if some areas are very commonly used and some rarely. This could result in some nodes being overloaded and some
+nodes being underused. This choice is a tradeoff between completely even distribution and efficient indemand queries of the tenant.
+
+An alternative partitioning strategy would be using the trip id as the partitioning key. This would ensure equally distributed data, but it would mean slower queries on the pickup comminity areas, making the analysis less real-time.
+
+The data storage is composed of 4 Cassandra nodes with a replication factor of 3. The data is partitioned by the pickup location and
+each partition is replicated across 3 different Cassandra nodes in 2 data centers. This design gives fault tolerance and availability to the indemand area queries of the tenant.
 
 3. Assume that you play the role of the tenant, emulate the data sources with the real selected dataset
 and write a mysimbdp-dataingest that takes data from your selected sources and stores the data into
 mysimbdp-coredms. Explain what would be the atomic data element/unit to be stored. Explain
 possible consistency options for writing data in your mysimdbp-dataingest
 
-The tenant dataset is the [taxi trip data of Chicago](https://data.cityofchicago.org/Transportation/Taxi-Trips-2024-/ajtu-isnz/about_data).
-The implementation for the mysimbdp-dataingest can be found on *code/mysimbdp-dataingest/*.
+### 3. Mysimbdp-dataingest implementation,
+
+The example taxi service provider tenant's dataset is the [taxi trip data of Chicago](https://data.cityofchicago.org/Transportation/Taxi-Trips-2024-/ajtu-isnz/about_data).
+The implementation for the mysimbdp-dataingest can be found on *code/mysimbdp-dataingest/*. The kafka_server holds containerized kafka server with 5 brokers. The consumer/ contains kafka_consumer.py which is a python script that holds implementation for creating kafka consumers using the server to consume source data and ingest it to the corresponding coredms Cassandra table.
+A shell script start_consuming.sh can be used for running multiple concurrent consumers.
+
+The implementation for example tenant is in *code/tenant/*. It contains a python script kafka_producer.py for simulating generation of source data and sending it to the platform using Kafka Producers. Shell script start_producing.sh can be used for running multiple parallel kafka producers.
+The folder *data* contains python script create_samples.sh for reading rows from the taxi trip data of chicago and generating number of sample data set from it. Using multiple source data files we can simulate multiple parallel producers generating data.
+
+The producer(s) reads the source data from the samples of taxi trip data of Chicago and send it to kafka server. An example row looks following:
+
+``
+Trip ID,Taxi ID,Trip Start Timestamp,Trip End Timestamp,Trip Seconds,Trip Miles,Pickup Census Tract,Dropoff Census Tract,Pickup Community Area,Dropoff Community Area,Fare,Tips,Tolls,Extras,Trip Total,Payment Type,Company,Pickup Centroid Latitude,Pickup Centroid Longitude,Pickup Centroid Location,Dropoff Centroid Latitude,Dropoff Centroid Longitude,Dropoff Centroid  Location
+0000184e7cd53cee95af32eba49c44e4d20adcd8,f538e6b729d1aaad4230e9dcd9dc2fd9a168826ddadbd67c2f79331875dc586863d73aa3169fb266dc5e5ed6cdc8687537de8071a51556146f5251d4d8e8237f,01/19/2024 05:00:00 PM,01/19/2024 06:00:00 PM,4051,17.12,17031980000,17031320100,76,32,45.50,10.00,0.00,4.00,60.00,Credit Card,Flash Cab,41.97907082,-87.903039661,POINT (-87.9030396611 41.9790708201),41.884987192,-87.620992913,POINT (-87.6209929134 41.8849871918)
+``
+
 
 The consistency level in Cassandra means the number of replicas/nodes must acknowledge a read or write operation before it is succesful.
 Consistency level can bet set for both read and write operations. The consistency level for both read and write is chosen to be Quorum,
@@ -116,7 +133,7 @@ is a good option for this domain.
 Alternative consistency levels would be All and and One. All would mean that all 3 replication nodes must acknowledge the operation. In case of node failures
 this would mean that the operation wont go through, which decreases the platforms availability. As the data domain is transportation and not, example financial transactions, this consistency level would be unnecessarily high. Consistency level of one would enable the fastest reads, but could return stale data.
 
-4. Given your deployment environment, measure and show the performance (e.g., response time,
+1. Given your deployment environment, measure and show the performance (e.g., response time,
 throughput, and failure) of the tests for 1,5, 10, .., n of concurrent mysimbdp-dataingest writing data
 into mysimbdp-coredms with dierent speeds/velocities together with the change of the number of
 nodes of mysimbdp-coredms. Indicate any performance dierences due to the choice of consistency
