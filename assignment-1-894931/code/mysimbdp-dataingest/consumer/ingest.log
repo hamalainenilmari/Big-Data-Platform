@@ -1,0 +1,23 @@
+2025-02-06 13:16:19,167 - INFO - Succesfully connected to Cassandra
+2025-02-06 13:16:19,168 - INFO - Starting to listen for data
+2025-02-06 13:16:25,376 - WARNING - Error attempting to reconnect to 172.23.0.5:9042, scheduling retry in 1.76 seconds: [Errno None] Tried connecting to [('172.23.0.5', 9042)]. Last error: timed out
+2025-02-06 13:16:32,184 - WARNING - Error attempting to reconnect to 172.23.0.5:9042, scheduling retry in 4.28 seconds: [Errno None] Tried connecting to [('172.23.0.5', 9042)]. Last error: timed out
+2025-02-06 13:16:41,501 - WARNING - Error attempting to reconnect to 172.23.0.5:9042, scheduling retry in 9.12 seconds: [Errno None] Tried connecting to [('172.23.0.5', 9042)]. Last error: timed out
+2025-02-06 13:16:55,630 - WARNING - Error attempting to reconnect to 172.23.0.5:9042, scheduling retry in 13.6 seconds: [Errno None] Tried connecting to [('172.23.0.5', 9042)]. Last error: timed out
+2025-02-06 13:17:14,270 - WARNING - Error attempting to reconnect to 172.23.0.5:9042, scheduling retry in 27.84 seconds: [Errno None] Tried connecting to [('172.23.0.5', 9042)]. Last error: timed out
+2025-02-06 13:17:23,655 - INFO - Stopped ingesting - statistics:
+2025-02-06 13:17:23,656 - INFO - Time taken: 64.49 s
+2025-02-06 13:17:23,656 - INFO - Number of Kafka messages received: 201
+2025-02-06 13:17:23,656 - INFO - Rows succesfully inserted: 200
+2025-02-06 13:17:23,656 - INFO - Rows succesfully inserted / s: 3.1013807786144225
+2025-02-06 13:17:23,656 - INFO - Number of Cassandra errors: 0
+2025-02-06 13:17:23,656 - INFO - Number of Kafka errors: 0
+2025-02-06 13:17:23,656 - INFO - ------------------------------------------------
+2025-02-06 13:17:23,693 - INFO - Stopped ingesting - statistics:
+2025-02-06 13:17:23,693 - INFO - Time taken: 64.52 s
+2025-02-06 13:17:23,693 - INFO - Number of Kafka messages received: 201
+2025-02-06 13:17:23,693 - INFO - Rows succesfully inserted: 200
+2025-02-06 13:17:23,693 - INFO - Rows succesfully inserted / s: 3.099578934911262
+2025-02-06 13:17:23,693 - INFO - Number of Cassandra errors: 0
+2025-02-06 13:17:23,693 - INFO - Number of Kafka errors: 0
+2025-02-06 13:17:23,693 - INFO - ------------------------------------------------
