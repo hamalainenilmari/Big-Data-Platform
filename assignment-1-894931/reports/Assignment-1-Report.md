@@ -406,15 +406,10 @@ mysimbdp-daas, draw the updated architecture of your mysimbdp? (1 point)
 ### 4. New component: Mysimbdp-daas
 
 The mysimbdp-daas would be implemented as a platform-as-a-service inside the mysimbdp-platform. The source data ingestion would still be done
-by the mysimdp-dataingest. The daas would provide APIs for tenants to use for ingesting data. The underlying technology would still be Kafka.
+by the mysimdp-dataingest. The daas would provide APIs for tenants to use for ingesting data. The underlying technology would still be Kafka. 
 The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API.
 
 ![Platform architecture with daas](../architecture_daas.png)
-
-1. Assume that the platform allows the customer to dene which types of data should be stored in a hot
-space and which in a cold space in the mysimbdp-coredms. Provide one example of constraints based
-on characteristics of data for data in a hot space vs in a cold space. Explain how would you support
-automatically moving/extracting data from a hot space to a cold space. (1 point)
 
 ### 5. Hot space and cold space
 
@@ -426,6 +421,6 @@ After 24 hours we can assume that the demand would not be probably the same anym
 and could be inserted to cold space and removed from hot space.
 
 We could implement this automatically in a way, where there are hot and cold Cassandra Clusters for the tenant. We could have a scheduled job running for example every hour,
-and query the hot data tables and check which data are currently over the 24 hour line. Then these data units would be inserted into the cold cluster,
+and query the hot data tables based on timestamp and check which data are currently over the 24 hour line. Then these data units would be inserted into the cold cluster,
 and removed from the hot cluster. If the constraint is that only trips that are inside the current date (e.g. 06.02.2025) are in hot space, we could query every day
 at midnight and insert and remove the data of previous day.
