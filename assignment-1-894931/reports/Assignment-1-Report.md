@@ -384,7 +384,7 @@ The tenant information could be stored in JSON like:
 }
 ```
 
-## 3. How to integrate service and data discovery feature
+### 3. How to integrate service and data discovery feature
 
 Currently, mysimbdp-dataingest contains hardcoded environmental variables to use when connecting to the specific mysimbdp-coredms instance.
 This means that the coredms instance VM ip and port are manually inserted, and cassandra keyspace and table where to store the data are manually inserted. The use of the tenant service and data discovery
