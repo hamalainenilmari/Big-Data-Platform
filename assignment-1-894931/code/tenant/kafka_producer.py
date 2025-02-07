@@ -10,6 +10,12 @@ import datetime
 def datetime_converter(dt):
     if isinstance(dt, datetime.datetime):
         return dt.__str__()
+    
+
+def date_parser(date_str):
+    return pd.to_datetime(date_str, format="%m/%d/%Y %H:%M:%S %p")
+
+
 '''
 A common way to get the error if something is wrong with
 the delivery
@@ -55,7 +61,7 @@ if __name__ == '__main__':
             'sasl.password': args.sasl_password
         }
 
-    input_data =pd.read_csv(INPUT_DATA_FILE,parse_dates=['Trip Start Timestamp','Trip End Timestamp'],iterator=True,chunksize=chunksize)
+    input_data =pd.read_csv(INPUT_DATA_FILE,parse_dates=['Trip Start Timestamp','Trip End Timestamp'],date_parser=date_parser,iterator=True,chunksize=chunksize)
     kafka_producer = Producer(kafka_conf)
 
     start_time = time.time()
