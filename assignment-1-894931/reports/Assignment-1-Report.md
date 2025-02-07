@@ -19,13 +19,14 @@ The platform consists of two components in this part:
 * **Mysimbdp-dataingest**: this component is responsible for the ETL. The component ingests the source data from tenants data sources into the platform and inserts the data into the coredms. Dataingest ensures reliable data transmission and does the necessary simple data processing, including modifying data types and column names to match Cassandra table schemas.
 * **Mysimbdp-coredms**: this component is responsible for managing and storing the data across multiple Cassandra nodes with replication.
 
-The platform is deployed to Google Cloud Platform (GCP). The components are communicating in the shared GCP Virtual Private Network (VPC) with Kafka (TCP-protocol). The dataingest-component connects to the coredms using coredms VM port 9042, with the configured VM ip-address. The is dataingest is listening to data on port 9092, which is the port tenant data Producers connect to.
+The platform is deployed to Google Cloud Platform (GCP). The components are communicating in the shared GCP Virtual Private Network (VPC) with Kafka (TCP-protocol). The dataingest-component connects to the coredms using coredms VM port 9042, with the configured VM ip-address. The dataingest is listening to data on port 9092, which is the port tenant data Producers connect to.
 
 Data ingestion pipeline:
 
 Tenants use Kafka Producer Python library provided by [Confluent](https://developer.confluent.io/get-started/python/#introduction) to send the source data into mysimbdp-dataingest, which hosts a Kafka server and Kafka Consumer (by Confluent). The dataingest is listening on a specific ip and port, which are given to tenant. The consumer subscribes and listens to the relevant topics (predetermined with tenant) continuously. Upon receiving the raw data, the consumer parses, validates and transforms it and inserts the data into a corresponding Cassandra table of mysimbdp-coredms.
 
-The services not developed to the platform at this point include external data processing and analytics components. Additionally, proper security and logging (data lineage, metadata, VMs HW usage) mechanisms are not developed.
+The services not developed to the platform at this point include external data processing and analytics components.
+For example the taxi service provider tenant would want analysis about indemand location areas, which an analysis component could show. Additionally, proper security and logging (data lineage, metadata, VMs HW usage) mechanisms are not developed.
 
 ![Platform architecture](../architecture.png)
 
