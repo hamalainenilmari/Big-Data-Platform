@@ -26,7 +26,7 @@ Data ingestion pipeline:
 Tenants use Kafka Producer Python library provided by [Confluent](https://developer.confluent.io/get-started/python/#introduction) to send the source data into mysimbdp-dataingest, which hosts a Kafka server and Kafka Consumer (by Confluent). The dataingest is listening on a specific ip and port, which are given to tenant. The consumer subscribes and listens to the relevant topics (predetermined with tenant) continuously. Upon receiving the raw data, the consumer parses, validates and transforms it and inserts the data into a corresponding Cassandra table of mysimbdp-coredms.
 
 The services not developed to the platform at this point include external data processing and analytics components.
-For example the taxi service provider tenant would want analysis about indemand location areas, which an analysis component could show. Additionally, proper security and logging (data lineage, metadata, VMs HW usage) mechanisms are not developed.
+For example the taxi service provider tenant would want analysis about indemand location areas, which an analysis component could show. Additionally, proper security and logging (data lineage, metadata, VMs HW usage) mechanisms are not developed. There is also no component yet implemented for tenants to query the data they have stored.
 
 ![Platform architecture](../architecture.png)
 
