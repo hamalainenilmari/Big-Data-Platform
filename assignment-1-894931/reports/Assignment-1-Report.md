@@ -125,7 +125,7 @@ The final data unit to be stored after ingesting the source data and doing simpl
 
 ![dataunit](../taxitrip_row.png)
 
-From the raw source data columns Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Also timestamps are modified from format "01/19/2024 05:00:00 PM" to format "2024-01-19 17:00:00:00.00000+0000".
+From the raw source data unimportant columns Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Also timestamps are modified from format "01/19/2024 05:00:00 PM" to format "2024-01-19 17:00:00:00.00000+0000" for consistent database formatting.
 
 The consistency level in Cassandra means the number of replicas/nodes must acknowledge a read or write operation before it is succesful.
 Consistency level can bet set for both read and write operations. The consistency level for both read and write is chosen to be Quorum,
@@ -141,6 +141,8 @@ throughput, and failure) of the tests for 1,5, 10, .., n of concurrent mysimbdp-
 into mysimbdp-coredms with dierent speeds/velocities together with the change of the number of
 nodes of mysimbdp-coredms. Indicate any performance dierences due to the choice of consistency
 options. (1 point)
+
+### 4. Performance testing of the deployed platform
 
 Avg. data produce velocity for each of these test case (runtime of a single producer): finished producing input data at 1738592753.3659682, total runtime: 80.86 s
 (different log mechanism)
@@ -255,7 +257,7 @@ When you increase the number of nodes in the Cassandra cluster, the data is dist
 In this test we try the platform's performance when ingesting lots of data in real-time.
 
 We had 50 producers generating 20 000 rows of input data concurrently (1M total rows) - average runtime of a producer was spproximately 380s (52 rows/s).
-On total producers generated and send 50 * 52 = 2600 rows/s to the platform. The platform dataingest component had 15 concurrent Kafka Consumers reading the input data simultaneously.
+On total producers generated and send 50 * 52 = 2600 rows/s to the platform. The platform dataingest component had 15 concurrent Kafka Consumers reading the input data simultaneously. The topic partition was 15.
 
 From the **ingest_huge.log** we can see that each of the 15 Kafka consumers inserted approximately 90 rows per second to the coredms. In ingest3.log performance test, we had
 30 Kafka Producers producing 10 000 rows of data each (300 000 rows) and 15 Kafka Consumers and the rows succesfully inserted / s was approx. 144. The throughput speed in the large data set decrease
@@ -271,11 +273,6 @@ get too many messages and fail completely.
 
 ## Part 3 Extension
 
-1. Using your mysimbdp-coredms, a single tenant can run mysimbdp-dataingest to create many
-dierent databases/datasets. The tenant would like to record basic lineage of the ingested data,
-explain what types of metadata about data lineage you would like to support and how would you do
-this. Provide one example of a lineage data. (1 point)
-
 ### 1. Data lineage and metadata
 
 The platform could support multiple types of metadata for the data ingested into it. An example of a data lineage for a taxi service provider which sends their raw
@@ -290,6 +287,7 @@ errors. Additionally, the ingestion start timestamp and end timestamps would be 
 
 The data lineage could be stored in JSON format like:
 
+```json
 {
   "tenant_id": "tenant_a",
   "user_id": "user_1",
@@ -321,6 +319,7 @@ The data lineage could be stored in JSON format like:
   "cassandra_keyspaces": ["taxiservices"],
   "cassandra_tables": ["trips"]
 }
+```
 
 This kind of data lineage support would be implemented by recording the data ingestion statistics (similar to the logging part). Also the tenant user would
 send some message to the platform that which user is starting the action. Then after specific time period where no messages have been ingested/stopped by the user, the ingestion
