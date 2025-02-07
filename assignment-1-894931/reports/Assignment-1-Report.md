@@ -136,12 +136,6 @@ is a good option for this domain.
 Alternative consistency levels would be All and and One. All would mean that all 3 replication nodes must acknowledge the operation. In case of node failures
 this would mean that the operation wont go through, which decreases the platforms availability. As the data domain is transportation and not, example financial transactions, this consistency level would be unnecessarily high. Consistency level of one would enable the fastest reads, but could return stale data.
 
-1. Given your deployment environment, measure and show the performance (e.g., response time,
-throughput, and failure) of the tests for 1,5, 10, .., n of concurrent mysimbdp-dataingest writing data
-into mysimbdp-coredms with dierent speeds/velocities together with the change of the number of
-nodes of mysimbdp-coredms. Indicate any performance dierences due to the choice of consistency
-options. (1 point)
-
 ### 4. Performance testing of the deployed platform
 
 Avg. data produce velocity for each of these test case (runtime of a single producer): finished producing input data at 1738592753.3659682, total runtime: 80.86 s
