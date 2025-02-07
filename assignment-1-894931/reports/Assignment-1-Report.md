@@ -332,7 +332,7 @@ For managing multiple mysimbdp-coredms instances, the platform would need to han
 discovery information for each tenant in a configuration synchronization service like Apache ZooKeeper. These kind of services
 enable centralized and consistent way for managing configuration and metadata about multiple services like mysimbdp-coredms'.
 A tenant's mysimbdp-coredms information would contain essential information about the tenant such as
-tenant name, id and users and the corresponding coredms id. Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
+tenant name, id and users, provided services and the corresponding coredms(s) id. The services provided to the tenant could contain the data storage itself, data backup (in case of failures etc.) and automated data lifecycle handling (provide options for storing data in hot vs cold storages) Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
 Information about the VM instance running the coredms would contain the addresss (ip:port),
 firewall rules (protocols accepted, ports etc), hardware specs (CPU, RAM etc) and the cost of the machine. Also metadata such as tenant creation date, location would be stored.
 Also coredms status would be stored, including active, stopped, removed.
@@ -344,6 +344,11 @@ The tenant information could be stored in JSON like:
   "tenant_name": "taxi_service_provider_abc",
   "tenant_id": "abc123",
   "coredms_id": "dms_abc_123",
+  "services": {
+    "data_storage": true,
+    "data_backup": true,
+    "automated_data_lifecycle": false 
+  },
   "status": "active",
   "users": [
       {
