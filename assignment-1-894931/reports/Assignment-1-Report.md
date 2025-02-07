@@ -10,7 +10,7 @@ Technology for the data storage component (mysimbdp-coredms) of the platform is 
 
 Tenant data sources (e.g. the IoT taxi trip data) are ingested into the data storage of the platform using Apache Kafka, distributed event streaming platform. Kafka is designed for handling high-throughput real-time data streams, suiting perfectly this platform's domain. Tenants send the generated data using Kafka Producers into the Kafka server this platform provides, using predetermined Kafka topics and configurations. The platform inserts the received data into the data storage.
 
-The platform is designed to handle real-time data streams efficiently. Of the 4Vs of big data, this platform serves especially for Velocity: the platform is optimized to handle large amounts of data in real-time streams using technologies such as Kafka. The platform supports receiving up to 2600 rows of data in a second (part 2.5) The platform also has support for Variety and Veracity, as the data structure formats are not strictly enforced and the data is processed in real-time during the ingestion. The scalable data storage of the platform handles the Volume, as the amount of data gathered can grow huge. By addressing these concepts, this platform is designed to handle large scale data workloads.
+The platform is designed to handle real-time data streams efficiently. Of the 4Vs of big data, this platform serves especially for Velocity: the platform is optimized to handle large amounts of data in real-time streams using technologies such as Kafka. The platform supports receiving up to 2600 rows of data in a second (part 2.5). This means if each tenant would send approximately 500 rows of data in a second, this platform would support 5 tenants with current deployment. The platform also has support for Variety and Veracity, as the data structure formats are not strictly enforced and the data is processed in real-time during the ingestion. The scalable data storage of the platform handles the Volume, as the amount of data gathered can grow huge. By addressing these concepts, this platform is designed to handle large scale data workloads.
 
 ### 2. Platform architecture & data ingestion pipeline
 
@@ -153,6 +153,8 @@ Kafka broker is a server that stores and serves messages. Brokers work together 
 Kafka replication factor is 3.
 
 partitions: 15, so max 15 consumers can read
+
+Each log file contains statistics about each concurrent kafka consumer's data ingestion separated by lines.
 
 5 Kafka brokers, 4 Cassandra nodes (DC1: 2, DC2: 2, replication DC1: 2, DC2: 1), Consistency: Quorum, Kafka consumers poll every second
 
