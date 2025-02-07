@@ -4,7 +4,7 @@
 
 ### 1. Application domain, data & technologies
 
-The application domain for this big data platform is transportation. The reason for this domain is the relevance to big data concepts. Global taxi services like Uber, Yango and Bolt are handling massive volumes of real-time data, while also for example cargo and aviation industries use real-time location tracking. The platform supports both structured and semi-structured data, allowing new fields/columns to be dynamically added to the data storage tables without strict enforcement on data formats. This flexibility is essential for handling IoT-generated data in transportation domain, as data unit structures may vary geologically and evolve over time.
+The application domain for this big data platform is transportation. The reason for this domain is the relevance to big data concepts. Global taxi services like Uber, Yango and Bolt are handling massive volumes of real-time data, while also for example cargo and aviation industries use real-time location tracking. The platform supports both structured and semi-structured data, allowing new fields/columns to be dynamically added to the data storage tables without strict enforcement on data formats. This flexibility is essential for handling IoT-generated data in transportation domain, as data unit structures may vary geologically and evolve over time. The source data format could be for example csv, txt or JSON.
 
 Technology for the data storage component (mysimbdp-coredms) of the platform is chosen to be [Apache Cassandra](https://cassandra.apache.org/_/index.html), a distributed NoSQL database. Cassandra is designed for handling large volumes of data across multiple nodes. It offers scalability, high availability and fault tolerance, which are essential assets for a serving as a big data storage. Cassandra also excels in high-speed write operations, making it suitable for handling real-time data streams.
 
@@ -46,7 +46,7 @@ The replication factor could also be 2, which would lower storage needs and cost
 
 ### 5. Platform deployment
 
-The platform is deployed and hosted in Google Cloud Platform with two virtual machines, one for mysimbdp-dataingest and one for mysimbdp-coredms. The tenant data sources are expected to be geographically distributed as the domain is transportation (taxi trips etc), meaning that the data would be sent to this platforms Kafka server from different locations. The platform is designed for ingesting real-time data streams data row by row. Network bandwith in the platform hosted in GCP is 16Gbps between the platform components (dataingest, coredms) and 7Gbps between the platform and tenants. If one data row was 80 bytes of size, this would theoretically mean approximately 10 million rows of data in a second. The platforms hardware can not handle this much of data, but we can say the the platform network bandwidth will not be a bottleneck.
+The platform is deployed and hosted in Google Cloud Platform with two virtual machines, one for mysimbdp-dataingest and one for mysimbdp-coredms. The tenant data sources are expected to be geographically distributed as the domain is transportation (taxi trips etc), meaning that the data would be sent to this platforms Kafka server from different locations. The platform is designed for ingesting real-time data streams data row by row. Network bandwith in the platform hosted in GCP is 16Gbps between the platform components (dataingest, coredms) and 7Gbps between the platform and tenants. If one data row was 80 bytes of size, this would theoretically mean approximately 10 million rows of data in a second. The platforms hardware can not handle this much of data, but we can say that the platform network bandwidth will not be a bottleneck.
 
 If there was only one tenant and it is located in the USA (e.g the Chicago Taxi Data), the platform would also be physically hosted on USA near Chicago in Google data centers. For multiple tenants located in multiple continents, the platform would also need to be distributed geographically. Additionally edge clouds could do some data processing first to enchase performance. The transportation data could also be first be sent to a tenants own server, and then forwarded to this platforms Kafka server.
 
@@ -100,17 +100,12 @@ based on the pickup community area alone.
 However, partitioning by the community area can lead to unequal node sizes, if some areas are very commonly used and some rarely. This could result in some nodes being overloaded and some
 nodes being underused. This choice is a tradeoff between completely even distribution and efficient indemand queries of the tenant.
 
-An alternative partitioning strategy would be using the trip id as the partitioning key. This would ensure equally distributed data, but it would mean slower queries on the pickup comminity areas, making the analysis less real-time.
+An alternative partitioning strategy would be using the trip id as the partitioning key. This would ensure equally distributed data, but it would mean slower queries on the pickup comminity areas, making the analysis slower and more computationally expensive.
 
 The data storage is composed of 4 Cassandra nodes with a replication factor of 3. The data is partitioned by the pickup location and
 each partition is replicated across 3 different Cassandra nodes in 2 data centers. This design gives fault tolerance and availability to the indemand area queries of the tenant.
 
-3. Assume that you play the role of the tenant, emulate the data sources with the real selected dataset
-and write a mysimbdp-dataingest that takes data from your selected sources and stores the data into
-mysimbdp-coredms. Explain what would be the atomic data element/unit to be stored. Explain
-possible consistency options for writing data in your mysimdbp-dataingest
-
-### 3. Mysimbdp-dataingest implementation,
+### 3. Mysimbdp-dataingest implementation
 
 The example taxi service provider tenant's dataset is the [taxi trip data of Chicago](https://data.cityofchicago.org/Transportation/Taxi-Trips-2024-/ajtu-isnz/about_data).
 The implementation for the mysimbdp-dataingest can be found on *code/mysimbdp-dataingest/*. The kafka_server holds containerized kafka server with 5 brokers. The consumer/ contains kafka_consumer.py which is a python script that holds implementation for creating kafka consumers using the server to consume source data and ingest it to the corresponding coredms Cassandra table.
@@ -119,7 +114,7 @@ A shell script start_consuming.sh can be used for running multiple concurrent co
 The implementation for example tenant is in *code/tenant/*. It contains a python script kafka_producer.py for simulating generation of source data and sending it to the platform using Kafka Producers. Shell script start_producing.sh can be used for running multiple parallel kafka producers.
 The folder *data* contains python script create_samples.sh for reading rows from the taxi trip data of chicago and generating number of sample data set from it. Using multiple source data files we can simulate multiple parallel producers generating data.
 
-The producer(s) reads the source data from the samples of taxi trip data of Chicago and send it to kafka server. An example row looks following:
+The producer(s) (e.g. tenant's IoT-devices) reads the source data from the samples of taxi trip data of Chicago and send it to kafka server. An example row looks following:
 
 ``
 Trip ID,Taxi ID,Trip Start Timestamp,Trip End Timestamp,Trip Seconds,Trip Miles,Pickup Census Tract,Dropoff Census Tract,Pickup Community Area,Dropoff Community Area,Fare,Tips,Tolls,Extras,Trip Total,Payment Type,Company,Pickup Centroid Latitude,Pickup Centroid Longitude,Pickup Centroid Location,Dropoff Centroid Latitude,Dropoff Centroid Longitude,Dropoff Centroid  Location
@@ -129,6 +124,8 @@ Trip ID,Taxi ID,Trip Start Timestamp,Trip End Timestamp,Trip Seconds,Trip Miles,
 The final data unit to be stored after ingesting the source data and doing simple data processing is the following:
 
 ![dataunit](../taxitrip_row.png)
+
+From the raw source data columns Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Also timestamps are modified from format "01/19/2024 05:00:00 PM" to format "2024-01-19 17:00:00:00.00000+0000".
 
 The consistency level in Cassandra means the number of replicas/nodes must acknowledge a read or write operation before it is succesful.
 Consistency level can bet set for both read and write operations. The consistency level for both read and write is chosen to be Quorum,
