@@ -332,7 +332,7 @@ For managing multiple mysimbdp-coredms instances, the platform would need to han
 discovery information for each tenant in a configuration synchronization service like Apache ZooKeeper. These kind of services
 enable centralized and consistent way for managing configuration and metadata about multiple services like mysimbdp-coredms'.
 A tenant's mysimbdp-coredms information would contain essential information about the tenant such as
-tenant name, id and users, provided services and the corresponding coredms(s) id. The services provided to the tenant could contain the data storage itself, data backup (in case of failures etc.) and automated data lifecycle handling (provide options for storing data in hot vs cold storages) Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
+tenant name, id and users, provided services and the corresponding coredms(s) id. The services provided to the tenant could contain the data storage itself, data backup (in case of failures etc.) and automated data lifecycle handling (provide options for storing data in hot vs cold storages). Information about the tenant specific coredms(s) would contain: number of cassandra nodes, data centers, replication factor, keyspaces, tables
 Information about the VM instance running the coredms would contain the addresss (ip:port),
 firewall rules (protocols accepted, ports etc), hardware specs (CPU, RAM etc) and the cost of the machine. Also metadata such as tenant creation date, location would be stored.
 Also coredms status would be stored, including active, stopped, removed.
@@ -394,20 +394,12 @@ This would be implemented in a way, where the platform would also host ZooKeeper
 Mysimbdp-dataingest would query for the corresponding coredms data by the tenant id, and the ZooKeeper service would return it, if values are right, for example status is active and
 the tenant user is allowed for this action.
 When dataingest receives new data from tenant data sources, it would first query the data by tenant id, and then if the source data matches the configurations in the tenant data,
-the data is inserted.
-
-4. Assume that you have to introduce a new key component, called mysimbdp-daas, of which APIs can
-be called by external data producers/consumers to store/read data into/from mysimbdp-coredms.
-This component is a platform-as-a-service. Tenants can get shared or dedicated instances of
-mysimbdp-daas for their usage. Assume that now only mysimbdp-daas can read and write data into
-mysimbdp-coredms, how would you change your mysimbdp-dataingest (in Part 2) to work with
-mysimbdp-daas, draw the updated architecture of your mysimbdp? (1 point)
+the data is inserted. Then in the ingesting we would also look at the services we provide to the tenant from the service feature. Based on the configured services, dataingest would for example store the data its ingesting to a hot storage.
 
 ### 4. New component: Mysimbdp-daas
 
-The mysimbdp-daas would be implemented as a platform-as-a-service inside the mysimbdp-platform. The source data ingestion would still be done
-by the mysimdp-dataingest. The daas would provide APIs for tenants to use for ingesting data. The underlying technology would still be Kafka. 
-The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API.
+The mysimbdp-daas would be implemented as a platform-as-a-service offered within the mysimbdp-platform. The source data ingestion would still be done
+by the mysimdp-dataingest. The daas would provide APIs for tenants to interact with the platform. Instead of tenants directly interacting with the dataingest component, they would call provided API for ingesting data. The mysimbdp-daas would act as an interface between the data producers and the dataingest component. The underlying technology of the ingestion/data storage insertion would still be Kafka. The API component would communicate to the dataingest using protocols such as Kafka as before. The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API. The daas-APIs would take incoming request, validate them and then forward them. The daas-component would also enable integration of security mechanisms, for example providing authentication methods by API keys, tokens or user credentials etc. Mysimbdp-daas would abstract the underlying ingestion from the external users.
 
 ![Platform architecture with daas](../architecture_daas.png)
 
