@@ -326,11 +326,6 @@ send some message to the platform that which user is starting the action. Then a
 record would be stored as the JSON. The source data, data processing and ingestion result, keyspace and table statistics would be logged from the data-ignest component.
 The data lineage would be stored in the coredms of the tenant, where they can fetch it from.
 
-2. Assume that each of your tenants/users will need a dedicated mysimbdp-coredms. Design the data
-schema of service and data discovery information for mysimbdp-coredms that can be published into
-an existing registry (like ZooKeeper, consul or etcd) so that you can nd information about which
-mysimbdp-coredms is for which tenants/users. (1 point)
-
 ### 2. Data schema of service and data discovery information
 
 For managing multiple mysimbdp-coredms instances, the platform would need to handle and store the schema of service and data
@@ -344,46 +339,45 @@ Also coredms status would be stored, including active, stopped, removed.
 
 The tenant information could be stored in JSON like:
 
+```json
 {
-    "tenant_name": "taxi_service_provider_abc",
-    "tenant_id": "abc123",
-    "coredms_id": "dms_abc_123",
-    "status": "active",
-    "users": [
-        {
-            "user_id": "id123",
-            "role": "admin"
-        },
-        {
-            "user_id": "id456",
-            "role": "user"
-        }
-    ],
-    "databases": [
-        {
-            "keyspace:": "taxiservices",
-            "tables": ["trips", "reviews"],
-        }
-    ],
-    "db_nodes": 4,
-    "replication": 3,
-    "db_data_centers: ["DC1", "DC2"],
-    "virtual_machine": {
-        "ip": "127.0.0.1",
-        "cassandra_port": 9042,
-        "ports_listened_on": ["9042", "9042", "9044"],
-        "protocols": ["http", "https"],
-        "vm_cost_annual_euro": 10000,
-        "cpu_cores": 4,
-        "memory": 16,
-        "disk": 400
-    },
-    "creation_date": "2025-02-04T20:00:15Z",
-    "location": "USA"
+  "tenant_name": "taxi_service_provider_abc",
+  "tenant_id": "abc123",
+  "coredms_id": "dms_abc_123",
+  "status": "active",
+  "users": [
+      {
+          "user_id": "id123",
+          "role": "admin"
+      },
+      {
+          "user_id": "id456",
+          "role": "user"
+      }
+  ],
+  "databases": [
+      {
+          "keyspace": "taxiservices",
+          "tables": ["trips", "reviews"]
+      }
+  ],
+  "db_nodes": 4,
+  "replication": 3,
+  "db_data_centers": ["DC1", "DC2"],
+  "virtual_machine": {
+      "ip": "127.0.0.1",
+      "cassandra_port": 9042,
+      "ports_listened_on": ["9042", "9042", "9044"],
+      "protocols": ["http", "https"],
+      "vm_cost_annual_euro": 10000,
+      "cpu_cores": 4,
+      "memory": 16,
+      "disk": 400
+  },
+  "creation_date": "2025-02-04T20:00:15Z",
+  "location": "USA"
 }
-
-3. Explain how you would change the implementation of mysimbdp-dataingest (in Part 2) to integrate a
-service and data discovery feature (no implementation is required). (1 point)
+```
 
 ## 3. How to integrate service and data discovery feature
 
