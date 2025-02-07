@@ -401,7 +401,7 @@ the data is inserted. Then in the ingesting we would also look at the services w
 The mysimbdp-daas would be implemented as a platform-as-a-service offered within the mysimbdp-platform. The source data ingestion would still be done
 by the mysimdp-dataingest. The daas would provide APIs for tenants to interact with the platform. Instead of tenants directly interacting with the dataingest component, they would call provided API for ingesting data. The mysimbdp-daas would act as an interface between the data producers and the dataingest component. The underlying technology of the ingestion/data storage insertion would still be Kafka. The API component would communicate to the dataingest using protocols such as Kafka as before.
 
-The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API. The daas-APIs would take incoming request, validate them and then forward them. The daas-component would also enable integration of security mechanisms, for example providing authentication methods by API keys, tokens or user credentials etc. Mysimbdp-daas would abstract the underlying ingestion from the external users.
+The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API. The daas-APIs would take incoming requests, validate them and then forward them. The daas-component would also enable integration of other services such as security mechanisms, for example providing authentication methods for tenants by API keys, tokens or user credentials etc. Mysimbdp-daas would abstract the underlying technologies and implementations of the platform from the external users.
 
 ![Platform architecture with daas](../architecture_daas.png)
 
@@ -414,7 +414,7 @@ This way we could store the hot data into separate tables, enabling more efficie
 After 24 hours we can assume that the demand would not be probably the same anymore on the location, and the data would not be needed in this kind of queries anymore,
 and could be inserted to cold space and removed from hot space.
 
-We could implement this automatically in a way, where there are hot and cold Cassandra Clusters for the tenant. We could have a scheduled job running for example every hour,
-and query the hot data tables based on timestamp and check which data are currently over the 24 hour line. Then these data units would be inserted into the cold cluster,
+We could implement this automatically in a way, where there are hot and cold Cassandra Clusters for the tenant. We could have a new component with a scheduled job running for example every hour,
+and query the hot data tables based on timestamp (or other constraints defined by the tenant) and check which data are currently over the 24 hour line. Then these data units would be inserted into the cold cluster,
 and removed from the hot cluster. If the constraint is that only trips that are inside the current date (e.g. 06.02.2025) are in hot space, we could query every day
 at midnight and insert and remove the data of previous day.
