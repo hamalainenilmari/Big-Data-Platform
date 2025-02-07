@@ -20,6 +20,7 @@ After the Cassandra and Kafka containers and the kafka consumer are up and runni
 
 **Tenant**:
 
+This external part is an example user of the platform.
 Download the source data set according to instructions in folder *data*. Create the sample data sets from the source data following the instructions.
 
 Go to *code/tenant*. Then run the data generators according to the instructions on the folder.
