@@ -9,7 +9,7 @@ To simulate producing data into the platform first run:
 
 If you have problems with installing Pandas-package from requirements.txt, try to install Numpy first (pip install "numpy>=1.21.0")
 
-If you have not created the sample data sets, go to foldet *data* and create sample data set according to the instructions.
+If you have not created the sample data sets, go to folder *data* and create sample data set according to the instructions.
 
 Then using the shell script you can start the producers.
 
