@@ -188,7 +188,7 @@ For this test we had:
 No dramatic time differences. The changes in runtimes may be affected by network, latencies etc.
 What we can say is, that in this case having a bit longer poll interval can benefit the platform, as the CPU usage wont be so high.
 
-![poll time](../poll_ingestion.png)
+![poll time](../poll_performance.png)
 
 **Different write consistencies:**
 
