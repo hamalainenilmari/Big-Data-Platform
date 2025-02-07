@@ -192,12 +192,12 @@ What we can say is, that in this case having a bit longer poll interval can bene
 
 **Different write consistencies:**
 
-For this test we had:
+This test was run locally to emphasize on the effect of consistency options (no latencies etc). For this test we had:
 
-* 5 Kafka brokers
-* 4 Cassandra nodes
-* 30 Kafka Producers producing 10 000 rows of data each
-* 5 Kafka Consumers poll every 1.0s
+* 3 Kafka brokers
+* 3 Cassandra nodes
+* 2 Kafka Producers producing 20 000 rows of data each
+* 3 Kafka Consumers poll every 1.0s
 
 Consistency defines the level of guarantee on how many nodes in a cluster must acknowledge a read or write operation for it to be considered succesful.
 Consistency options provide tradeoff between availability, latency and data consistency.
@@ -209,14 +209,16 @@ Consistency options provide tradeoff between availability, latency and data cons
 
 | Consistency   | Log File     |
 |---------------|--------------|
-| Any           | ingest8.log  |
-| One           | ingest9.log  |
-| Quorum        | ingest1.log  |
-| All           | ingest10.log |
+| Any           | ingest9.log  |
+| One           | ingest8.log  |
+| Quorum        | ingest10.log  |
+| All           | ingest11.log |
 
-![quorum performance](../quorum_perf.png)
+![consistency effect on performance](../consistency_performance.png)
 
-No dramatic time differences. The changes in runtimes may be affected by network, latencies etc.
+As expected from the performance analysis, consistency of all has the highest runtime and smallest rows inserted/s rate. Loosest consistencies any and one had approximately 33 % faster ingestion compared to all-consistency.
+Our chosen consistency quorum was approx. 13 % faster than the consistency all. As we can see, with lower consistency we would increase the throughput speed.
+Because we chose to value data reliabalitity and fault tolerance we chose the quorum as a balance between speed and data consistency.
 
 ### 5. Test ingestion of lots of data
 

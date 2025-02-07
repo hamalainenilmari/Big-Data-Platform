@@ -1,50 +1,88 @@
-2025-02-05 11:46:51,312 - INFO - Succesfully connected to Cassandra
-2025-02-05 11:46:51,312 - INFO - Starting to listen for data
-2025-02-05 11:46:51,323 - INFO - Succesfully connected to Cassandra
-2025-02-05 11:46:51,323 - INFO - Starting to listen for data
-2025-02-05 11:46:51,338 - INFO - Succesfully connected to Cassandra
-2025-02-05 11:46:51,338 - INFO - Starting to listen for data
-2025-02-05 11:46:51,347 - INFO - Succesfully connected to Cassandra
-2025-02-05 11:46:51,347 - INFO - Starting to listen for data
-2025-02-05 11:46:51,362 - INFO - Succesfully connected to Cassandra
-2025-02-05 11:46:51,362 - INFO - Starting to listen for data
-2025-02-05 11:49:26,666 - INFO - Stopped ingesting - statistics:
-2025-02-05 11:49:26,666 - INFO - Time taken: 155.30 s
-2025-02-05 11:49:26,666 - INFO - Number of Kafka messages received: 59470
-2025-02-05 11:49:26,666 - INFO - Rows succesfully inserted: 59345
-2025-02-05 11:49:26,666 - INFO - Rows succesfully inserted / s: 382.1216276253341
-2025-02-05 11:49:26,667 - INFO - Number of Cassandra errors: 125
-2025-02-05 11:49:26,667 - INFO - Number of Kafka errors: 0
-2025-02-05 11:49:26,667 - INFO - ------------------------------------------------
-2025-02-05 11:49:26,681 - INFO - Stopped ingesting - statistics:
-2025-02-05 11:49:26,681 - INFO - Time taken: 155.36 s
-2025-02-05 11:49:26,682 - INFO - Number of Kafka messages received: 59353
-2025-02-05 11:49:26,682 - INFO - Rows succesfully inserted: 59228
-2025-02-05 11:49:26,682 - INFO - Rows succesfully inserted / s: 381.23502139973783
-2025-02-05 11:49:26,682 - INFO - Number of Cassandra errors: 125
-2025-02-05 11:49:26,682 - INFO - Number of Kafka errors: 0
-2025-02-05 11:49:26,682 - INFO - ------------------------------------------------
-2025-02-05 11:49:26,745 - INFO - Stopped ingesting - statistics:
-2025-02-05 11:49:26,745 - INFO - Time taken: 155.43 s
-2025-02-05 11:49:26,746 - INFO - Number of Kafka messages received: 60344
-2025-02-05 11:49:26,746 - INFO - Rows succesfully inserted: 60224
-2025-02-05 11:49:26,746 - INFO - Rows succesfully inserted / s: 387.458662727753
-2025-02-05 11:49:26,746 - INFO - Number of Cassandra errors: 120
-2025-02-05 11:49:26,746 - INFO - Number of Kafka errors: 0
-2025-02-05 11:49:26,746 - INFO - ------------------------------------------------
-2025-02-05 11:49:26,760 - INFO - Stopped ingesting - statistics:
-2025-02-05 11:49:26,760 - INFO - Time taken: 155.41 s
-2025-02-05 11:49:26,760 - INFO - Number of Kafka messages received: 60494
-2025-02-05 11:49:26,760 - INFO - Rows succesfully inserted: 60351
-2025-02-05 11:49:26,760 - INFO - Rows succesfully inserted / s: 388.32784042439755
-2025-02-05 11:49:26,760 - INFO - Number of Cassandra errors: 143
-2025-02-05 11:49:26,760 - INFO - Number of Kafka errors: 0
-2025-02-05 11:49:26,760 - INFO - ------------------------------------------------
-2025-02-05 11:49:26,774 - INFO - Stopped ingesting - statistics:
-2025-02-05 11:49:26,774 - INFO - Time taken: 155.44 s
-2025-02-05 11:49:26,774 - INFO - Number of Kafka messages received: 60339
-2025-02-05 11:49:26,774 - INFO - Rows succesfully inserted: 60212
-2025-02-05 11:49:26,774 - INFO - Rows succesfully inserted / s: 387.37496172284625
-2025-02-05 11:49:26,774 - INFO - Number of Cassandra errors: 127
-2025-02-05 11:49:26,774 - INFO - Number of Kafka errors: 0
-2025-02-05 11:49:26,774 - INFO - ------------------------------------------------
+2025-02-07 11:49:38,064 - INFO - Succesfully connected to Cassandra
+2025-02-07 11:49:38,064 - INFO - Starting to listen for data
+2025-02-07 11:49:43,057 - INFO - Succesfully connected to Cassandra
+2025-02-07 11:49:43,057 - INFO - Starting to listen for data
+2025-02-07 11:49:43,059 - INFO - Succesfully connected to Cassandra
+2025-02-07 11:49:43,060 - INFO - Starting to listen for data
+2025-02-07 11:49:43,059 - WARNING - Failed to create connection pool for new host 172.22.0.4:9042:
+Traceback (most recent call last):
+  File "cassandra/cluster.py", line 3234, in cassandra.cluster.Session.add_or_renew_pool.run_add_or_renew_pool
+  File "cassandra/pool.py", line 406, in cassandra.pool.HostConnection.__init__
+  File "cassandra/cluster.py", line 1670, in cassandra.cluster.Cluster.connection_factory
+  File "cassandra/connection.py", line 846, in cassandra.connection.Connection.factory
+  File "/home/ilmarih/.local/lib/python3.8/site-packages/cassandra/io/asyncorereactor.py", line 354, in __init__
+    self._connect_socket()
+  File "cassandra/connection.py", line 951, in cassandra.connection.Connection._connect_socket
+OSError: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:49:43,062 - WARNING - Host 172.22.0.4:9042 has been marked down
+2025-02-07 11:49:49,063 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 1.86 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:49:49,163 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 2.1 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:49:49,272 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 2.08 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:49:55,980 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 3.84 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:49:56,274 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 4.36 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:49:56,384 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 3.96 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:04,902 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 6.96 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:05,403 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 7.04 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:05,704 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 7.28 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:16,931 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 17.44 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:17,536 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 17.92 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:18,038 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 16.96 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:39,437 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 32.32 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:40,026 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 36.48 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:50:40,517 - WARNING - Error attempting to reconnect to 172.22.0.4:9042, scheduling retry in 27.84 seconds: [Errno None] Tried connecting to [('172.22.0.4', 9042)]. Last error: timed out
+2025-02-07 11:51:07,817 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:07,819 - INFO - Time taken: 84.76 s
+2025-02-07 11:51:07,819 - INFO - Number of Kafka messages received: 13184
+2025-02-07 11:51:07,819 - INFO - Rows succesfully inserted: 13170
+2025-02-07 11:51:07,820 - INFO - Rows succesfully inserted / s: 155.38451914709208
+2025-02-07 11:51:07,820 - INFO - Number of Cassandra errors: 14
+2025-02-07 11:51:07,820 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:07,820 - INFO - ------------------------------------------------
+2025-02-07 11:51:07,828 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:07,829 - INFO - Time taken: 84.77 s
+2025-02-07 11:51:07,829 - INFO - Number of Kafka messages received: 13184
+2025-02-07 11:51:07,829 - INFO - Rows succesfully inserted: 13170
+2025-02-07 11:51:07,829 - INFO - Rows succesfully inserted / s: 155.3638550191969
+2025-02-07 11:51:07,829 - INFO - Number of Cassandra errors: 14
+2025-02-07 11:51:07,829 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:07,829 - INFO - ------------------------------------------------
+2025-02-07 11:51:08,409 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:08,410 - INFO - Time taken: 85.35 s
+2025-02-07 11:51:08,410 - INFO - Number of Kafka messages received: 13627
+2025-02-07 11:51:08,410 - INFO - Rows succesfully inserted: 13598
+2025-02-07 11:51:08,410 - INFO - Rows succesfully inserted / s: 159.31713653104305
+2025-02-07 11:51:08,410 - INFO - Number of Cassandra errors: 29
+2025-02-07 11:51:08,410 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:08,410 - INFO - ------------------------------------------------
+2025-02-07 11:51:08,414 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:08,414 - INFO - Time taken: 85.36 s
+2025-02-07 11:51:08,414 - INFO - Number of Kafka messages received: 13627
+2025-02-07 11:51:08,414 - INFO - Rows succesfully inserted: 13598
+2025-02-07 11:51:08,414 - INFO - Rows succesfully inserted / s: 159.30833252877255
+2025-02-07 11:51:08,414 - INFO - Number of Cassandra errors: 29
+2025-02-07 11:51:08,414 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:08,414 - INFO - ------------------------------------------------
+2025-02-07 11:51:08,636 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:08,637 - INFO - Time taken: 90.57 s
+2025-02-07 11:51:08,637 - INFO - Number of Kafka messages received: 13189
+2025-02-07 11:51:08,637 - INFO - Rows succesfully inserted: 13142
+2025-02-07 11:51:08,637 - INFO - Rows succesfully inserted / s: 145.09920164953166
+2025-02-07 11:51:08,637 - INFO - Number of Cassandra errors: 47
+2025-02-07 11:51:08,637 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:08,637 - INFO - ------------------------------------------------
+2025-02-07 11:51:08,641 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:08,642 - INFO - Time taken: 90.58 s
+2025-02-07 11:51:08,642 - INFO - Number of Kafka messages received: 13189
+2025-02-07 11:51:08,642 - INFO - Rows succesfully inserted: 13142
+2025-02-07 11:51:08,642 - INFO - Rows succesfully inserted / s: 145.09121241953588
+2025-02-07 11:51:08,642 - INFO - Number of Cassandra errors: 47
+2025-02-07 11:51:08,642 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:08,642 - INFO - ------------------------------------------------
+2025-02-07 11:51:11,679 - INFO - Stopped ingesting - statistics:
+2025-02-07 11:51:11,680 - INFO - Time taken: 93.62 s
+2025-02-07 11:51:11,680 - INFO - Number of Kafka messages received: 13189
+2025-02-07 11:51:11,680 - INFO - Rows succesfully inserted: 13142
+2025-02-07 11:51:11,680 - INFO - Rows succesfully inserted / s: 140.38293387391
+2025-02-07 11:51:11,680 - INFO - Number of Cassandra errors: 47
+2025-02-07 11:51:11,680 - INFO - Number of Kafka errors: 0
+2025-02-07 11:51:11,680 - INFO - ------------------------------------------------

@@ -1,7 +1,7 @@
 # This is a deployment/installation guide for running this platform locally
 
 To run the platform, Docker and Docker compose must be installed. Python and pip must also be installed.
-The platform can be run locally by the following steps (use separate terminal for each):
+The platform can be run locally by the following steps (use separate terminal for each, if needed make shell scripts executable by running ``$ chmod +x <file_sh>``):
 
 ##### Note that if the component configurations are too much for your device, you can reduce the number of cassandra nodes and kafka brokers in the docker-compose files. 3 nodes and 3 brokers works just fine also.
 
