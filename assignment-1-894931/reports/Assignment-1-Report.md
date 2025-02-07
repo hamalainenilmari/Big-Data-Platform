@@ -138,36 +138,29 @@ this would mean that the operation wont go through, which decreases the platform
 
 ### 4. Performance testing of the deployed platform
 
-Avg. data produce velocity for each of these test case (runtime of a single producer): finished producing input data at 1738592753.3659682, total runtime: 80.86 s
-(different log mechanism)
-Each consumer polls for new messages every second
+Average runtime of a single data producer sending 10 000 rows of data to the platform was 80-90 seconds.
 
-**Different number of data coming in and different number of kafka consumers:**
+**Effect of number of concurrent data consumers:**
 
-Number of consumers	At least as many partitions as consumers for parallelism. We use as 1.5x number of consumers
-Kafka broker is a server that stores and serves messages. Brokers work together in a Kafka cluster.
-Kafka replication factor is 3.
+For this test we had:
 
-partitions: 15, so max 15 consumers can read
+* 30 Kafka Producers producing 10 000 rows of data each
+  * on avg., a source data producer sent 10 000 rows of data to the mysimbdp-coredms in 80 seconds (125 rows/s) => 30 Producers sent 3750 rows of data / s.
+* 5 Kafka brokers
+* 4 Cassandra nodes (DC1: 2, DC2: 2, replication DC1: 2, DC2: 1)
+* Cassandra Consistency: Quorum
+* Kafka consumers poll for new data every second
+* Kafka topic replication 3 and 15 partitions
+* Consumers poll for new messages every second
 
-Each log file contains statistics about each concurrent kafka consumer's data ingestion separated by lines.
+Each log file contains statistics about each concurrent kafka consumer's data ingestion separated by lines
 
-5 Kafka brokers, 4 Cassandra nodes (DC1: 2, DC2: 2, replication DC1: 2, DC2: 1), Consistency: Quorum, Kafka consumers poll every second
-
-On average, a source data producer sent 10 000 rows of data to the mysimbdp-coredms in 80 seconds (125 rows/s). 30 Producers generated 3750 rows of data in a second.
-Avg. data produce velocity for each of these test case (runtime of a single producer): finished producing input data at 1738592753.3659682, total runtime: 80.86 s
-
-30 Kafka Producers producing 10 000 rows of data each, 1 Kafka Consumers
-- log file: ingest0.log
-
-30 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers
-- ingest1.log
-
-30 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers
-- ingest2.log
-
-30 Kafka Producers producing 10 000 rows of data each, 15 Kafka Consumers
-- ingest3.log
+| Kafka Consumers | Log File     |
+|-----------------|--------------|
+| 1               | ingest0.log  |
+| 5               | ingest1.log  |
+| 10              | ingest2.log  |
+| 15              | ingest3.log  |
 
 We can see, that the most radical effect is when increasing the number of concurrent Kafka Consumers happens when increasing
 from one to 5. After 5 consumers, adding more instances does not give any real boost when receiving 3750 rows of data in a second.
@@ -176,75 +169,54 @@ from one to 5. After 5 consumers, adding more instances does not give any real b
 
 **Different poll time of consumers:**
 
-Using 5 Kafka consumers to point out the effect of the polling time
+For this test we had:
 
-5 Kafka brokers, 4 Cassandra nodes, Consistency: Quorum, 30 Kafka Producers producing 10 000 rows of data each (), 5 Kafka Consumers 
-poll every second
-- log1.log
+* 5 Kafka consumers to point out the effect of the polling time
+* 5 Kafka brokers
+* 4 Cassandra nodes
+* Consistency: Quorum
+* 30 Kafka Producers producing 10 000 rows of data each
 
-poll every 0.1s
-- log4.log
-=> 10%? increase in speed
-
-poll every 2s
-- log5.log
-=> not much difference to 1s poll time
-
-poll every 4s
-- log6.log
-
-poll every 8s
-- log7.log
+| Poll Interval | Log File     |
+|---------------|--------------|
+| Every second  | ingest1.log  |
+| Every 0.1s    | ingest4.log  |
+| Every 2s      | ingest5.log  |
+| Every 4s      | ingest6.log  |
+| Every 8s      | ingest7.log  |
 
 No dramatic time differences. The changes in runtimes may be affected by network, latencies etc.
-What we can say is, that in this case having a bit bigger poll interval can benefit the platform, as the CPU usage wont be so high.
+What we can say is, that in this case having a bit longer poll interval can benefit the platform, as the CPU usage wont be so high.
 
-[poll time](../poll_ingestion.png)
+![poll time](../poll_ingestion.png)
 
 **Different write consistencies:**
 
-5 Kafka brokers, 4 Cassandra nodes, 30 Kafka Producers producing 10 000 rows of data each, 5 Kafka Consumers poll every 1.0s
+For this test we had:
 
-Consistency: Any
-- a write is succesful if any node in the cluster accepts it.
-- log8.log
-
-Consistency: One
-- a write is succesful if one replica (node which stores the replicated data) in the cluster accepts it.
-- log9.log
- 
-Consistency: Quorum
-- a write is succesful when majority of replicas in the cluster accept it.
-- log1.log
-
-Consistency: All
-- a write is succesful only when all the replicas in the cluster have accepted it.
-- log10.10
+* 5 Kafka brokers
+* 4 Cassandra nodes
+* 30 Kafka Producers producing 10 000 rows of data each
+* 5 Kafka Consumers poll every 1.0s
 
 Consistency defines the level of guarantee on how many nodes in a cluster must acknowledge a read or write operation for it to be considered succesful.
 Consistency options provide tradeoff between availability, latency and data consistency.
 
-**Different number of Cassandra nodes:**
+* Any: a write is succesful if any node in the cluster accepts it.
+* One: a write is succesful if one replica (node which stores the replicated data) in the cluster accepts it.
+* Quorum: a write is succesful when majority of replicas in the cluster accept it.
+* All: a write is succesful only when all the replicas in the cluster have accepted it.
 
-5 Kafka brokers, Consistency: Quorum, 30 Kafka Producers producing 10 000 rows of data each, 10 Kafka Consumers poll every 1s
-esting the effect of data distribution and replication across different configurations.
-CREATE KEYSPACE taxiServices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;
+| Consistency   | Log File     |
+|---------------|--------------|
+| Any           | ingest8.log  |
+| One           | ingest9.log  |
+| Quorum        | ingest1.log  |
+| All           | ingest10.log |
 
-4 Cassandra nodes (2 in DC1, 2 in DC2)
-- log1.log
-=> is there impact when one more node, on the distribution/replication => performance
+![quorum performance](../quorum_perf.png)
 
-5 Cassandra nodes (3 in DC1, 2 in DC2)
-=> same replication, one more node still
--log11.log
-
-6 Cassandra nodes (3 in DC1, 3 in DC2)
--log12.log
-
-7 Cassandra nodes (3 in DC1, 3 in DC2, 1 in DC3)
-
-When you increase the number of nodes in the Cassandra cluster, the data is distributed more widely. With more nodes, Cassandra has a better opportunity to distribute the write load across the cluster, leading to less congestion on any single node. This can result in higher throughput for writes, as the load is spread across more nodes.
-=> load balancing
+No dramatic time differences. The changes in runtimes may be affected by network, latencies etc.
 
 ### 5. Test ingestion of lots of data
 
