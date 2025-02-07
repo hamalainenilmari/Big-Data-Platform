@@ -1,3 +1,5 @@
+# skeleton from couse materials
+
 x-kafka: &kafka
   image: 'bitnami/kafka:latest'
   restart: always

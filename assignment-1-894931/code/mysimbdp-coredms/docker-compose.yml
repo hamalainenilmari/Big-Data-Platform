@@ -1,3 +1,5 @@
+# skeleton from course materials
+
 x-cassandra: &cassandras
   CASSANDRA_CLUSTER_NAME: TaxiCluster
   CASSANDRA_SEEDS: cassandra1, cassandra2, cassandra3, cassandra4 # all nodes as seeds for better availability

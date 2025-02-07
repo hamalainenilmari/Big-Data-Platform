@@ -1,7 +1,5 @@
-'''
-We use python client library from https://docs.confluent.io/clients-confluent-kafka-python/current/overview.html.
-Also see https://github.com/confluentinc/confluent-kafka-python
-'''
+# skeleton from course materials
+
 from confluent_kafka import Consumer
 from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement, ConsistencyLevel

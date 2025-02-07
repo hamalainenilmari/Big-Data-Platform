@@ -5,7 +5,7 @@ import json
 import time
 import datetime
 
-# this script is based on course material
+# skeleton from course materials
 
 def datetime_converter(dt):
     if isinstance(dt, datetime.datetime):
