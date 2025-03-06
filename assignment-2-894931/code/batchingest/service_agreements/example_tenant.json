@@ -1,0 +1,14 @@
+{
+    "id": "test123",
+    "pipeline": "other_pipeline.py",
+    "fileStorageLocation": "/testLocation",
+    "fileTypesSupported": {
+        "csv": true,
+        "json": false,
+        "txt": false,
+        "xml": false
+    },
+    "maxStorage": 10.0,
+    "maxNumFiles": 5,
+    "interval": 60000
+}
