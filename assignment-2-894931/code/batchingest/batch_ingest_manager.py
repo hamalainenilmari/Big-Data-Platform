@@ -2,15 +2,27 @@ import subprocess
 import multiprocessing
 import json
 import os
+import logging
+import time
 from hdfs import InsecureClient
 from hdfs.util import HdfsError
 
 # Batch ingest manager, starts the tenant specific batch data ingestion pipeline
 
-def exit():
+
+
+def exit(total_time, total_size):
+    print(f"total ingestion time: {total_time:.2f} s")
+    print(f"total ingestion size: {(total_size/1000000):.2f} MB")
+    print(f"{(total_size/total_time):.2f} B/s")
+
     print("exiting ...")
 
 def executePipeline(tenant):
+    total_ingest_time = 0
+    total_ingest_size = 0
+    logger = logging.getLogger(f"DataIngestionLogger_{tenant['id']}")
+    logger.setLevel(logging.INFO)
     print(f"Executing tenant {tenant['id']} pipeline ...")
     # Connect to HDFS
     try:
@@ -23,6 +35,8 @@ def executePipeline(tenant):
 
         numFiles = len(files)
         combinedStorage = 0
+        filesToIngest = []
+        filesToIngestSize = 0
         for file in files:
             type = file.split(".")[1]
             if (not tenant['fileTypesSupported'][type]):
@@ -31,7 +45,13 @@ def executePipeline(tenant):
                 client.delete(f"{folder}/{file}")
                 files.remove(file)
             else:
-                combinedStorage += (client.status(f"{folder}/{file}")['length'])
+                file_size = client.status(f"{folder}/{file}")['length']
+                if ((filesToIngestSize + file_size) < tenant["maxIngestionIntervalSize"]*1000000): # add the file to ingestion list
+                    filesToIngest.append(file)
+                    filesToIngestSize += file_size
+                    print(f"added {file} to ingest list")
+
+                combinedStorage += (file_size)
 
         print(f"Statistics:\nAmount of files: {numFiles}\nCombined Storage: {combinedStorage}\nFiles:")
         for file in files:
@@ -39,14 +59,15 @@ def executePipeline(tenant):
         
         if (numFiles > tenant["maxNumFiles"]):
             print("Tenant Service Agreement limit reached: too many input files")
-            exit()
+            exit(0,0)
         elif (combinedStorage > tenant["maxStorage"]*1000000):
             print("Tenant Service Agreement limit reached: too much storage used")
             print(f"Storage used: {combinedStorage / 1000000} MB")
             print(f"Storage limit: {tenant['maxStorage']} MB")
-            exit()
+            exit(0,0)
         else:
-            for file in files:
+            for file in filesToIngest:
+                start_time = time.time()
                 print(f"Ingesting {file}")
                 # TODO add spark location to env variable
                 cmd = f"/home/ilmarih/bdp_25_tech/spark-3.5.5-bin-hadoop3/bin/spark-submit --master local[*] \
@@ -58,12 +79,20 @@ def executePipeline(tenant):
                 code/tenant/{tenant['pipeline']} \
                 --input_file {folder}/{file}"
                 subprocess.run(cmd, shell=True)
-                print("Ingested")
+                end_time = time.time()
+                ingestion_time = end_time - start_time
+                total_ingest_time += ingestion_time
+                total_ingest_size += client.status(f"{folder}/{file}")['length']
+                client.delete(f"{folder}/{file}")
+                print(f"time taken to ingest: {ingestion_time:.2f}s")
+                print(f"Ingested {file}. Deleted from staging dir.")
+        print(f"Ingestion ended, amount of files not ingested due to ingestion size limit: {len(files) - len(filesToIngest)}")
+        exit(total_ingest_time, total_ingest_size)
     except HdfsError as e:
         print(f"Error trying to access tenant HDFS storage location: {e}")
     except Exception as e:
         print(f"Error: {e}")
-    exit()
+
     
 def main():
     # Get the service agreements of tenants
