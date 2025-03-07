@@ -62,6 +62,10 @@ Start NameNode daemon and DataNode daemon:
 
   $ sbin/start-dfs.sh
 
+
+to insert data to hdfs tenant:
+bin/hdfs dfs -put -f ../../bdp_25/assignment-2-894931/data/*.csv /tenantChicagoTaxi/
+
 ## Spark
 version 3.5.5
 download from https://www.apache.org/dyn/closer.lua/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz
