@@ -6,6 +6,8 @@ from pyspark.sql.functions import col
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_file", help="input data file")
+parser.add_argument("--keyspace", help="data storage cassandra keyspace")
+parser.add_argument("--table", help="data storage cassandra table")
 
 args = parser.parse_args()
 
@@ -31,4 +33,4 @@ df = df.fillna({"pickup_community_area": -1.0})
 
 # Insert processed data into Cassandra
 df.write.format("org.apache.spark.sql.cassandra").mode('append').\
-        options(table="trips", keyspace="taxiservices").save()
+        options(table=args.table, keyspace=args.keyspace).save()
