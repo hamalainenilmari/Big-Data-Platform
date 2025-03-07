@@ -1,0 +1,9 @@
+2025-03-07 15:21:25,619 - INFO - ######################################################
+2025-03-07 15:21:25,619 - INFO - Starting tenant example_tenant_123 pipeline execution ...
+2025-03-07 15:21:25,656 - INFO - Files:
+2025-03-07 15:21:25,675 - INFO - * sample0.csv - 20.66 MB
+2025-03-07 15:21:25,698 - INFO - * sample1.csv - 20.66 MB
+2025-03-07 15:21:25,698 - INFO - Statistics:
+  *  Amount of files in tenant's staging input directory: 2
+  *  Combined Storage Used: 41.31 /100.0 MB
+2025-03-07 15:21:25,698 - INFO - Ingesting sample0.csv

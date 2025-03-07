@@ -1,0 +1,17 @@
+2025-03-07 15:38:54,267 - INFO - ######################################################
+2025-03-07 15:38:54,267 - INFO - Starting tenant tenant_chicago pipeline execution ...
+2025-03-07 15:38:54,305 - INFO - Files:
+2025-03-07 15:38:54,321 - INFO - * sample0.csv - 14.46 MB
+2025-03-07 15:38:54,334 - INFO - * sample1.csv - 14.46 MB
+2025-03-07 15:38:54,335 - INFO - Statistics:
+  *  Amount of files in tenant's staging input directory: 2
+  *  Combined Storage Used: 28.92 /100.0 MB
+2025-03-07 15:38:54,335 - INFO - Ingesting sample0.csv
+2025-03-07 15:39:54,679 - INFO - Ingested sample0.csv. Time taken: 60.30s. Deleted from staging dir.
+2025-03-07 15:39:54,679 - INFO - Ingesting sample1.csv
+2025-03-07 15:40:50,569 - INFO - Ingested sample1.csv. Time taken: 55.85s. Deleted from staging dir.
+2025-03-07 15:40:50,570 - INFO - Ingestion ended, amount of files ingested: 2
+2025-03-07 15:40:50,570 - INFO - --------------------------------
+2025-03-07 15:40:50,570 - INFO - Total ingestion time: 116.23 s
+2025-03-07 15:40:50,570 - INFO - Total ingestion size: 28.92 MB
+2025-03-07 15:40:50,570 - INFO - Ingestion speed: 0.25 MB/s

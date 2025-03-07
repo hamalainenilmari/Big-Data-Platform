@@ -1,0 +1,44 @@
+2025-03-07 14:50:15,257 - INFO - ######################################################
+2025-03-07 14:50:15,257 - INFO - Starting tenant example_tenant_123 pipeline execution ...
+2025-03-07 14:50:15,286 - INFO - Files:
+2025-03-07 14:50:15,302 - INFO - * sample0.csv - 2.06 MB
+2025-03-07 14:50:15,313 - INFO - * sample1.csv - 2.06 MB
+2025-03-07 14:50:15,324 - INFO - * sample2.csv - 2.07 MB
+2025-03-07 14:50:15,336 - INFO - * sample3.csv - 2.07 MB
+2025-03-07 14:50:15,350 - INFO - * sample4.csv - 2.06 MB
+2025-03-07 14:50:15,360 - INFO - * sample5.csv - 2.07 MB
+2025-03-07 14:50:15,371 - INFO - * sample6.csv - 2.07 MB
+2025-03-07 14:50:15,383 - INFO - * sample7.csv - 2.07 MB
+2025-03-07 14:50:15,392 - INFO - * sample8.csv - 2.06 MB
+2025-03-07 14:50:15,402 - INFO - * sample9.csv - 2.07 MB
+2025-03-07 14:50:15,403 - INFO - Statistics:
+  *  Amount of files in tenant's staging input directory: 10
+  *  Combined Storage Used: 20.66 /50.0 MB
+2025-03-07 14:50:15,403 - INFO - Ingesting sample0.csv
+2025-03-07 14:50:55,489 - INFO - Ingested sample0.csv. Time taken: 40.06s. Deleted from staging dir.
+2025-03-07 14:50:55,490 - INFO - Ingesting sample1.csv
+2025-03-07 14:51:37,792 - INFO - Ingested sample1.csv. Time taken: 42.27s. Deleted from staging dir.
+2025-03-07 14:51:37,795 - INFO - Ingesting sample2.csv
+2025-03-07 14:52:19,463 - INFO - Ingested sample2.csv. Time taken: 41.64s. Deleted from staging dir.
+2025-03-07 14:52:19,464 - INFO - Ingestion interval limit reached. Starting ingestion again after 60 seconds ...
+2025-03-07 14:53:19,519 - INFO - Ingesting sample3.csv
+2025-03-07 14:53:56,893 - INFO - Ingested sample3.csv. Time taken: 37.31s. Deleted from staging dir.
+2025-03-07 14:53:56,894 - INFO - Ingesting sample4.csv
+2025-03-07 14:54:39,813 - INFO - Ingested sample4.csv. Time taken: 42.88s. Deleted from staging dir.
+2025-03-07 14:54:39,816 - INFO - Ingesting sample5.csv
+2025-03-07 14:55:30,367 - INFO - Ingested sample5.csv. Time taken: 50.51s. Deleted from staging dir.
+2025-03-07 14:55:30,370 - INFO - Ingestion interval limit reached. Starting ingestion again after 60 seconds ...
+2025-03-07 14:56:30,431 - INFO - Ingesting sample6.csv
+2025-03-07 14:57:12,387 - INFO - Ingested sample6.csv. Time taken: 41.92s. Deleted from staging dir.
+2025-03-07 14:57:12,388 - INFO - Ingesting sample7.csv
+2025-03-07 14:57:44,161 - INFO - Ingested sample7.csv. Time taken: 31.72s. Deleted from staging dir.
+2025-03-07 14:57:44,162 - INFO - Ingesting sample8.csv
+2025-03-07 14:58:15,480 - INFO - Ingested sample8.csv. Time taken: 31.29s. Deleted from staging dir.
+2025-03-07 14:58:15,480 - INFO - Ingestion interval limit reached. Starting ingestion again after 60 seconds ...
+2025-03-07 14:59:15,534 - INFO - Ingesting sample9.csv
+2025-03-07 14:59:46,517 - INFO - Ingested sample9.csv. Time taken: 30.92s. Deleted from staging dir.
+2025-03-07 14:59:46,517 - INFO - Ingestion ended, amount of files ingested: 10
+2025-03-07 14:59:46,518 - INFO - --------------------------------
+2025-03-07 14:59:46,518 - INFO - Total ingestion time: 571.11 s
+2025-03-07 14:59:46,518 - INFO - Total ingestion size: 20.66 MB
+2025-03-07 14:59:46,518 - INFO - Ingestion speed: 0.04 MB/s

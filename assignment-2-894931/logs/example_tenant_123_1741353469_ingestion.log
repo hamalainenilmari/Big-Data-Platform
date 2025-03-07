@@ -1,0 +1,14 @@
+2025-03-07 15:17:49,421 - INFO - ######################################################
+2025-03-07 15:17:49,422 - INFO - Starting tenant example_tenant_123 pipeline execution ...
+2025-03-07 15:17:49,468 - INFO - Files:
+2025-03-07 15:17:49,483 - INFO - * fail.txt - 0.00 MB
+2025-03-07 15:17:49,483 - WARNING - Tenant Service Agreement failure: input file type 'txt' not supported
+2025-03-07 15:17:49,483 - WARNING - Removing file fail.txt
+2025-03-07 15:17:49,500 - INFO - Statistics:
+  *  Amount of files in tenant's staging input directory: 1
+  *  Combined Storage Used: 0.00 /50.0 MB
+2025-03-07 15:17:49,500 - INFO - Ingestion ended, amount of files ingested: 0
+2025-03-07 15:17:49,500 - INFO - --------------------------------
+2025-03-07 15:17:49,500 - INFO - Total ingestion time: 0.00 s
+2025-03-07 15:17:49,500 - INFO - Total ingestion size: 0.00 MB
+2025-03-07 15:17:49,500 - INFO - Ingestion speed: 0.00 MB/s

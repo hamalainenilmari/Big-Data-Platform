@@ -1,0 +1,14 @@
+2025-03-07 15:21:25,618 - INFO - ######################################################
+2025-03-07 15:21:25,618 - INFO - Starting tenant tenant_chicago pipeline execution ...
+2025-03-07 15:21:25,662 - INFO - Files:
+2025-03-07 15:21:25,682 - INFO - * sample0.csv - 20.66 MB
+2025-03-07 15:21:25,706 - INFO - * sample1.csv - 20.66 MB
+2025-03-07 15:21:25,721 - INFO - * sample5.csv - 2.07 MB
+2025-03-07 15:21:25,733 - INFO - * sample6.csv - 2.07 MB
+2025-03-07 15:21:25,747 - INFO - * sample7.csv - 2.07 MB
+2025-03-07 15:21:25,760 - INFO - * sample8.csv - 2.06 MB
+2025-03-07 15:21:25,781 - INFO - * sample9.csv - 2.07 MB
+2025-03-07 15:21:25,782 - INFO - Statistics:
+  *  Amount of files in tenant's staging input directory: 7
+  *  Combined Storage Used: 51.65 /100.0 MB
+2025-03-07 15:21:25,782 - INFO - Ingesting sample0.csv
