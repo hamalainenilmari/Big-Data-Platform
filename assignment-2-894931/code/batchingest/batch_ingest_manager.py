@@ -9,66 +9,75 @@ from hdfs.util import HdfsError
 
 # Batch ingest manager, starts the tenant specific batch data ingestion pipeline
 
+# Start executing pipeline of tenant
+def startExecution(tenant):
+    # Initialize logging for pipeline execution loop
+    logFile = f"logs/{tenant['id']}_{int(time.time())}_ingestion.log"
 
+    logger = logging.getLogger(f"tenant_{tenant['id']}")
+    logger.setLevel(logging.INFO)
 
-def exit(total_time, total_size):
-    print(f"total ingestion time: {total_time:.2f} s")
-    print(f"total ingestion size: {(total_size/1000000):.2f} MB")
-    print(f"{(total_size/total_time):.2f} B/s")
+    fileHandler = logging.FileHandler(logFile)
+    fileHandler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    logger.addHandler(fileHandler)
+    executePipeline(tenant, logger)
 
-    print("exiting ...")
-
-def executePipeline(tenant):
+# Run the pipeline
+def executePipeline(tenant, logger):
     total_ingest_time = 0
     total_ingest_size = 0
-    logger = logging.getLogger(f"DataIngestionLogger_{tenant['id']}")
-    logger.setLevel(logging.INFO)
-    print(f"Executing tenant {tenant['id']} pipeline ...")
-    # Connect to HDFS
+    logger.info("######################################################")
+    logger.info(f"Starting tenant {tenant['id']} pipeline execution ...")
     try:
+        # Connect to HDFS
         client = InsecureClient('http://localhost:9870', user='ilmarih')
 
-        # Get the service agreement
+        # Get the tenant staging input directory location from service agreement and check for input data
         folder = tenant['fileStorageLocation']
-        # Check tenants staging input directory for input data
         files = client.list(folder)
 
         numFiles = len(files)
-        combinedStorage = 0
-        filesToIngest = []
+        if (numFiles == 0):
+            logger.info("No files in staging input directory. Stopping pipeline.")
+            stopPipeline(0,0,logger,tenant)
+        combinedStorageUsed = 0
+
+        filesToIngest = [] # ingest only files up to max ingestion interval size
         filesToIngestSize = 0
+        logger.info(f"Files:")
         for file in files:
+            file_size = client.status(f"{folder}/{file}")['length']
+            logger.info(f"* {file} - {(file_size/1000000):.2f} MB")
             type = file.split(".")[1]
+            # Check if file type is supported by service agreement
             if (not tenant['fileTypesSupported'][type]):
-                print(f"Tenant Service Agreement failure: input file type '{type}' not supported")
-                print(f"Removing file {file}")
-                client.delete(f"{folder}/{file}")
+                logger.warning(f"Tenant Service Agreement failure: input file type '{type}' not supported")
+                logger.warning(f"Removing file {file}")
+                client.delete(f"{folder}/{file}") # not supported, delete
                 files.remove(file)
             else:
-                file_size = client.status(f"{folder}/{file}")['length']
-                if ((filesToIngestSize + file_size) < tenant["maxIngestionIntervalSize"]*1000000): # add the file to ingestion list
+                if ((filesToIngestSize + file_size) < tenant["maxIngestionIntervalSize"]*1000000):
+                    #File type supported, ingestion limit not reached -> add the file to ingestion list
                     filesToIngest.append(file)
                     filesToIngestSize += file_size
-                    print(f"added {file} to ingest list")
+                    logger.info(f"added {file} to ingest list")
 
-                combinedStorage += (file_size)
+                combinedStorageUsed += (file_size)
 
-        print(f"Statistics:\nAmount of files: {numFiles}\nCombined Storage: {combinedStorage}\nFiles:")
-        for file in files:
-            print(f"- {file}")
+        logger.info(f"Statistics:\n  *  Amount of files in tenant's staging input directory: {numFiles}\n  *  Combined Storage Used: {(combinedStorageUsed/1000000):.2f} /{tenant['maxStorage']} MB")
         
         if (numFiles > tenant["maxNumFiles"]):
-            print("Tenant Service Agreement limit reached: too many input files")
-            exit(0,0)
-        elif (combinedStorage > tenant["maxStorage"]*1000000):
-            print("Tenant Service Agreement limit reached: too much storage used")
-            print(f"Storage used: {combinedStorage / 1000000} MB")
-            print(f"Storage limit: {tenant['maxStorage']} MB")
-            exit(0,0)
+            logger.warning("Tenant Service Agreement limit reached: input file amount limit exceeded")
+            stopPipeline(0,0, logger, tenant)
+        elif (combinedStorageUsed > tenant["maxStorage"]*1000000):
+            logger.warning("Tenant Service Agreement limit reached: storage limit exceeded")
+            logger.warning(f"Storage used: {combinedStorageUsed / 1000000} MB")
+            logger.warning(f"Storage limit: {tenant['maxStorage']} MB")
+            stopPipeline(0,0, logger, tenant)
         else:
             for file in filesToIngest:
                 start_time = time.time()
-                print(f"Ingesting {file}")
+                logger.info(f"Ingesting {file}")
                 # TODO add spark location to env variable
                 cmd = f"/home/ilmarih/bdp_25_tech/spark-3.5.5-bin-hadoop3/bin/spark-submit --master local[*] \
                 --conf spark.cassandra.connection.host=localhost \
@@ -84,15 +93,25 @@ def executePipeline(tenant):
                 total_ingest_time += ingestion_time
                 total_ingest_size += client.status(f"{folder}/{file}")['length']
                 client.delete(f"{folder}/{file}")
-                print(f"time taken to ingest: {ingestion_time:.2f}s")
-                print(f"Ingested {file}. Deleted from staging dir.")
-        print(f"Ingestion ended, amount of files not ingested due to ingestion size limit: {len(files) - len(filesToIngest)}")
-        exit(total_ingest_time, total_ingest_size)
+                logger.info(f"Ingested {file}. Time taken: {ingestion_time:.2f}s. Deleted from staging dir.")
+        logger.info(f"Ingestion ended, amount of files ingested: {len(filesToIngest)}. Amount of files not ingested due to ingestion size limit: {len(files) - len(filesToIngest)}")
+        stopPipeline(total_ingest_time, total_ingest_size, logger, tenant)
     except HdfsError as e:
-        print(f"Error trying to access tenant HDFS storage location: {e}")
+        logger.warning(f"Error trying to access tenant HDFS storage location: {e}")
     except Exception as e:
-        print(f"Error: {e}")
+        logger.warning(f"Error: {e}")
 
+def stopPipeline(total_time, total_size, logger, tenant):
+    logger.info("--------------------------------")
+    logger.info(f"Total ingestion time: {total_time:.2f} s")
+    logger.info(f"Total ingestion size: {(total_size/1000000):.2f} MB")
+    if (total_time != 0):
+        logger.info(f"Ingestion speed: {((total_size/1000000)/total_time):.2f} MB/s")
+
+    logger.info(f"Starting ingestion pipeline again after {tenant['interval']} seconds ...")
+    time.sleep(tenant['interval'])
+    # Execute tenant pipeline in a loop
+    executePipeline(tenant, logger)
     
 def main():
     # Get the service agreements of tenants
@@ -104,7 +123,7 @@ def main():
     numTenants = len(tenants)
     # Parallel execution of tenant pipelines
     with multiprocessing.Pool(processes=numTenants) as pool:
-        pool.map(executePipeline, tenants)
+        pool.map(startExecution, tenants)
 
 if __name__ == "__main__":
     main()
