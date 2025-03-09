@@ -13,7 +13,7 @@ parser.add_argument("--row_count", help="number of rows in a sample")
 
 args = parser.parse_args()
 if __name__ == '__main__':
-    with open("../assignment-1-894931/data/Taxi_Trips__2024-__20250204.csv", "r", newline="") as f: # edit here to match the source data set name of yours
+    with open("../../assignment-1-894931/data/Taxi_Trips__2024-__20250204.csv", "r", newline="") as f: # edit here to match the source data set name of yours
         reader = csv.reader(f)
         header = next(reader)
 
