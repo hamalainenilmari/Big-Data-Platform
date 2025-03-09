@@ -371,7 +371,10 @@ This log shows the agreement violation of staging input directory maximum storag
 
 ## Part 2 - Near real-time data ingestion and transformation
 
-### 2.1 
+### 2.1 Stream Ingestion
+
+Messaging system technology is Apache Kafka.
+Stream processing technology Apache Flink, which is good for tracking running aggregations and detecting anomalies. Flink provides stateful computations with streaming data at large scale, high performance and low latency.
 
 ### 2.2 Stream Ingestion Manager
 
