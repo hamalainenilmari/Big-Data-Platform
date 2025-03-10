@@ -141,6 +141,7 @@ if __name__ == "__main__":
     kafka_conf = {
             'bootstrap.servers': 'localhost:9092',
             'group.id': 'control',
+            'auto.offset.reset': 'latest'
         }
         
     consumer = Consumer(kafka_conf)
@@ -160,10 +161,10 @@ if __name__ == "__main__":
                 if (json_value["action"] == "start"):
                     started = True
                     execute()
-                if (json_value["action"] == "start"):
+                if (json_value["action"] == "stop"):
                     started = False
                     stopExecution()
     except Exception as e:
         print(f"Error: {e}")
-
-    #initialize()
+    except KeyboardInterrupt:
+        print("Exiting...")
