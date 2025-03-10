@@ -1,14 +1,17 @@
 {
-    "id": "test123",
-    "pipeline": "other_pipeline.py",
-    "fileStorageLocation": "/testLocation",
+    "id": "example_tenant_123",
+    "pipeline": "batch_ingest_pipeline.py",
+    "fileStorageLocation": "/exampleTenant",
+    "coredmsKeyspace": "exampletenant",
+    "coredmsTable": "trips",
     "fileTypesSupported": {
         "csv": true,
         "json": false,
         "txt": false,
         "xml": false
     },
-    "maxStorage": 10.0,
-    "maxNumFiles": 5,
-    "interval": 60000
+    "maxStorage": 100.0,
+    "maxIngestionIntervalSize": 100.0,
+    "maxNumFiles": 20,
+    "interval": 60
 }

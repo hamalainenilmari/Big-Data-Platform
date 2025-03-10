@@ -1,14 +1,18 @@
 {
-    "id": "tenant123",
+    "id": "tenant_chicago",
     "pipeline": "batch_ingest_pipeline.py",
     "fileStorageLocation": "/tenantChicagoTaxi",
+    "coredmsKeyspace": "taxiservices",
+    "coredmsTable": "trips",
     "fileTypesSupported": {
         "csv": true,
         "json": false,
         "txt": false,
         "xml": false
     },
-    "maxStorage": 20.0,
-    "maxNumFiles": 10,
-    "interval": 120
+    "maxStagingStorage": 100.0,
+    "maxNumFiles": 20,
+    "inputCheckInterval": 10,
+    "maxIngestionIntervalSize": 100.0,
+    "ingestInterval": 10
 }
