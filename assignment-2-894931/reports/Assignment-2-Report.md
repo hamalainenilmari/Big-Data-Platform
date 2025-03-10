@@ -373,13 +373,94 @@ This log shows the agreement violation of staging input directory maximum storag
 
 ### 2.1 Stream Ingestion
 
-Messaging system technology is Apache Kafka.
-Stream processing technology Apache Flink, which is good for tracking running aggregations and detecting anomalies. Flink provides stateful computations with streaming data at large scale, high performance and low latency.
+The stream ingestion provided by this platform consists of a messaging system, stream ingestion pipeline and a data storage. Messaging system technology is Apache Kafka. The Kafka topics are defined in the cluster, and the tenant's produce real-time data into those topics. Stream processing technology Apache Flink, which is good for tracking running aggregations and detecting anomalies. Flink is used to transform the raw source data into data storage compatible format. Flink provides stateful computations with streaming data at large scale, high performance and low latency. Data storage component is Cassandra, as before.
+
+In real-time ingestion provided by the platform some components of the platform are dedicated to individual tenants and some parts are shared between all tenants. The messaging system is shared between all tenants in the multi-tenancy model. The platform hosts an Kafka server with multiple brokers. The tenant-specific Kafka topics are added to the Kafka broker cluster alongside the other topics of tenants.
+
+Individually dedicated parts of the platform are the stream ingestion pipeline and the data storage. The stream ingestion pipeline is developed by the tenant itself and the platform invokes the execution of the pipeline. Pipelines are added and removed based on pay-per-use principle of the platform. The data storage components (coredms), Cassandra clusters, are also dedicated to individual tenants. Each tenant has their own data storage component running on it's own virtual machine in the platform infrastructure.
 
 ### 2.2 Stream Ingestion Manager
 
+The platform contains a component stream ingestion manager, which is responsible for starting and stopping stream ingestion pipeline instances on-demand. The manager is listening to all the topics of tenants in the messaging system Kafka cluster. When tenant produces new messages to a topic, the manager gets the message and starts the tenant specific stream ingestion pipeline. The pipeline then ingests the real-time data stream and stores the data into tenant specific Cassandra table.
+
+The stream ingestion pipeline is a blackbox to the platform, meaning that the pipeline must follow a specific model to be able to be integrated to the platform. To succesfully develop the pipeline, the tenant must implement the following logic. The pipeline must consume data from the specific Kafka topic of the tenant. The pipeline must transform the raw data into format compatible with the Cassandra table of the tenant and insert the data into the table. The pipeline must be a Flink job, which can be given to the Flink cluster of the platform to perform.
+
+![platform architecture - real-time ingest](../images/realtime_architecture.png)
+
 ### 2.3 Stream Ingestion Pipeline
+
+We have developed an example stream ingestion pipeline with Flink, which consumes the raw source data from Kafka topic, transforms it and stores the processed data into Cassandra table. The pipeline initializes a Kafka source and reads the input data as a string. The input data is then turned into JSON object and all the possible NaN values are transformed into Null-format, which is compatible with Cassandra. The trip start and end strings are turned into timestamps and unneeded values Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Then the remaining data is inserted into Cassandra data storage.
+
+The input data must hold the following message structure schema (with possible missing values):
+
+```json
+{
+  "Trip ID": "0000184e7cd53cee95af32eba49c44e4d20adcd8",
+  "Taxi ID": "f538e6b729d1aaad4230e9dcd9dc2fd9a168826ddadbd67c2f79331875dc586863d73aa3169fb266dc5e5ed6cdc8687537de8071a51556146f5251d4d8e8237f", 
+  "Trip Start Timestamp": "2024-01-19T17:00:00Z", 
+  "Trip End Timestamp": "2024-01-19T18:00:00Z", 
+  "Trip Seconds": 4051, 
+  "Trip Miles": 17.12, 
+  "Pickup Census Tract": 17031980000, 
+  "Dropoff Census Tract": 17031320100, 
+  "Pickup Community Area": 76, 
+  "Dropoff Community Area": 32, 
+  "Fare": 45.5, 
+  "Tips": 10.0, 
+  "Tolls": 0.0, 
+  "Extras": 4.0, 
+  "Trip Total": 60.0, 
+  "Payment Type": "Credit Card", 
+  "Company": "Flash Cab", 
+  "Pickup Centroid Latitude": 41.97907082, 
+  "Pickup Centroid Longitude": -87.903039661, 
+  "Pickup Centroid Location": "POINT (-87.9030396611 41.9790708201)", 
+  "Dropoff Centroid Latitude": 41.884987192, 
+  "Dropoff Centroid Longitude": -87.620992913, 
+  "Dropoff Centroid  Location": "POINT (-87.6209929134 41.8849871918)"
+}
+```
+
+The transformed data inserted into Cassandra is in the following format (input data has NaNs):
+
+```python
+(6, '000072ee076c9038868e239ca54185eb43959db0', 'Flash Cab', None, None, None, 0.0, 33.75, 'Cash', 41.944226601, -87.655998182, 'e51e2c30caec952b40b8329a68b498e18ce8a1f40fa75c71e425e9426db562ac617b0a28e1c69f5c579048f75a43a2dc066c17448ab65f5016acca10558df3ed', 0.0, 0.0, datetime.datetime(2024, 1, 28, 15, 0), 12.7, 1749, datetime.datetime(2024, 1, 28, 14, 30), 33.75)
+```
 
 ### 2.4 Stream Ingestion Monitor
 
+The platform could have a component stream ingestion monitor, which would watch over the performance of stream ingestion pipeline instances. The pipelines would report the data processing performance, with average ingestion time, total ingestion size and number of messages received/inserted. The monitor component could use these reports for monitoring the system performance and tenant actions, and based on the information take actions such as scale components.
+
+The report could contain information for:
+
+* identification of tenant
+* pipeline component information
+* ingestion start time
+* ingestion end time
+* number of messages ingested from messaging system
+* average ingestion time/speed (messages/rows ingested per second)
+* total size of messages ingested
+* number of errors during ingestion
+
+An example report could be following:
+
+```json
+{
+  "tenantId": "chicago_taxi_123",
+  "pipeline": "stream_ingest_chicago",
+  "startTime": "2025-04-10 11:15:00",
+  "endTime": "2025-04-10 11:30:00",
+  "inboundMessagesAmount": 10000,
+  "ingestionSpeed": 50,
+  "totalIngestionSize": 2000000,
+  "numMessagesError": 0
+}
+```
+
+The pipeline component would record and store this report information. The pipeline produces this information to another Kafka topic, such as "tenant_chicago_ingestion_report", where stream ingestion monitor consumes the data and take possible actions based on it. The monitor could e.g. scale pipeline up/down or stop it based on the report information.
+
+![platform architecture - real-time ingest with monitor](../images/realtime_architecture_monitor.png)
+
 ### 2.5 Monitor gets report from pipeline
+
+The stream ingestion monitor component overwatches the performance of ingestion components. The monitor is consuming messages from Kafka topics specified for each tenant pipeline reporting. 
