@@ -27,11 +27,11 @@ def kafka_delivery_error(err, msg):
 if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
+    parser.add_argument('-b', '--broker', default="localgost:9092", help='Broker as "server:port"')
     parser.add_argument('-i', '--input_file', default="../../../data/sample0.csv", help='Input file')
-    parser.add_argument('-c', '--chunksize', default=1, help='chunk size for big file')
+    parser.add_argument('-c', '--chunksize', default=10, help='chunk size for big file')
     parser.add_argument('-s', '--sleeptime', default=0, help='sleep time in second')
-    parser.add_argument('-t', '--topic', default="taxiTrips", help='kafka topic')
+    parser.add_argument('-t', '--topic', default="chicago_taxitrips", help='kafka topic')
     parser.add_argument('--security_protocol', default='SASL_PLAINTEXT', help='security protocol')
     parser.add_argument('--sasl_mechanism', default='PLAIN', help='security protocol')
     parser.add_argument('--sasl_username', help='sasl user name')
