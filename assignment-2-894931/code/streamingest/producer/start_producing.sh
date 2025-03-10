@@ -11,7 +11,7 @@ stop() {
 trap stop SIGINT
 for i in $(seq 1 $1)
 do
-  python3 kafka_producer.py -b $2 -i ../../data/sample$i.csv &
+  python3 kafka_producer.py -b $2 -i ../../../data/sample$i.csv &
 done
 
 wait
