@@ -1,9 +1,9 @@
 from confluent_kafka import Consumer, Producer
 import argparse
 import json
+import time
 
-
-
+# kafka error
 def kafka_delivery_error(err, msg):
     if err is not None:
         print(f'Message delivery failed: {err}')
@@ -13,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-t', '--topics', nargs="+", default=["taxiTrips"], help='tenants kafka topics')
+    parser.add_argument('-t', '--topics', nargs="+", default=["chicago_taxitrips"], help='tenants kafka topics')
     parser.add_argument('-g', '--consumer_group', default="manager", help='consumer group')
     
     args = parser.parse_args()
@@ -37,15 +37,13 @@ def main():
     consumer = Consumer(kafka_conf)
     consumer.subscribe(topics)
 
-
     kafka_conf_producer={
             'bootstrap.servers': 'localhost:9092'
         } 
-    # producer for starting / stopping pipelines
+
+    # producer for sending msgs to starting / stopping pipelines
     producer = Producer(kafka_conf_producer)
 
-    sentExecute = False
-    sentStop = False
     # listen to all tenants
     try:
         while True: # consume in a loop
@@ -59,15 +57,14 @@ def main():
                     lastMessageTime = tenants[key][1]
                     print(f"Time since last tenant {key} message: {lastMessageTime} s")
 
-                    if (lastMessageTime >= 60 and not sentStop):
-                        # no new messages in 60 seconds, send message to stop tenant pipeline
+                    if (lastMessageTime >= 60 and tenants[key][0]): 
+                        # no new messages in 60 seconds and tenant is running, send message to stop tenant pipeline
                         msg = json.dumps({"action": "stop"}) # message to start pipeline execution
                         control_topic = f"{key}_ingestioncontrol" # corresponding topic
                         print(f"send message: {msg}, topic: {control_topic}")
                         producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
                         producer.flush()
-                        sentStop = True
-                        sentExecute = False
+                        tenants[key] = (False, lastMessageTime) # set tenant to not running
                 continue
 
             if msg.error():
@@ -76,22 +73,19 @@ def main():
 
             if msg:
                 # new message inbound
-                print("execute? ", sentExecute)
-                if (not sentExecute): # if execution not started yet, start it
-                    topic = msg.topic()
-                    tenant = topic.split("_")[0]
-                    if not tenants[tenant][0]:
-                        print(f"tenant {tenant} not running, start execution")
+                topic = msg.topic()
+                tenant = topic.split("_")[0]
+                if (not tenants[tenant][0]): # if tenant not running, start execution
+                    print(f"new msg for tenant {tenant}, not running -> start execution")
 
-                        msg = json.dumps({"action": "start"}) # message to start pipeline execution
-                        control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
+                    msg = json.dumps({"action": "start"}) # message to start pipeline execution
+                    control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
 
-                        producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
-                        producer.flush()
-                        sentExecute = True
-                        sentStop = False
-                        tenants[tenant] = (True, 0) # reset tenants time since last msg
+                    producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
+                    producer.flush()
+                    tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
                 else: # execution already going on, no need to send message
+                    tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
                     print("tenant already running")
     except Exception as e:
         print(f"Error: {e}")
