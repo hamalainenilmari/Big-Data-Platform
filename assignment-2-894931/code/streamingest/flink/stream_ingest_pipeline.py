@@ -7,14 +7,57 @@ from pyflink.common.serialization import SimpleStringSchema
 import math
 import json
 from datetime import datetime
+import logging
+import time
+import sys
 
-# Modify NaN values to -1, remove unneeded values
+def initialize():
+    """
+    logger = logging.getLogger("StreamIngestionChicago")
+    logger.setLevel(logging.INFO)
+
+    fh = logging.FileHandler('logs/streamingest.log')
+    fh.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    
+    The report could contain information for:
+
+    * identification of tenant
+    * pipeline component information
+    * ingestion start time
+    * ingestion end time
+    * number of messages ingested from messaging system
+    * average ingestion time/speed (messages/rows ingested per second)
+    * total size of messages ingested
+    * number of errors during ingestion
+    """
+    tenantId = "chicago"
+    pipeline = "streamChicagoPipeline"
+    startTime = time.time()
+    endTime = startTime
+    messageCount = 0
+    ingestSpeed = 0
+    totalSize = 0
+    errorCount = 0
+    execute()
+
+def stop():
+    endtime = time.time()
+    #logger.
+
+
+
+# Modify NaN values to Null/None, remove unneeded values
 def transform(stream):
-    jsonStream = json.loads(stream) # load the string into json format
+    jsonStream = json.loads(stream) # load the source string into json format
 
     for key,value in jsonStream.items():
-        if isinstance(value, float) and math.isnan(value): # value is NaN, modify it to -1.0
-            jsonStream[key] = -1.0
+        if isinstance(value, float) and math.isnan(value): # value is NaN, modify it to null
+            jsonStream[key] = None
 
     # format timestamps
     timestampStart = datetime.strptime(jsonStream["Trip Start Timestamp"], '%Y-%m-%dT%H:%M:%SZ')
@@ -43,29 +86,41 @@ def transform(stream):
             timestampStart,
             jsonStream["Trip Total"]
             )
+    print(filteredRow)
     return filteredRow
 
-def main():
-    env = StreamExecutionEnvironment.get_execution_environment()
-    
-    # JARs of kafka (source) and Cassandra (sink) connectors
-    env.add_jars("file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-sql-connector-kafka-3.4.0-1.20.jar")
-    env.add_jars("file:////home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-connector-cassandra_2.12-3.2.0-1.19.jar")
+def execute():
 
+    env = StreamExecutionEnvironment.get_execution_environment()
+    # JARs of kafka (source) and Cassandra (sink) connectors
+    env.add_jars(
+        "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-sql-connector-kafka-3.4.0-1.20.jar",
+        "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-connector-cassandra_2.12-3.2.0-1.19.jar",
+        "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/opt/flink-python-1.20.1.jar"
+        )
+    #env.add_jars("file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-connector-cassandra_2.12-3.2.0-1.19.jar")
+    #env.add_jars("file:///home/ilmarih/bdp_25_tech/flink-1.20.1/opt/flink-python-1.20.1.jar")
     # Kafka Source setup
     source = KafkaSource.builder() \
-        .set_bootstrap_servers("localhost:9092") \
-        .set_topics("testTopic") \
-        .set_group_id("my-group") \
+        .set_bootstrap_servers("localhost:9092,localhost:9093,localhost:9094") \
+        .set_topics("chicago_taxiTrips", "chicago_ingestioncontrol") \
+        .set_group_id("g1") \
         .set_starting_offsets(KafkaOffsetsInitializer.latest()) \
         .set_value_only_deserializer(SimpleStringSchema()) \
         .set_properties({
-         'fetch.max.wait.ms': '10000',  # Adjust this for longer timeout
+         'fetch.max.wait.ms': '10000',
         }) \
         .build()
     
     # Input data stream
     stream = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
+    print("stream:")
+    stream.print()
+    #messageCount += 1
+    
+
+    totalSize = 0
+    errorCount = 0
 
     # Process raw data
     processedStream = stream.map(
@@ -92,7 +147,7 @@ def main():
             Types.FLOAT()           # trip_total
             ])
     )
-    
+    #totalSize += sys.getsizeof(processedStream)
     # Insert data into Cassandra Sink
     CassandraSink.add_sink(processedStream) \
         .set_host("localhost") \
@@ -109,4 +164,4 @@ def main():
         print(f"Error while executing the Flink job: {e}")
 
 if __name__ == "__main__":
-    main()
+    initialize()
