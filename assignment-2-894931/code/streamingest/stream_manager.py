@@ -20,10 +20,10 @@ def main():
     broker = args.broker
     topics = args.topics
     
-    # key: tenant id, value: running status (true/false)
+    # key: tenant id, value: tuple ( running status (true/false), seconds since last message)
     tenants = {}
     for item in topics:
-        tenants[item.split("_")[0]] = False
+        tenants[item.split("_")[0]] = (False, 0)
 
     print("tenants: ")
     print(tenants)
@@ -44,28 +44,54 @@ def main():
     # producer for starting / stopping pipelines
     producer = Producer(kafka_conf_producer)
 
+    sentExecute = False
+    sentStop = False
     # listen to all tenants
     try:
         while True: # consume in a loop
-            msg = consumer.poll(5.0)
-            if msg is None:
-                continue
-            if msg.error():
-                print("error")
-                continue
-            if msg: 
-                #topic = msg.topic()
-                tenant = topic.split("_")[0]
-                print("message from tenant: " + tenant)
-                if not tenants[tenant]:
-                    print("tenant not running, start execution")
+            # check for new messages of tenants topics every 10 seconds
+            msg = consumer.poll(10.0)
 
-                    msg = "{'action': 'start'}"
-                    topic = f"{tenant}_ingestioncontrol"
-                    print("topic: " + topic)
-                    producer.produce(topic, msg.encode('utf-8'), callback=kafka_delivery_error)
-                    producer.flush()
-                else:
+            if msg is None:
+                # no new message
+                for key, value in tenants.items():
+                    tenants[key] = (value[0], value[1] + 10)
+                    lastMessageTime = tenants[key][1]
+                    print(f"Time since last tenant {key} message: {lastMessageTime} s")
+
+                    if (lastMessageTime >= 60 and not sentStop):
+                        # no new messages in 60 seconds, send message to stop tenant pipeline
+                        msg = json.dumps({"action": "stop"}) # message to start pipeline execution
+                        control_topic = f"{key}_ingestioncontrol" # corresponding topic
+                        print(f"send message: {msg}, topic: {control_topic}")
+                        producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
+                        producer.flush()
+                        sentStop = True
+                        sentExecute = False
+                continue
+
+            if msg.error():
+                print(f"Kafka error: {msg.error()}")
+                continue
+
+            if msg:
+                # new message inbound
+                print("execute? ", sentExecute)
+                if (not sentExecute): # if execution not started yet, start it
+                    topic = msg.topic()
+                    tenant = topic.split("_")[0]
+                    if not tenants[tenant][0]:
+                        print(f"tenant {tenant} not running, start execution")
+
+                        msg = json.dumps({"action": "start"}) # message to start pipeline execution
+                        control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
+
+                        producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
+                        producer.flush()
+                        sentExecute = True
+                        sentStop = False
+                        tenants[tenant] = (True, 0) # reset tenants time since last msg
+                else: # execution already going on, no need to send message
                     print("tenant already running")
     except Exception as e:
         print(f"Error: {e}")
