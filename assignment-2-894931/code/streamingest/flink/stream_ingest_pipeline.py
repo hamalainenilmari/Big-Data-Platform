@@ -10,45 +10,7 @@ from datetime import datetime
 import logging
 import time
 import sys
-
-def initialize():
-    """
-    logger = logging.getLogger("StreamIngestionChicago")
-    logger.setLevel(logging.INFO)
-
-    fh = logging.FileHandler('logs/streamingest.log')
-    fh.setLevel(logging.INFO)
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-
-    logger.addHandler(fh)
-    
-    The report could contain information for:
-
-    * identification of tenant
-    * pipeline component information
-    * ingestion start time
-    * ingestion end time
-    * number of messages ingested from messaging system
-    * average ingestion time/speed (messages/rows ingested per second)
-    * total size of messages ingested
-    * number of errors during ingestion
-    """
-    tenantId = "chicago"
-    pipeline = "streamChicagoPipeline"
-    startTime = time.time()
-    endTime = startTime
-    messageCount = 0
-    ingestSpeed = 0
-    totalSize = 0
-    errorCount = 0
-    execute()
-
-def stop():
-    endtime = time.time()
-    #logger.
-
+from confluent_kafka import Consumer
 
 
 # Modify NaN values to Null/None, remove unneeded values
@@ -86,11 +48,24 @@ def transform(stream):
             timestampStart,
             jsonStream["Trip Total"]
             )
-    print(filteredRow)
+    #print(filteredRow)
     return filteredRow
 
-def execute():
+def checkPrimaryKeys(stream):
+    try:
+        jsonStream = json.loads(stream) # load the source string into json format
+        if isinstance(jsonStream["Pickup Community Area"], float) and math.isnan(jsonStream["Pickup Community Area"]): 
+            # Primary key is NaN, discard input
+            return False
+        elif isinstance(jsonStream["Trip ID"], float) and math.isnan(jsonStream["Tip ID"]):
+            return False
+        else:
+            return True
+    except json.JSONDecodeError as e:
+        print(f"json error: {e}")
 
+
+def execute():
     env = StreamExecutionEnvironment.get_execution_environment()
     # JARs of kafka (source) and Cassandra (sink) connectors
     env.add_jars(
@@ -102,10 +77,10 @@ def execute():
     #env.add_jars("file:///home/ilmarih/bdp_25_tech/flink-1.20.1/opt/flink-python-1.20.1.jar")
     # Kafka Source setup
     source = KafkaSource.builder() \
-        .set_bootstrap_servers("localhost:9092,localhost:9093,localhost:9094") \
-        .set_topics("chicago_taxiTrips", "chicago_ingestioncontrol") \
+        .set_bootstrap_servers("localhost:9092") \
+        .set_topics("chicago_taxitrips") \
         .set_group_id("g1") \
-        .set_starting_offsets(KafkaOffsetsInitializer.latest()) \
+        .set_starting_offsets(KafkaOffsetsInitializer.earliest()) \
         .set_value_only_deserializer(SimpleStringSchema()) \
         .set_properties({
          'fetch.max.wait.ms': '10000',
@@ -114,18 +89,13 @@ def execute():
     
     # Input data stream
     stream = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
-    print("stream:")
-    stream.print()
-    #messageCount += 1
-    
 
-    totalSize = 0
-    errorCount = 0
+    filteredStream = stream.filter(checkPrimaryKeys)
 
     # Process raw data
-    processedStream = stream.map(
-         lambda raw: transform(raw),
-         output_type=Types.ROW([
+    processedStream = filteredStream.map(
+        lambda raw: transform(raw),
+        output_type=Types.ROW([
             Types.FLOAT(),          # pickup_community_area
             Types.STRING(),         # trip_id
             Types.STRING(),         # company
@@ -147,11 +117,12 @@ def execute():
             Types.FLOAT()           # trip_total
             ])
     )
-    #totalSize += sys.getsizeof(processedStream)
+
+
     # Insert data into Cassandra Sink
     CassandraSink.add_sink(processedStream) \
         .set_host("localhost") \
-        .set_query("INSERT INTO flink.trips (pickup_community_area, trip_id, company, \
+        .set_query("INSERT INTO taxiservices.trips (pickup_community_area, trip_id, company, \
             dropoff_centroid_latitude, dropoff_centroid_longitude, dropoff_community_area, extras, fare, \
             payment_type, pickup_centroid_latitude, pickup_centroid_longitude, taxi_id, tips, tolls, \
                 trip_end_timestamp, trip_miles, trip_seconds, trip_start_timestamp, trip_total \
@@ -163,5 +134,36 @@ def execute():
     except Exception as e:
         print(f"Error while executing the Flink job: {e}")
 
+def stopExecution():
+    print("stopped execution")
+
 if __name__ == "__main__":
-    initialize()
+    kafka_conf = {
+            'bootstrap.servers': 'localhost:9092',
+            'group.id': 'control',
+        }
+        
+    consumer = Consumer(kafka_conf)
+    consumer.subscribe(["chicago_ingestioncontrol"])
+    started = False
+    try:
+        while not started: # consume in a loop
+            msg = consumer.poll(5.0)
+            if msg is None:
+                continue
+            if msg.error():
+                print("error")
+                continue
+            if msg: 
+                json_value =json.loads(msg.value().decode('utf-8'))
+                print(json_value["action"])
+                if (json_value["action"] == "start"):
+                    started = True
+                    execute()
+                if (json_value["action"] == "start"):
+                    started = False
+                    stopExecution()
+    except Exception as e:
+        print(f"Error: {e}")
+
+    #initialize()
