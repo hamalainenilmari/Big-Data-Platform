@@ -8,9 +8,15 @@ To run the platform, the following technologies must be installed:
 * Python and pip
 * HDFS - Hadoop (version 3.4.1), download from https://www.apache.org/dyn/closer.cgi/hadoop/common/
 * Apache Spark (version 3.5.5), download from https://www.apache.org/dyn/closer.lua/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz
+* Java (openjdk version "1.8.0_392"
+OpenJDK Runtime Environment (build 1.8.0_392-8u392-ga-1~20.04-b08)
+OpenJDK 64-Bit Server VM (build 25.392-b08, mixed mode)) - sudo apt install openjdk-11-jdk
 * Apache Flink (version ), download from https://dlcdn.apache.org/flink/flink-1.20.1/flink-1.20.1-bin-scala_2.12.tgz
 * Flink Kafka jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-sql-connector-kafka/3.4.0-1.20
 * Flink Cassandra jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-connector-cassandra_2.12/3.2.0-1.19
+* Flink python jar: https://mvnrepository.com/artifact/org.apache.flink/flink-python/1.20.1
+
+add python to be same as python3
 
 **Coredms**:
 
@@ -86,3 +92,25 @@ After you have created a folder to the local HDFS and inserted source data there
 This will start the manager, which invokes the batch_ingest_pipeline and ingest the processed data into the Cassandra table.
 
 **Stream ingestion**:
+
+Start up the kafka broker cluster:
+
+go to code/streamingest/kafka/server
+create .env based on env example
+
+generate KAFKA_KRAFT_CLUSTER_ID by by running: $docker run -it  bitnami/kafka:latest kafka-storage.sh random-uuid
+
+add outcome to env
+add listeners to localhost
+
+run docker compose up -d
+
+create kafka topics based on the instructions
+
+add jar file location to stream ingestion pipeline
+
+
+start stream ingest manager py running python3 code/streamingest/stream_manager.py --topics chicago_taxitrips ny_taxitrips
+
+start producing data by running python3 start_producing
+
