@@ -28,9 +28,9 @@ if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-i', '--input_file', default="../../../data/smallSample.csv", help='Input file')
+    parser.add_argument('-i', '--input_file', default="../../../data/sample0.csv", help='Input file')
     parser.add_argument('-c', '--chunksize', default=1, help='chunk size for big file')
-    parser.add_argument('-s', '--sleeptime', default=10, help='sleep time in second')
+    parser.add_argument('-s', '--sleeptime', default=0, help='sleep time in second')
     parser.add_argument('-t', '--topic', default="taxiTrips", help='kafka topic')
     parser.add_argument('--security_protocol', default='SASL_PLAINTEXT', help='security protocol')
     parser.add_argument('--sasl_mechanism', default='PLAIN', help='security protocol')
@@ -38,9 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('--sasl_password', help='sasl password')
     
     args = parser.parse_args()
-    '''
-    Because the KPI file is big, we emulate by reading chunk, using iterator and chunksize
-    '''
+
     KAFKA_BROKER=args.broker
     INPUT_DATA_FILE=args.input_file
     chunksize=int(args.chunksize)
@@ -74,7 +72,8 @@ if __name__ == '__main__':
         #print(f'DEBUG: Send data to Kafka - chuck: {i}')
         for index, row in chunk_data.iterrows():
             json_data=json.dumps(row.to_dict(), default=datetime_converter)
-            print(json_data)
+            #print(json_data)
+            print(f"produced to topic: {KAFKA_TOPIC}")
             kafka_producer.produce(KAFKA_TOPIC, json_data.encode('utf-8'), callback=kafka_delivery_error)
             kafka_producer.flush()
             time.sleep(sleeptime)
