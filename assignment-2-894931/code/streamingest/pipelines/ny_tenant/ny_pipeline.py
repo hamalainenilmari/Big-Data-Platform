@@ -27,33 +27,49 @@ def transform(stream):
             jsonStream[key] = None
 
     # format timestamps
-    timestampStart = datetime.strptime(jsonStream["created_utc"], '%Y-%m-%dT%H:%M:%SZ')
-
-    #timestampEnd = datetime.strptime(jsonStream["Trip End Timestamp"], '%Y-%m-%dT%H:%M:%SZ')
+    timestampStart = datetime.strptime(jsonStream["tpep_pickup_datetime"], '%Y-%m-%dT%H:%M:%SZ')
+    timestampEnd = datetime.strptime(jsonStream["Ttpep_dropoff_datetime"], '%Y-%m-%dT%H:%M:%SZ')
 
     # Create Flink Row from source, format ready for Cassandra insert
-    # removed Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location
+    # removed congestion_surcharge, improvement_surcharge, store_and_fwd_flag
+    """
+    VendorID
+    tpep_pickup_datetime
+    tpep_dropoff_datetime
+    passenger_count
+    trip_distance
+    RatecodeID
+    store_and_fwd_flag
+    PULocationID
+    DOLocationID
+    payment_type
+    fare_amount
+    extra
+    mta_tax
+    tip_amount
+    tolls_amount
+    total_amount
+    Airport_fee
+    """
     filteredRow = Row(
-            jsonStream["Pickup Community Area"],  
-            jsonStream["Trip ID"],
-            jsonStream["Company"],
-            jsonStream["Dropoff Centroid Latitude"],
-            jsonStream["Dropoff Centroid Longitude"],
-            jsonStream["Dropoff Community Area"],
-            jsonStream["Extras"],
-            jsonStream["Fare"],
-            jsonStream["Payment Type"],
-            jsonStream["Pickup Centroid Latitude"],
-            jsonStream["Pickup Centroid Longitude"],
-            jsonStream["Taxi ID"],
-            jsonStream["Tips"],
-            jsonStream["Tolls"],
-            timestampEnd,
-            jsonStream["Trip Miles"],
-            jsonStream["Trip Seconds"],
-            timestampStart,
-            jsonStream["Trip Total"]
-            )
+        jsonStream["VendorID"],
+        timestampStart,
+        timestampEnd,
+        jsonStream["passenger_count"],
+        jsonStream["trip_distance"],
+        jsonStream["RatecodeID"],
+        jsonStream["store_and_fwd_flag"],
+        jsonStream["PULocationID"],
+        jsonStream["DOLocationID"],
+        jsonStream["payment_type"],
+        jsonStream["fare_amount"],
+        jsonStream["extra"],
+        jsonStream["mta_tax"],
+        jsonStream["tip_amount"],
+        jsonStream["tolls_amount"],
+        jsonStream["total_amount"],
+        jsonStream["Airport_fee"]
+    )
     return filteredRow
 
 def checkPrimaryKeys(stream):
@@ -76,10 +92,10 @@ def incorrectFormat(stream):
     global current_job, incorrectRowsAmount, incorrectRowsSent
     try:
         jsonStream = json.loads(stream) # load the source string into json format
-        if isinstance(jsonStream["Pickup Community Area"], float) and math.isnan(jsonStream["Pickup Community Area"]): 
+        if isinstance(jsonStream["tpep_dropoff_datetime"], float) and math.isnan(jsonStream["tpep_dropoff_datetime"]): 
             # Primary key is NaN, discard input
             return True
-        elif isinstance(jsonStream["Trip ID"], float) and math.isnan(jsonStream["Trip ID"]):
+        elif isinstance(jsonStream["vendor_id"], float) and math.isnan(jsonStream["vendor_id"]):
             return True
         else:
             return False
@@ -102,8 +118,8 @@ def execute():
     kafka_add = f"{kafka_ip}:9092"
     source = KafkaSource.builder() \
         .set_bootstrap_servers(kafka_add) \
-        .set_topics("tenantReddit_comments") \
-        .set_group_id("reddit") \
+        .set_topics("nytenant_trips") \
+        .set_group_id("ny") \
         .set_starting_offsets(KafkaOffsetsInitializer.earliest()) \
         .set_value_only_deserializer(SimpleStringSchema()) \
         .set_properties({
@@ -116,7 +132,7 @@ def execute():
         .set_bootstrap_servers(kafka_add) \
         .set_record_serializer(
             KafkaRecordSerializationSchema.builder()
-                .set_topic("tenantReddit_ingestion_report_warning")
+                .set_topic("nytenant_ingestion_report_warning")
                 .set_value_serialization_schema(SimpleStringSchema()) 
                 .build()
         ) \
@@ -131,31 +147,45 @@ def execute():
     # send incorrect rows to monitor component
     incorrectStream = stream.filter(incorrectFormat)
     incorrectStream.filter(lambda x: str(x)).sink_to(kafka_sink)
-
+    """
+        vendor_id uuid,
+    tpep_pickup_datetime timestamp,
+    tpep_dropoff_datetime timestamp,
+    passenger_count int,
+    trip_distance float,
+    ratecode_id int,
+    pu_location_id int,
+    do_location_id int,
+    payment_type int,
+    fare_amount float,
+    extra float,
+    mta_tax float,
+    tip_amount float,
+    tolls_amount float,
+    total_amount float,
+    airport_fee float,"
+    """
     # Process raw, filtered data
     processedStream = filteredStream.map(
         lambda raw: transform(raw),
         output_type=Types.ROW([
-            Types.FLOAT(),          # pickup_community_area
-            Types.STRING(),         # trip_id
-            Types.STRING(),         # company
-            Types.DOUBLE(),         # dropoff_centroid_latitude
-            Types.DOUBLE(),         # dropoff_centroid_longitude
-            Types.FLOAT(),          # dropoff_community_area
-            Types.FLOAT(),          # extras
-            Types.FLOAT(),          # fare
-            Types.STRING(),         # payment_type
-            Types.DOUBLE(),         # pickup_centroid_latitude
-            Types.DOUBLE(),         # pickup_centroid_longitude
-            Types.STRING(),         # taxi_id
-            Types.FLOAT(),          # tips
-            Types.FLOAT(),          # tolls
-            Types.SQL_TIMESTAMP(),  # trip_end_timestamp
-            Types.FLOAT(),          # trip_miles
-            Types.INT(),            # trip_seconds
-            Types.SQL_TIMESTAMP(),  # trip_start_timestamp
-            Types.FLOAT()           # trip_total
-            ])
+                    Types.STRING(),         # vendor_id (uuid)
+                    Types.SQL_TIMESTAMP(),  # tpep_pickup_datetime (timestamp)
+                    Types.SQL_TIMESTAMP(),  # tpep_dropoff_datetime (timestamp)
+                    Types.INT(),            # passenger_count (int)
+                    Types.FLOAT(),          # trip_distance (float)
+                    Types.INT(),            # ratecode_id (int)
+                    Types.INT(),            # pu_location_id (int)
+                    Types.INT(),            # do_location_id (int)
+                    Types.INT(),            # payment_type (int)
+                    Types.FLOAT(),          # fare_amount (float)
+                    Types.FLOAT(),          # extra (float)
+                    Types.FLOAT(),          # mta_tax (float)
+                    Types.FLOAT(),          # tip_amount (float)
+                    Types.FLOAT(),          # tolls_amount (float)
+                    Types.FLOAT(),          # total_amount (float)
+                    Types.FLOAT()           # airport_fee (float)
+                ])
     )
 
     # Insert processed data into Cassandra Sink
@@ -165,15 +195,15 @@ def execute():
     
     CassandraSink.add_sink(processedStream) \
         .set_host(cassandra_ip) \
-        .set_query(f"INSERT INTO {cassandra_keyspace}.{cassandra_table} (pickup_community_area, trip_id, company, \
-            dropoff_centroid_latitude, dropoff_centroid_longitude, dropoff_community_area, extras, fare, \
-            payment_type, pickup_centroid_latitude, pickup_centroid_longitude, taxi_id, tips, tolls, \
-                trip_end_timestamp, trip_miles, trip_seconds, trip_start_timestamp, trip_total \
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)") \
+        .set_query(f"INSERT INTO {cassandra_keyspace}.{cassandra_table} (vendor_id, tpep_pickup_datetime, tpep_dropoff_datetime, \
+            passenger_count, trip_distance, ratecode_id, pu_location_id, do_location_id, payment_type, fare_amount, \
+            extra, mta_tax, tip_amount, tolls_amount, total_amount, airport_fee) \
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)") \
         .build()
+
     
     try:
-        res = env.execute_async("Kafka Flink Cassandra pipeline")
+        res = env.execute_async("NY - Kafka Flink Cassandra pipeline")
         current_job = res
         job_id = res.get_job_id()
         print("Flink job id: ", job_id)
@@ -197,7 +227,7 @@ def finishExecution(startTime, totalRows, kafka_producer):
         "speed": speed
         }) 
     
-    topic = f"chicago_ingestion_report" 
+    topic = f"nytenant_ingestion_report" 
     kafka_producer.produce(topic, msg.encode('utf-8'))
     kafka_producer.flush()
 
@@ -221,7 +251,7 @@ def run():
         }
     
     consumer = Consumer(kafka_conf)
-    consumer.subscribe(["chicago_ingestioncontrol"])
+    consumer.subscribe(["nytenant_ingestioncontrol"])
 
     kafka_conf_prod = {
             'bootstrap.servers': k_add,
