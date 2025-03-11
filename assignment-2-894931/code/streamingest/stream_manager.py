@@ -13,7 +13,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-t', '--topics', nargs="+", default=["chicago_taxitrips"], help='tenants kafka topics')
+    parser.add_argument('-t', '--topics', nargs="+", default=["chicagotenant_trips", "nytenant_trips"], help='tenants kafka topics')
     parser.add_argument('-g', '--consumer_group', default="manager", help='consumer group')
     
     args = parser.parse_args()
