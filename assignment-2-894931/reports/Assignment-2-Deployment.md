@@ -117,3 +117,12 @@ start stream ingest manager py running python3 code/streamingest/stream_manager.
 start producing data by running python3 start_producing
 
 get ny taxi set from https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic nytenant_trips
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report_warning
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic nytenant_ingestioncontrol
+
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic chicagotenant_trips
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report_warning
+docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic chicago_ingestioncontrol
