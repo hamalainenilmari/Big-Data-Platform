@@ -12,9 +12,10 @@ def generateReport(tenant, statistics, badRows):
     rows = statistics["rows"]
     size = statistics["total_size"]
     speed = statistics["speed"]
+    print(statistics)
      
-    logFile = f"../../logs/stream/chicago_{start}_stream_ingestion.log"
-    logger = logging.getLogger(f"tenant_chicago_{start}")
+    logFile = f"../../logs/stream/{tenant}_{start}_stream_ingestion.log"
+    logger = logging.getLogger(f"{tenant}_{start}")
     logger.setLevel(logging.INFO)
     
     fileHandler = logging.FileHandler(logFile)
@@ -35,7 +36,8 @@ if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-t', '--topics', default=["chicago_ingestion_report", "chicago_ingestion_report_warning"], help='kafka topic')
+    parser.add_argument('-t', '--topics', default=["chicagotenant_ingestion_report", "chicagotenant_ingestion_report_warning", \
+                                                   "nytenant_ingestion_report", "nytenant_ingestion_report_warning"], help='kafka topics')
     parser.add_argument('-g', '--consumer_group', default="monitor", help='consumer group')
     args = parser.parse_args()
     broker=args.broker
@@ -68,8 +70,10 @@ if __name__ == '__main__':
             
             if msg:
                 topic = msg.topic()
-                tenant = topic.split("_")[0]
-                report = topic.split("_")[1]
+                split = topic.split("_", 1)
+                tenant = split[0]
+                report = split[1]
+                print("tenant: ", tenant)
                 print("report: ", report)
                 # discarded row information
                 if report == "ingestion_report_warning":
@@ -80,7 +84,9 @@ if __name__ == '__main__':
                 if report == "ingestion_report":
                     print("got full execution statistics, generate reports")
                     stats = json.loads(msg.value().decode('utf-8'))
-                    generateReport(tenant, stats, rowsDiscarded)
+                    rows = tenants[tenant][1]
+                    tenants[tenant] = (False, 0)
+                    generateReport(tenant, stats, rows)
 
     except KeyboardInterrupt:
         print("Exiting...")

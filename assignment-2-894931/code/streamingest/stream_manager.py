@@ -48,6 +48,7 @@ def main():
     try:
         while True: # consume in a loop
             # check for new messages of tenants topics every 10 seconds
+            time.sleep(10)
             msg = consumer.poll(10.0)
 
             if msg is None:
@@ -75,24 +76,31 @@ def main():
                 # new message inbound
                 topic = msg.topic()
                 tenant = topic.split("_")[0]
-                if (not tenants[tenant][0]): # if tenant not running, start execution
-                    print(f"new msg for tenant {tenant}, not running -> start execution")
+                for key, value in tenants.items():
+                    if key == tenant:
+                        if (not tenants[tenant][0]): # if tenant not running, start execution
+                            print(f"new msg for tenant {tenant}, not running -> start execution")
 
-                    msg = json.dumps({"action": "start"}) # message to start pipeline execution
-                    control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
+                            msg = json.dumps({"action": "start"}) # message to start pipeline execution
+                            control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
 
-                    producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
-                    producer.flush()
-                    tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
-                else: # execution already going on, no need to send message
-                    tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
-                    #print("tenant already running")
+                            producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
+                            producer.flush()
+                            tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
+                        else: # execution already going on, no need to send message
+                            tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
+                            #print("tenant already running")
+                    else:
+                        tenants[key] = (value[0], value[1] + 10)
+                        lastMessageTime = tenants[key][1]
+                        print(f"Time since last tenant {key} message: {lastMessageTime} s")
+
     except Exception as e:
         print(f"Error: {e}")
         
     except KeyboardInterrupt:
         print("Exiting...")
     
-
+    
 if __name__ == '__main__':
     main()
