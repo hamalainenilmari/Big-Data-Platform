@@ -28,37 +28,18 @@ def transform(stream):
 
     # format timestamps
     timestampStart = datetime.strptime(jsonStream["tpep_pickup_datetime"], '%Y-%m-%dT%H:%M:%SZ')
-    timestampEnd = datetime.strptime(jsonStream["Ttpep_dropoff_datetime"], '%Y-%m-%dT%H:%M:%SZ')
+    timestampEnd = datetime.strptime(jsonStream["tpep_dropoff_datetime"], '%Y-%m-%dT%H:%M:%SZ')
 
     # Create Flink Row from source, format ready for Cassandra insert
     # removed congestion_surcharge, improvement_surcharge, store_and_fwd_flag
-    """
-    VendorID
-    tpep_pickup_datetime
-    tpep_dropoff_datetime
-    passenger_count
-    trip_distance
-    RatecodeID
-    store_and_fwd_flag
-    PULocationID
-    DOLocationID
-    payment_type
-    fare_amount
-    extra
-    mta_tax
-    tip_amount
-    tolls_amount
-    total_amount
-    Airport_fee
-    """
+
     filteredRow = Row(
-        jsonStream["VendorID"],
+        int(jsonStream["VendorID"]),
         timestampStart,
         timestampEnd,
         jsonStream["passenger_count"],
         jsonStream["trip_distance"],
         jsonStream["RatecodeID"],
-        jsonStream["store_and_fwd_flag"],
         jsonStream["PULocationID"],
         jsonStream["DOLocationID"],
         jsonStream["payment_type"],
@@ -73,13 +54,12 @@ def transform(stream):
     return filteredRow
 
 def checkPrimaryKeys(stream):
-    global incorrectRowsAmount
     try:
         jsonStream = json.loads(stream) # load the source string into json format
-        if isinstance(jsonStream["Pickup Community Area"], float) and math.isnan(jsonStream["Pickup Community Area"]): 
+        if isinstance(jsonStream["tpep_dropoff_datetime"], int) and math.isnan(jsonStream["tpep_dropoff_datetime"]): 
             # Primary key is NaN, discard input
             return False
-        elif isinstance(jsonStream["Trip ID"], float) and math.isnan(jsonStream["Trip ID"]):
+        elif isinstance(jsonStream["VendorID"], int) and math.isnan(jsonStream["VendorID"]):
             return False
         else:
             # valid data
@@ -92,10 +72,10 @@ def incorrectFormat(stream):
     global current_job, incorrectRowsAmount, incorrectRowsSent
     try:
         jsonStream = json.loads(stream) # load the source string into json format
-        if isinstance(jsonStream["tpep_dropoff_datetime"], float) and math.isnan(jsonStream["tpep_dropoff_datetime"]): 
+        if isinstance(jsonStream["tpep_dropoff_datetime"], int) and math.isnan(jsonStream["tpep_dropoff_datetime"]): 
             # Primary key is NaN, discard input
             return True
-        elif isinstance(jsonStream["vendor_id"], float) and math.isnan(jsonStream["vendor_id"]):
+        elif isinstance(jsonStream["VendorID"], int) and math.isnan(jsonStream["VendorID"]):
             return True
         else:
             return False
@@ -143,7 +123,6 @@ def execute():
 
     # if NaN values for primary keys, filter
     filteredStream = stream.filter(checkPrimaryKeys)
-
     # send incorrect rows to monitor component
     incorrectStream = stream.filter(incorrectFormat)
     incorrectStream.filter(lambda x: str(x)).sink_to(kafka_sink)
@@ -169,7 +148,7 @@ def execute():
     processedStream = filteredStream.map(
         lambda raw: transform(raw),
         output_type=Types.ROW([
-                    Types.STRING(),         # vendor_id (uuid)
+                    Types.INT(),         # vendor_id (uuid)
                     Types.SQL_TIMESTAMP(),  # tpep_pickup_datetime (timestamp)
                     Types.SQL_TIMESTAMP(),  # tpep_dropoff_datetime (timestamp)
                     Types.INT(),            # passenger_count (int)
@@ -187,7 +166,6 @@ def execute():
                     Types.FLOAT()           # airport_fee (float)
                 ])
     )
-
     # Insert processed data into Cassandra Sink
     cassandra_ip = os.getenv("CASSANDRA_ADDRESS")
     cassandra_keyspace = os.getenv("CASSANDRA_KEYSPACE")
@@ -200,7 +178,7 @@ def execute():
             extra, mta_tax, tip_amount, tolls_amount, total_amount, airport_fee) \
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)") \
         .build()
-
+    
     
     try:
         res = env.execute_async("NY - Kafka Flink Cassandra pipeline")
