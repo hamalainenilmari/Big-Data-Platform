@@ -20,9 +20,9 @@ Then enter cassandra shell by running:
 
 Then to create 2 keyspaces for 2 different tenants run:
 
-``$ CREATE KEYSPACE chicagoTenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
+``$ CREATE KEYSPACE chicagotenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
 
-``$ CREATE KEYSPACE redditTenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
+``$ CREATE KEYSPACE nytenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
 
 And then to create the tables run:
 
@@ -53,10 +53,27 @@ CREATE TABLE chicagoTenant.trips (
 
 And
 
-``$
-
+``$ CREATE TABLE nytenant.trips (
+    vendor_id uuid,
+    tpep_pickup_datetime timestamp,
+    tpep_dropoff_datetime timestamp,
+    passenger_count int,
+    trip_distance float,
+    ratecode_id int,
+    pu_location_id int,
+    do_location_id int,
+    payment_type int,
+    fare_amount float,
+    extra float,
+    mta_tax float,
+    tip_amount float,
+    tolls_amount float,
+    total_amount float,
+    airport_fee float,
+    PRIMARY KEY (tpep_dropoff_datetime, vendor_id),
+);
 ``
 
 To test that ingestion is working correctly, you can try to query rows in cqlsh after running the ingestion pipeline.
 
-``$ SELECT COUNT(*) FROM tenantChicago.trips;``
+``$ SELECT COUNT(*) FROM tenantchicago.trips;``
