@@ -3,19 +3,32 @@ import argparse
 import json
 from dotenv import load_dotenv
 import logging
-import time
+from datetime import datetime
 
-def stopIngest():
-    end_time = time.time()
-    logging.info(f"Stopped ingesting - statistics:")
-    logging.info(f"Time taken: {end_time - start_time:.2f} s")
-    logging.info(f"Number of Kafka messages received: {messagesReceived}")
-    logging.info(f"Rows succesfully inserted: {rowsConsumed}")
-    logging.info(f"Rows succesfully inserted / s: {rowsConsumed / (end_time - start_time)}")
-    logging.info(f"Number of Cassandra errors: {cassandraError}")
-    logging.info(f"Number of Kafka errors: {kafkaError}")
-    logging.info("------------------------------------------------")
-    exit(0)
+def generateReport(tenant, statistics, badRows):
+    start = datetime.fromtimestamp(statistics["start_time"]).strftime('%Y-%m-%d %H:%M:%S')
+    end = datetime.fromtimestamp(statistics["end_time"]).strftime('%Y-%m-%d %H:%M:%S')
+    totalTime = statistics["total_time"]
+    rows = statistics["rows"]
+    size = statistics["total_size"]
+    speed = statistics["speed"]
+     
+    logFile = f"../../logs/stream/chicago_{start}_stream_ingestion.log"
+    logger = logging.getLogger(f"tenant_chicago_{start}")
+    logger.setLevel(logging.INFO)
+    
+    fileHandler = logging.FileHandler(logFile)
+    fileHandler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    logger.addHandler(fileHandler)
+   
+    logger.info(f"{tenant} - Stream ingestion statistics:")
+    logger.info(f"Ingestion started at: {start}")
+    logger.info(f"Ingestion ended at: {end}")
+    logger.info(f"Total ingestion time: {totalTime:.2f} s")
+    logger.info(f"Total number of rows inserted: {rows}")
+    logger.info(f"Total ingestion size: {size} kB")
+    logger.info(f"Ingestion speed: {speed:.2f} kB/s")
+    logger.info(f"Number of rows not inserted due to format not matching schema: {badRows}")
 
 if __name__ == '__main__':
     load_dotenv()
@@ -24,10 +37,6 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
     parser.add_argument('-t', '--topics', default=["chicago_ingestion_report", "chicago_ingestion_report_warning"], help='kafka topic')
     parser.add_argument('-g', '--consumer_group', default="monitor", help='consumer group')
-    parser.add_argument('--security_protocol', default='SASL_PLAINTEXT', help='security protocol')
-    parser.add_argument('--sasl_mechanism', default='PLAIN', help='security protocol')
-    parser.add_argument('--sasl_username', help='sasl user name')
-    parser.add_argument('--sasl_password', help='sasl password')
     args = parser.parse_args()
     broker=args.broker
 
@@ -42,13 +51,11 @@ if __name__ == '__main__':
     kafka_consumer = Consumer(kafka_conf)
     kafka_consumer.subscribe(topics)
 
-    #logging.basicConfig(filename='ingest.log', level=logging.INFO,
-     #               format='%(asctime)s - %(levelname)s - %(message)s')
+    tenants = {}
+    for item in topics:
+        tenants[item.split("_")[0]] = (False, 0) # final execution report has came, number of discarded rows
 
-    rowsDiscrded = 0
-
-    print("Listening to pipeline reports")
-
+    print("Listening to tenants pipeline reports")
     try:
         while True:
             # consume a message from kafka, wait 10 second
@@ -62,9 +69,18 @@ if __name__ == '__main__':
             if msg:
                 topic = msg.topic()
                 tenant = topic.split("_")[0]
-                json_value =json.loads(msg.value().decode('utf-8'))
-                print("tenant: ", tenant)
-                print("msg: ", json_value)
+                report = topic.split("_")[1]
+                print("report: ", report)
+                # discarded row information
+                if report == "ingestion_report_warning":
+                    rowsDiscarded = tenants[tenant][1]
+                    tenants[tenant] = (False, rowsDiscarded + 1)
+
+                # final execution statistics
+                if report == "ingestion_report":
+                    print("got full execution statistics, generate reports")
+                    stats = json.loads(msg.value().decode('utf-8'))
+                    generateReport(tenant, stats, rowsDiscarded)
 
     except KeyboardInterrupt:
         print("Exiting...")

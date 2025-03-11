@@ -44,7 +44,7 @@ def main():
     # producer for sending msgs to starting / stopping pipelines
     producer = Producer(kafka_conf_producer)
 
-    # listen to all tenants
+    # listen to all tenants    
     try:
         while True: # consume in a loop
             # check for new messages of tenants topics every 10 seconds
@@ -57,7 +57,7 @@ def main():
                     lastMessageTime = tenants[key][1]
                     print(f"Time since last tenant {key} message: {lastMessageTime} s")
 
-                    if (lastMessageTime >= 60 and tenants[key][0]): 
+                    if (lastMessageTime >= 40 and tenants[key][0]): 
                         # no new messages in 60 seconds and tenant is running, send message to stop tenant pipeline
                         msg = json.dumps({"action": "stop"}) # message to start pipeline execution
                         control_topic = f"{key}_ingestioncontrol" # corresponding topic
@@ -89,9 +89,10 @@ def main():
                     #print("tenant already running")
     except Exception as e:
         print(f"Error: {e}")
+        
     except KeyboardInterrupt:
         print("Exiting...")
-
+    
 
 if __name__ == '__main__':
     main()
