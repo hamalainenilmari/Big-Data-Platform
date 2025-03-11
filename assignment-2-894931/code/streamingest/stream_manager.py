@@ -86,9 +86,11 @@ def main():
                     tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
                 else: # execution already going on, no need to send message
                     tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
-                    print("tenant already running")
+                    #print("tenant already running")
     except Exception as e:
         print(f"Error: {e}")
+    except KeyboardInterrupt:
+        print("Exiting...")
 
 
 if __name__ == '__main__':
