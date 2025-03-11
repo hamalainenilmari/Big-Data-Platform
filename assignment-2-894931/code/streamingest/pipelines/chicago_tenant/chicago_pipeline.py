@@ -101,7 +101,7 @@ def execute():
     kafka_add = f"{kafka_ip}:9092"
     source = KafkaSource.builder() \
         .set_bootstrap_servers(kafka_add) \
-        .set_topics("tenantChicagoTaxi_trips") \
+        .set_topics("chicagotenant_trips") \
         .set_group_id("g1") \
         .set_starting_offsets(KafkaOffsetsInitializer.earliest()) \
         .set_value_only_deserializer(SimpleStringSchema()) \
@@ -115,7 +115,7 @@ def execute():
         .set_bootstrap_servers(kafka_add) \
         .set_record_serializer(
             KafkaRecordSerializationSchema.builder()
-                .set_topic("tenantChicagoTaxi_ingestion_report_warning")
+                .set_topic("chicagotenant_ingestion_report_warning")
                 .set_value_serialization_schema(SimpleStringSchema()) 
                 .build()
         ) \
@@ -196,7 +196,7 @@ def finishExecution(startTime, totalRows, kafka_producer):
         "speed": speed
         }) 
     
-    topic = f"chicago_ingestion_report" 
+    topic = f"chicagotenant_ingestion_report" 
     kafka_producer.produce(topic, msg.encode('utf-8'))
     kafka_producer.flush()
 
@@ -220,7 +220,7 @@ def run():
         }
     
     consumer = Consumer(kafka_conf)
-    consumer.subscribe(["chicago_ingestioncontrol"])
+    consumer.subscribe(["chicagotenant_ingestioncontrol"])
 
     kafka_conf_prod = {
             'bootstrap.servers': k_add,
