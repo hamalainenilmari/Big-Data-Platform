@@ -1,5 +1,5 @@
 from pyflink.datastream import StreamExecutionEnvironment
-from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer
+from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
 from pyflink.datastream.connectors.cassandra import CassandraSink
 from pyflink.common import Types, Row
 from pyflink.common.watermark_strategy import WatermarkStrategy
@@ -15,6 +15,7 @@ from confluent_kafka import Consumer
 from dotenv import load_dotenv
 import threading
 from cassandra.cluster import Cluster
+from pyflink.datastream.formats.json import JsonRowSerializationSchema
 
 # event to stop pipeline exeution running as thread
 stop_event = threading.Event()
@@ -28,7 +29,10 @@ inboundMessagesAmount = 0
 ingestionSpeed = 0
 totalIngestionSize = 0
 numMessagesError = 0
+
 incorrectRowsAmount = 0
+incorrectRowsSent = 0
+
 
 casRowsStart = 0
 casRowsEnd = 0
@@ -71,14 +75,18 @@ def transform(stream):
     return filteredRow
 
 def checkPrimaryKeys(stream):
-    global current_job, incorrectRowsAmount #, inboundMessagesAmount, totalIngestionSize, numMessagesError, incorrectRowsAmount
+    global current_job, incorrectRowsAmount, incorrectRowsSent #, inboundMessagesAmount, totalIngestionSize, numMessagesError, incorrectRowsAmount
     try:
         jsonStream = json.loads(stream) # load the source string into json format
         if isinstance(jsonStream["Pickup Community Area"], float) and math.isnan(jsonStream["Pickup Community Area"]): 
             # Primary key is NaN, discard input
+            print("row discarded incorrect")
+
             incorrectRowsAmount += 1
             return False
         elif isinstance(jsonStream["Trip ID"], float) and math.isnan(jsonStream["Trip ID"]):
+            
+            print("row discarded")
             incorrectRowsAmount += 1
             return False
         else:
@@ -86,9 +94,27 @@ def checkPrimaryKeys(stream):
     except json.JSONDecodeError as e:
         print(f"json error: {e}")
 
+# keep only input data which does not comply with schema
+def incorrectFormat(stream):
+    global current_job, incorrectRowsAmount, incorrectRowsSent #, inboundMessagesAmount, totalIngestionSize, numMessagesError, incorrectRowsAmount
+    try:
+        jsonStream = json.loads(stream) # load the source string into json format
+        if isinstance(jsonStream["Pickup Community Area"], float) and math.isnan(jsonStream["Pickup Community Area"]): 
+            # Primary key is NaN, discard input
+            print("row discarded incorrect")
+            incorrectRowsAmount += 1
+            return True
+        elif isinstance(jsonStream["Trip ID"], float) and math.isnan(jsonStream["Trip ID"]):
+            print("row discarded incorrect")
+            incorrectRowsAmount += 1
+            return True
+        else:
+            return False
+    except json.JSONDecodeError as e:
+        print(f"json error: {e}")
 
 def execute():
-    global current_job #, inboundMessagesAmount, totalIngestionSize, numMessagesError, incorrectRowsAmount
+    global current_job, incorrectRowsAmount #, kafka_producer #, inboundMessagesAmount, totalIngestionSize, numMessagesError,
 
     env = StreamExecutionEnvironment.get_execution_environment()
     # JARs of kafka (source) and Cassandra (sink) connectors
@@ -111,6 +137,39 @@ def execute():
         'fetch.max.wait.ms': '10000',
         }) \
         .build()
+
+    kafka_sink = KafkaSink.builder() \
+        .set_bootstrap_servers("localhost:9092") \
+        .set_record_serializer(
+            KafkaRecordSerializationSchema.builder()
+                .set_topic("chicago_ingestion_report_warning")  # Topic for incorrect rows
+                .set_value_serialization_schema(
+                    JsonRowSerializationSchema.builder()
+                    .with_type_info(Types.ROW([
+                                        Types.FLOAT(),          # pickup_community_area
+                                        Types.STRING(),         # trip_id
+                                        Types.STRING(),         # company
+                                        Types.DOUBLE(),         # dropoff_centroid_latitude
+                                        Types.DOUBLE(),         # dropoff_centroid_longitude
+                                        Types.FLOAT(),          # dropoff_community_area
+                                        Types.FLOAT(),          # extras
+                                        Types.FLOAT(),          # fare
+                                        Types.STRING(),         # payment_type
+                                        Types.DOUBLE(),         # pickup_centroid_latitude
+                                        Types.DOUBLE(),         # pickup_centroid_longitude
+                                        Types.STRING(),         # taxi_id
+                                        Types.FLOAT(),          # tips
+                                        Types.FLOAT(),          # tolls
+                                        Types.SQL_TIMESTAMP(),  # trip_end_timestamp
+                                        Types.FLOAT(),          # trip_miles
+                                        Types.INT(),            # trip_seconds
+                                        Types.SQL_TIMESTAMP(),  # trip_start_timestamp
+                                        Types.FLOAT()           # trip_total
+                                        ]))  
+                    .build())
+                .build()
+        ) \
+        .build()
     
     # Input data stream
     stream = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
@@ -118,6 +177,9 @@ def execute():
     # if NaN values for primary keys, filter
     filteredStream = stream.filter(checkPrimaryKeys)
 
+    incorrectStream = stream.filter(incorrectFormat)
+    #incorrectStream.filter(lambda x: x is not None).sink_to(kafka_sink)
+    #incorrectStream.sink_to(kafka_sink)
     # Process raw, filtered data
     processedStream = filteredStream.map(
         lambda raw: transform(raw),
@@ -144,11 +206,13 @@ def execute():
             ])
     )
 
+
+
     # Insert data into Cassandra Sink
     cassandra_ip = os.getenv("CASSANDRA_ADDRESS")
     cassandra_keyspace = os.getenv("CASSANDRA_KEYSPACE")
     cassandra_table = os.getenv("CASSANDRA_TABLE")
-
+    """
     CassandraSink.add_sink(processedStream) \
         .set_host(cassandra_ip) \
         .set_query(f"INSERT INTO {cassandra_keyspace}.{cassandra_table} (pickup_community_area, trip_id, company, \
@@ -157,7 +221,7 @@ def execute():
                 trip_end_timestamp, trip_miles, trip_seconds, trip_start_timestamp, trip_total \
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)") \
         .build()
-    
+    """
     try:
         res = env.execute_async("Kafka Flink Cassandra pipeline")
         current_job = res
@@ -189,14 +253,26 @@ def finishLogging(logger, totalRows):
 
     endTime = time.time()
     totalTime = endTime - startTime
+    totalSize = ((totalRows*48)/1000)
+    speed = (totalSize/totalTime)
     logger.info("--------------------------------")
     logger.info(f"Total ingestion time: {totalTime:.2f} s")
     logger.info(f"Total number of rows inserted: {totalRows}")
-    logger.info(f"Total ingestion size: {((totalRows*48)/1000):.2f} kB")
+    logger.info(f"Total ingestion size: {totalSize:.2f} kB")
     if (totalTime != 0):
-        logger.info(f"Ingestion speed: {(((totalRows*48)/1000)/totalTime):.2f} kB/s")
+        logger.info(f"Ingestion speed: {speed:.2f} kB/s")
     logger.info(f"Number of inconsistent data rows: {incorrectRowsAmount}")
     logger = None
+
+    msg = json.dumps({
+        "total_time": totalTime,
+        "rows": totalRows,
+        "size": totalSize,
+        "speed": speed
+        }) 
+    topic = f"chicago_ingestion_report" 
+    #kafka_producer.produce(topic, msg.encode('utf-8'))
+    #kafka_producer.flush()
 
 # Main loop, check for pipeline action calls and perform them
 def run():
@@ -218,12 +294,13 @@ def run():
     consumer.subscribe(["chicago_ingestioncontrol"])
 
     # Cassandra table to get num of rows
+    """
     cassandra_ip = os.getenv("CASSANDRA_ADDRESS")
     cassandra_keyspace = os.getenv("CASSANDRA_KEYSPACE")
     cassandra_table = os.getenv("CASSANDRA_TABLE")
     cluster = Cluster([f"{cassandra_ip}"])
     session = cluster.connect(f"{cassandra_keyspace}")
-
+    """
     try:
         while True: # consume in a loop
             msg = consumer.poll(5.0)
@@ -246,12 +323,13 @@ def run():
                             continue
                         
                         # get number of rows before ingestion
+                        """
                         result = session.execute(f"SELECT COUNT(*) FROM {cassandra_table};") 
                         rows = result.one()[0]
                         casRowsStart = rows
                         logger = None
                         logger = initializeLogging()
-
+                        """
                         current_job = None
                         stop_event.clear()                          # clear stop
                         thread = threading.Thread(target=execute)   # initialize thread
@@ -263,12 +341,14 @@ def run():
                         if current_job is not None:
                             # is job running
                             print("Received call to stop execution")
-                            
+                            """
                             result = session.execute(f"SELECT COUNT(*) FROM {cassandra_table};")
                             rows = result.one()[0]
                             casRowsEnd = rows
-                            totalRows = casRowsEnd - casRowsStart
+                            totalRows = casRowsEnd - casRowsStart"
+                            
                             finishLogging(logger, totalRows)
+                            """
                             logger = None
                             # clean up
                             if current_job is not None:
