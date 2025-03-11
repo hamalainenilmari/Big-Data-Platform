@@ -54,7 +54,7 @@ CREATE TABLE chicagoTenant.trips (
 And
 
 ``$ CREATE TABLE nytenant.trips (
-    vendor_id uuid,
+    vendor_id int,
     tpep_pickup_datetime timestamp,
     tpep_dropoff_datetime timestamp,
     passenger_count int,
