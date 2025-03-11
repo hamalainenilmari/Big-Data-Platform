@@ -93,6 +93,8 @@ This will start the manager, which invokes the batch_ingest_pipeline and ingest 
 
 **Stream ingestion**:
 
+create two
+
 Start up the kafka broker cluster:
 
 go to code/streamingest/kafka/server
@@ -114,3 +116,4 @@ start stream ingest manager py running python3 code/streamingest/stream_manager.
 
 start producing data by running python3 start_producing
 
+get ny taxi set from https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
