@@ -18,14 +18,16 @@ Then enter cassandra shell by running:
 
 ``$ cqlsh``
 
-Then to create the keyspace run:
+Then to create 2 keyspaces for 2 different tenants run:
 
-``$ CREATE KEYSPACE taxiservices WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
+``$ CREATE KEYSPACE chicagoTenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
 
-And then to create the table run:
+``$ CREATE KEYSPACE redditTenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
 
-``
-$ CREATE TABLE taxiservices.trips (
+And then to create the tables run:
+
+``$
+CREATE TABLE chicagoTenant.trips (
     trip_id text,
     taxi_id text,
     trip_start_timestamp timestamp,
@@ -49,6 +51,12 @@ $ CREATE TABLE taxiservices.trips (
 );
 ``
 
+And
+
+``$
+
+``
+
 To test that ingestion is working correctly, you can try to query rows in cqlsh after running the ingestion pipeline.
 
-``$ SELECT COUNT(*) FROM taxiservices.trips;``
+``$ SELECT COUNT(*) FROM tenantChicago.trips;``

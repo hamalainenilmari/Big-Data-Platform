@@ -7,9 +7,12 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--data_set", help="data set of which the samples are created")
 parser.add_argument("--file_count", help="number of sample files created")
 parser.add_argument("--row_count", help="number of rows in a sample")
 
+# taxi: "../../assignment-1-894931/data/Taxi_Trips__2024-__20250204.csv"
+# reddit: "/reddit/reddit_comments.csv"
 
 args = parser.parse_args()
 if __name__ == '__main__':
