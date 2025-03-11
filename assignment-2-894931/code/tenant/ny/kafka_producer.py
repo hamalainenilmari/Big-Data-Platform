@@ -26,8 +26,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
     parser.add_argument('-i', '--input_file', default="../../../data/ny/yellow_tripdata_2024-01.parquet", help='Input file')
-    parser.add_argument('-c', '--chunksize', default=5, help='chunk size for big file')
-    parser.add_argument('-s', '--sleeptime', default=1, help='sleep time in second')
+    parser.add_argument('-c', '--chunksize', default=10, help='chunk size for big file')
+    parser.add_argument('-s', '--sleeptime', default=0.5, help='sleep time in second')
     parser.add_argument('-t', '--topic', default="nytenant_trips", help='kafka topic')
     
     args = parser.parse_args()
@@ -49,23 +49,26 @@ if __name__ == '__main__':
     start_time = time.time()
     print(f"started producing input data at {start_time}")
     i = 0
-    
-    for batch in parquet_file.iter_batches(batch_size=chunksize):
-        df_chunk = batch.to_pandas()  # Convert to Pandas DataFrame
-        json_records = df_chunk.to_dict(orient="records")  # Convert to JSON format (list of dicts)
-        # Send each JSON record to Kafka
-        for record in json_records:
-            record["tpep_pickup_datetime"] = datetime_converter(record["tpep_pickup_datetime"])
-            record["tpep_dropoff_datetime"] = datetime_converter(record["tpep_dropoff_datetime"])
-            json_data=json.dumps(record)
-            print(record)
-            kafka_producer.produce(KAFKA_TOPIC, json_data.encode('utf-8'), callback=kafka_delivery_error)
-            kafka_producer.flush()
-            time.sleep(sleeptime)
-    
-        i += 1
-    end_time = time.time()
-    
+    try:
+        for batch in parquet_file.iter_batches(batch_size=chunksize):
+            df_chunk = batch.to_pandas()  # Convert to Pandas DataFrame
+            json_records = df_chunk.to_dict(orient="records")  # Convert to JSON format (list of dicts)
+            # Send each JSON record to Kafka
+            for record in json_records:
+                record["tpep_pickup_datetime"] = datetime_converter(record["tpep_pickup_datetime"])
+                record["tpep_dropoff_datetime"] = datetime_converter(record["tpep_dropoff_datetime"])
+                json_data=json.dumps(record)
+                print(record)
+                kafka_producer.produce(KAFKA_TOPIC, json_data.encode('utf-8'), callback=kafka_delivery_error)
+                kafka_producer.flush()
+                time.sleep(sleeptime)
+        
+            i += 1
+        end_time = time.time()
+    except KeyboardInterrupt:
+        end_time = time.time()
+        print(f"finished producing input data at {end_time}, total runtime: {end_time - start_time:.2f} s, \
+            total number of rows: {chunksize * i}")
     print(f"finished producing input data at {end_time}, total runtime: {end_time - start_time:.2f} s, \
-          total number of rows: {chunksize * i}")
+            total number of rows: {chunksize * i}")
     
