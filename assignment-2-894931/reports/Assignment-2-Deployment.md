@@ -128,6 +128,10 @@ Then create the following Kafka topics:
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestioncontrol``
 
+Then create the monitor manager connection topic:
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic pipeline_execution_warning``
+
 Then lets run the tenant pipelines. The pipelines components are always running and listening to messages to start/stop ingestion. Go to location *code/streamingest/pipelines/*. Add the .env files to each tenant folder according to the example env.
 
 Add the the downloaded jar file locations to both pipelines. Keep the file:// before the location
@@ -153,9 +157,7 @@ and
 
 ``$ python3 ny/kafka_produrer.py``
 
-
-
 get ny taxi set from https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 Download 2024 january Yellow Taxi Trip Records (PARQUET)
 
-get chicago taxi set from 
+get chicago taxi set from

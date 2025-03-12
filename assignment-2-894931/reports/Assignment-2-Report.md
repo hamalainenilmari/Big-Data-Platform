@@ -243,6 +243,7 @@ the maximum amount of data per second we can ingest by batch ingestion is approx
 ### 1.5 Logging
 
 Define metrics:
+
 * why do we log these info, why are the data needed?
 * how are the log data used to manage service quality (platform not too slow etc)
 * are the logging data metrics defined in the service agreement (we promise that this is minimum ingest speed etc)
@@ -552,20 +553,31 @@ The pipeline component would record and store this report information. The pipel
 
 The stream ingestion monitor component overwatches the performance of ingestion components. The monitor is consuming messages from Kafka topics specified for each tenant pipeline reporting. The monitor implementation can be found on locaiton *code/streamingest/stream_monitor.py*.
 
-The monitor informes the stream manager if the report execution is showing alarming statistics. For example, if the pipeline execution is called, but the received pipeline statistics show no data inserted, the monitor makes a specific call to manager. Also if data ingestion speed is low, the monitor informes manager about it. This would need setting a specific limit to the lowness, which would need careful planning as we don't want the monitor to send messages to the manager when nothing is from, e.g. if it is normal that only a few data sets are produced in some time interval.
+The monitor informes the stream manager if the report execution is showing alarming statistics. Each tenant has a unique configuration which determines the pipeline execution limits to follow. The configuration is in following format:
+
+```json
+{
+    "minimumIngestionSpeed": 2,
+    "minRowsInserted": 10,
+    "maxDiscardedRowsRelation": 0.01
+}
+```
+
+The configurations contains limit for minimum ingestion speed in kilo bytes per second. The value is needed for making sure that the pipeline is performing as expected for the tenant. For example, if we know that a tenant should be producing 10 kB every second, but ingestion speeed is below the 2, something is wrong. Minimum rows inserted means the lower limit of rows inserted during one execution run. If we know that tenant sends always a batch of data at a time, this can be higher than 1. Otherwise, it should be at least one, to make sure that when ingestion is started,a t least one unit data is really ingested. The final, maximum discarded rows relation stores the information about how many data units consumed where discarded on relation to total data consumed. If the relation exceeds the limit, the platform acts accordingly.
 
 The monitor will inform the manager about the following problems:
 
-The amount of rows discarded in the stream pipeline execution is above a specific set threshold. The monitor will send a following Kafka message to manager:
+maxDiscardedRowsRelation:
 
 ```json
 {
   "tenant": "nytenant",
-  "warning": "maxDiscardedRowsAmount"
+  "warning": "maxDiscardedRowsRelation"
 }
 ```
 
-The message contains information about which tenant has execution problems and the warning. The manager knows based on the warning, that maximum discarded rows amount is exceeded, and something must be done. The manager could for example, inform the tenant that the input data has not good value currently.
+When manager gets this ingestion result message, it will stop the pipeline 
+
 
 Numbers of rows inserted is less than a specific set threshold. For example, if the tenant configuration tells that this tenant should produce continuosly, this could indicate that something is wrong with the pipeline. Based on the information, the manager could scale the pipeline component horizontally or up.The monitor send the following message to manager:
 
