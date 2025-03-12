@@ -1,0 +1,8 @@
+2025-03-12 00:33:41,369 - INFO - nytenant - Stream ingestion statistics:
+2025-03-12 00:33:41,369 - INFO - Ingestion started at: 2025-03-12 00:32:58
+2025-03-12 00:33:41,369 - INFO - Ingestion ended at: 2025-03-12 00:33:40
+2025-03-12 00:33:41,369 - INFO - Total ingestion time: 42.01 s
+2025-03-12 00:33:41,369 - INFO - Total number of rows inserted: 2253
+2025-03-12 00:33:41,369 - INFO - Total ingestion size: 108.144 kB
+2025-03-12 00:33:41,369 - INFO - Ingestion speed: 2.57 kB/s
+2025-03-12 00:33:41,369 - INFO - Number of rows not inserted due to format not matching schema: 0

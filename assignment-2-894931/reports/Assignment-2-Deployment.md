@@ -93,36 +93,69 @@ This will start the manager, which invokes the batch_ingest_pipeline and ingest 
 
 **Stream ingestion**:
 
-create two
+For performing near real-time data ingestion with the platform, you must have Cassandra Cluster (coredms) and Kafka Broker cluster (messagingystem) set up. You need to be running stream manager, stream monitor and the tenant pipelines simultaneously.
 
 Start up the kafka broker cluster:
 
-go to code/streamingest/kafka/server
-create .env based on env example
+Go to code/streamingest/messaging_system/
 
-generate KAFKA_KRAFT_CLUSTER_ID by by running: $docker run -it  bitnami/kafka:latest kafka-storage.sh random-uuid
+Create .env file based on env example file. If running locally, leave KAFKA_CFG_ADVERTISED_LISTENERS=localhost.
+Generate KAFKA_KRAFT_CLUSTER_ID by by running:
 
-add outcome to env
-add listeners to localhost
+``$ docker run -it  bitnami/kafka:latest kafka-storage.sh random-uuid``
 
-run docker compose up -d
+Add the output to env.
 
-create kafka topics based on the instructions
+Then start the cluster by running:
 
-add jar file location to stream ingestion pipeline
+``$ docker compose up -d``
+
+Then create the following Kafka topics:
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 15  --topic nytenant_trips``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report_warning``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestioncontrol``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 15  --topic chicagotenant_trips``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report_warning``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestioncontrol``
+
+Then lets run the tenant pipelines. The pipelines components are always running and listening to messages to start/stop ingestion. Go to location *code/streamingest/pipelines/*. Add the .env files to each tenant folder according to the example env.
+
+Add the the downloaded jar file locations to both pipelines. Keep the file:// before the location
+
+With two terminals, go to each tenant folder and run ``$ python ny_pipeline.py`` and ``$ python chicago_pipeline.py``. (or python3 ...)
+
+Then start stream ingest manager py running going to *code/streamingest/* and running 
+``$ python3 stream_manager.py``
+The two tenant topics are hardcoded as default arguments. The manager keeps listening to new messages to tenant pipeline topics, and based on input starts the pipelines. If no new messages for 60 seconds, manager sends stop message to pipeline.
+
+Then start monitor by running:
+
+``$ python3 stream_monitor.py``
+
+Monitor gets pipeline execution report from pipelines.
+
+Finally, we can start producing input data streams.
+
+start producing data for both tenant by going to */tenant/* and running
+``$ python3 chicago/kafka_produrer.py``
+
+and
+
+``$ python3 ny/kafka_produrer.py``
 
 
-start stream ingest manager py running python3 code/streamingest/stream_manager.py --topics chicago_taxitrips ny_taxitrips
-
-start producing data by running python3 start_producing
 
 get ny taxi set from https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic nytenant_trips
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report_warning
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic nytenant_ingestioncontrol
+Download 2024 january Yellow Taxi Trip Records (PARQUET)
 
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic chicagotenant_trips
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report_warning
-docker exec -it server-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 3  --topic chicago_ingestioncontrol
+get chicago taxi set from 

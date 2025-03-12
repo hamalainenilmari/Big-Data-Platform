@@ -389,7 +389,9 @@ The stream ingestion pipeline is a blackbox to the platform, meaning that the pi
 
 ### 2.3 Stream Ingestion Pipeline
 
-We have developed an example stream ingestion pipeline with Flink, which consumes the raw source data from Kafka topic, transforms it and stores the processed data into Cassandra table. The pipeline initializes a Kafka source and reads the input data as a string. The input data is then turned into JSON object and all the possible NaN values are transformed into Null-format, which is compatible with Cassandra. The trip start and end strings are turned into timestamps and unneeded values Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Then the remaining data is inserted into Cassandra data storage.
+We have developed two different tenant stream ingestion pipelines. The pipeline techonology is Apache Flink, which consumes the raw source data from Kafka topic, transforms it and stores the processed data into Cassandra table. The pipelines initialize a Kafka source and read the input data as a string. The input data is then turned into JSON object and all the possible NaN values are transformed into Null-format, which is compatible with Cassandra.
+
+For tenant 1 (chicago taxi), the trip start and end strings are turned into timestamps and unneeded values Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Then the remaining data is inserted into Cassandra data storage.
 
 The input data must hold the following message structure schema (with possible missing values):
 
@@ -427,40 +429,158 @@ The transformed data inserted into Cassandra is in the following format (input d
 (6, '000072ee076c9038868e239ca54185eb43959db0', 'Flash Cab', None, None, None, 0.0, 33.75, 'Cash', 41.944226601, -87.655998182, 'e51e2c30caec952b40b8329a68b498e18ce8a1f40fa75c71e425e9426db562ac617b0a28e1c69f5c579048f75a43a2dc066c17448ab65f5016acca10558df3ed', 0.0, 0.0, datetime.datetime(2024, 1, 28, 15, 0), 12.7, 1749, datetime.datetime(2024, 1, 28, 14, 30), 33.75)
 ```
 
-### 2.4 Stream Ingestion Monitor
+For tenant 2 (ny taxi), the trip start and end strings are turned into timestamps and unneeded values removed congestion_surcharge, improvement_surcharge and store_and_fwd_flag are dropped. Then the remaining data is inserted into Cassandra data storage.
 
-The platform could have a component stream ingestion monitor, which would watch over the performance of stream ingestion pipeline instances. The pipelines would report the data processing performance, with average ingestion time, total ingestion size and number of messages received/inserted. The monitor component could use these reports for monitoring the system performance and tenant actions, and based on the information take actions such as scale components.
-
-The report could contain information for:
-
-* identification of tenant
-* pipeline component information
-* ingestion start time
-* ingestion end time
-* number of messages ingested from messaging system
-* average ingestion time/speed (messages/rows ingested per second)
-* total size of messages ingested
-* number of errors during ingestion
-
-An example report could be following:
+The input data must hold the following message structure schema (with possible missing values):
 
 ```json
 {
-  "tenantId": "chicago_taxi_123",
-  "pipeline": "stream_ingest_chicago",
-  "startTime": "2025-04-10 11:15:00",
-  "endTime": "2025-04-10 11:30:00",
-  "inboundMessagesAmount": 10000,
-  "ingestionSpeed": 50,
-  "totalIngestionSize": 2000000,
-  "numMessagesError": 0
-}
+  "VendorID": 2,
+  "tpep_pickup_datetime": "2024-01-01 00:50:05",
+  "tpep_dropoff_datetime": "2024-01-01 01:25:09", 
+  "passenger_count": 1, 
+  "trip_distance": 4.08, 
+  "RatecodeID": 1, 
+  "store_and_fwd_flag": "N", 
+  "PULocationID": 48, 
+  "DOLocationID": 87, 
+  "payment_type": 2, 
+  "fare_amount": 31.0, 
+  "extra": 1.0, 
+  "mta_tax": 0.5, 
+  "tip_amount": 0.0, 
+  "tolls_amount": 0.0, 
+  "improvement_surcharge": 1.0, 
+  "total_amount": 36.0, 
+  "congestion_surcharge": 2.5, 
+  "Airport_fee": 0.0
+  }
 ```
 
-The pipeline component would record and store this report information. The pipeline produces this information to another Kafka topic, such as "tenant_chicago_ingestion_report", where stream ingestion monitor consumes the data and take possible actions based on it. The monitor could e.g. scale pipeline up/down or stop it based on the report information.
+The transformed data inserted into Cassandra is in the following format:
+
+```python
+(2, "2024-01-01 03:51:53", "2024-01-01 04:18:37", 2, 4.230000019073486, 1, 255, 198, 2, 25.399999618530273, 1.0, 0.5, 0.0, 0.0, 27.899999618530273, 0.0)
+```
+
+We tested the stream ingestion performance with the two tenants producing streaming data. We run the tenant producers locally for approximately 4 minutes, with data sent to the platform's messaging system in 0.1 second intervals.
+
+Statistics:
+
+Chicago taxi tenant:
+
+```log
+2025-03-12 09:41:25,338 - INFO - chicagotenant - Stream ingestion statistics:
+2025-03-12 09:41:25,339 - INFO - Ingestion started at: 2025-03-12 09:36:32
+2025-03-12 09:41:25,339 - INFO - Ingestion ended at: 2025-03-12 09:41:25
+2025-03-12 09:41:25,339 - INFO - Total ingestion time: 232.80 s
+2025-03-12 09:41:25,339 - INFO - Total number of rows inserted: 19443
+2025-03-12 09:41:25,339 - INFO - Total ingestion size: 933.264 kB
+2025-03-12 09:41:25,339 - INFO - Ingestion speed: 4.01 kB/s
+2025-03-12 09:41:25,339 - INFO - Number of rows not inserted due to format not matching schema: 557
+```
+
+Ny taxi tenant:
+
+```log
+2025-03-12 09:41:25,688 - INFO - nytenant - Stream ingestion statistics:
+2025-03-12 09:41:25,688 - INFO - Ingestion started at: 2025-03-12 09:36:31
+2025-03-12 09:41:25,688 - INFO - Ingestion ended at: 2025-03-12 09:41:25
+2025-03-12 09:41:25,688 - INFO - Total ingestion time: 233.78 s
+2025-03-12 09:41:25,688 - INFO - Total number of rows inserted: 12905
+2025-03-12 09:41:25,688 - INFO - Total ingestion size: 619.44 kB
+2025-03-12 09:41:25,688 - INFO - Ingestion speed: 2.65 kB/s
+2025-03-12 09:41:25,688 - INFO - Number of rows not inserted due to format not matching schema: 0
+```
+
+Chicago taxi tenant ingestion was a bit faster, with possible reasons being, producer slowness, network latency, pipeline data transformation efficiency, different database structures (different primary keys, ...) etc. Chicago pipeline ingested data approximately 83 rows a second while ny tenant ingested 55 rows a second. Chicago pipeline discarded 557 input data rows, because of data storage primary key values missing. Ny tenant input data was completely in correct format and no row was discarded.
+
+Log files:
+
+* logs/stream/ny_ingestion.log
+* logs/stream/chicago_ingestion.log
+
+We also tested chicago tenant streaming pipeline with large-scale streaming. We produced approximately 100 000 rows of data with the data being read in batches from a large input file and sent to the platform as fast as possible. This is the output log of the ingestion.
+
+```log
+2025-03-12 10:03:41,281 - INFO - chicagotenant - Stream ingestion statistics:
+2025-03-12 10:03:41,282 - INFO - Ingestion started at: 2025-03-12 09:46:15
+2025-03-12 10:03:41,282 - INFO - Ingestion ended at: 2025-03-12 10:03:41
+2025-03-12 10:03:41,282 - INFO - Total ingestion time: 985.79 s
+2025-03-12 10:03:41,282 - INFO - Total number of rows inserted: 108871
+2025-03-12 10:03:41,282 - INFO - Total ingestion size: 5225.808 kB
+2025-03-12 10:03:41,282 - INFO - Ingestion speed: 5.30 kB/s
+2025-03-12 10:03:41,282 - INFO - Number of rows not inserted due to format not matching schema: 3454
+```
+
+The ingestion took approximately 16 minutes, and 108 871 rows were inserted. 3454 rows were discarded due to mismatching format. Total ingestion size in 16 minutes was 5.2 MB. Ingestion speed raised higher than in the previous tests, as we only had one tenant pipeline running.
+
+### 2.4 Stream Ingestion Monitor
+
+The platform has a component stream ingestion monitor, which watches over the performance of stream ingestion pipeline instances. The pipelines report the data processing performance, with average ingestion time, total ingestion size and number of messages received/inserted. The pipelines send the report to a specific Kafka topic the monitor is listening to, after pipeline execution stop has been called. The pipelines also send discarded input data rows in real-time to the monitor. The monitor component could use these reports for monitoring the system performance and tenant actions, and based on the information take actions such as scale components. Also as the discarded rows are produced to monitor in real-time, the monitor could take actions based on some explicitely set limits, such as 100 discarded rows in 10 seconds.
+
+The report contains information for:
+
+* identification of tenant (based on the topic)
+* pipeline component information (based on the topic)
+* ingestion start time
+* ingestion end time
+* total ingestion time
+* number of messages ingested
+* total ingestion size
+* average ingestion time/speed (messages/rows/data ingested per second)
+* number of errors during ingestion (aggregated from the discarded data messages)
+
+The monitor stores the report in following format:
+
+```log
+2025-03-12 10:03:41,281 - INFO - chicagotenant - Stream ingestion statistics:
+2025-03-12 10:03:41,282 - INFO - Ingestion started at: 2025-03-12 09:46:15
+2025-03-12 10:03:41,282 - INFO - Ingestion ended at: 2025-03-12 10:03:41
+2025-03-12 10:03:41,282 - INFO - Total ingestion time: 985.79 s
+2025-03-12 10:03:41,282 - INFO - Total number of rows inserted: 108871
+2025-03-12 10:03:41,282 - INFO - Total ingestion size: 5225.808 kB
+2025-03-12 10:03:41,282 - INFO - Ingestion speed: 5.30 kB/s
+2025-03-12 10:03:41,282 - INFO - Number of rows not inserted due to format not matching schema: 3454
+```
+
+The pipeline component would record and store this report information. The pipeline produces this information to another Kafka topic, such as "tenant_chicago_ingestion_report", where stream ingestion monitor consumes the data and take possible actions based on it. The monitor creates the final execution report based on the ingestion statistics and discarded rows data.
 
 ![platform architecture - real-time ingest with monitor](../images/realtime_architecture_monitor.png)
 
 ### 2.5 Monitor gets report from pipeline
 
-The stream ingestion monitor component overwatches the performance of ingestion components. The monitor is consuming messages from Kafka topics specified for each tenant pipeline reporting.
+The stream ingestion monitor component overwatches the performance of ingestion components. The monitor is consuming messages from Kafka topics specified for each tenant pipeline reporting. The monitor implementation can be found on locaiton *code/streamingest/stream_monitor.py*.
+
+The monitor informes the stream manager if the report execution is showing alarming statistics. For example, if the pipeline execution is called, but the received pipeline statistics show no data inserted, the monitor makes a specific call to manager. Also if data ingestion speed is low, the monitor informes manager about it. This would need setting a specific limit to the lowness, which would need careful planning as we don't want the monitor to send messages to the manager when nothing is from, e.g. if it is normal that only a few data sets are produced in some time interval.
+
+The monitor will inform the manager about the following problems:
+
+The amount of rows discarded in the stream pipeline execution is above a specific set threshold. The monitor will send a following Kafka message to manager:
+
+```json
+{
+  "tenant": "nytenant",
+  "warning": "maxDiscardedRowsAmount"
+}
+```
+
+The message contains information about which tenant has execution problems and the warning. The manager knows based on the warning, that maximum discarded rows amount is exceeded, and something must be done. The manager could for example, inform the tenant that the input data has not good value currently.
+
+Numbers of rows inserted is less than a specific set threshold. For example, if the tenant configuration tells that this tenant should produce continuosly, this could indicate that something is wrong with the pipeline. Based on the information, the manager could scale the pipeline component horizontally or up.The monitor send the following message to manager:
+
+```json
+{
+  "tenant": "nytenant",
+  "warning": "minRowsInserted"
+}
+```
+
+Ingestion speed is below a specific set threshold. This could indicate problems in the pipeline execution or data storage performance. Based on the information manager could scale the component. The monitor sends the following message to manager:
+
+```json
+{
+  "tenant": "nytenant",
+  "warning": "minimumIngestionSpeed"
+}
+```

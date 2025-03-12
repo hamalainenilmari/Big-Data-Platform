@@ -90,10 +90,14 @@ def execute():
 
     env = StreamExecutionEnvironment.get_execution_environment()
     # JARs of kafka (source) and Cassandra (sink) connectors
+    kafka_jar = os.getenv("KAFKA_JAR")
+    cassandra_jar = os.getenv("CASSANDRA_JAR")
+    python_jar = os.getenv("PYTHON_JAR")
+
     env.add_jars(
-        "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-sql-connector-kafka-3.4.0-1.20.jar",
-        "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-connector-cassandra_2.12-3.2.0-1.19.jar",
-        "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/opt/flink-python-1.20.1.jar"
+        kafka_jar,
+        cassandra_jar,
+        python_jar
         )
 
     # Kafka Source setup
@@ -183,7 +187,7 @@ def execute():
 # Stopped pipeline execution, send run statistics to monitor
 def finishExecution(startTime, totalRows, kafka_producer):
     endTime = time.time()
-    totalTime = endTime - startTime
+    totalTime = endTime - startTime - 60 # stopping since no new messages for 60 seconds
     totalSize = ((totalRows*48)/1000)
     speed = (totalSize/totalTime)
 
