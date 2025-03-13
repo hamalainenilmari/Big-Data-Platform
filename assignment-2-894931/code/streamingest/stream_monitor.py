@@ -7,8 +7,8 @@ from datetime import datetime
 
 tenant_pipelines = {
     "chicagotenant": {
-        "minimumIngestionSpeed": 10,     # kB/s
-        "minRowsProcessed": 1,           # min number of rows ingested during execution before a problem
+        "minimumIngestionSpeed": 10,      # kB/s
+        "minRowsProcessed": 1,            # min number of rows ingested during execution before a problem
         "maxDiscardedRowsRelation": 0.001 # % of how many rows of input data can be discarded before a problem
     },
     "nytenant": {
@@ -26,7 +26,11 @@ def handleStatistics(statistics, producer):
     tenantId = statistics["tenant_id"]
     time = statistics["timestamp"]
     rows = statistics["rows_processed"]
-    speed = statistics["rows_per_second"] * 48
+    if "rows_per_second" in statistics:
+        speed = statistics["rows_per_second"] * 48
+    else:
+        speed = 0
+    #speed = statistics["rows_per_second"] * 48
     badRows = statistics["discarded_rows"]
     if rows > 0:
         relation = badRows / (badRows + rows) # discarded data amount divided by all consumed data
@@ -35,7 +39,8 @@ def handleStatistics(statistics, producer):
     print(statistics)
      
     if relation > tenant_pipelines[tenantId]["maxDiscardedRowsRelation"]:
-        print("Max amount of bad rows in ingestion -> inform manager")
+        print(f"Max amount of bad format rows in relation to total rows in ingestion exceeded \
+               {relation:.2f} / {tenant_pipelines[tenantId]['maxDiscardedRowsRelation']} -> informing manager")
         msg = {
             "tenant": tenantId,
             "warning": "maxDiscardedRowsRelation"
@@ -45,7 +50,7 @@ def handleStatistics(statistics, producer):
         producer.flush()
 
     elif rows < tenant_pipelines[tenantId]["minRowsProcessed"]:
-        print("below min amount of rows processed in ingestion -> inform manager")
+        print(f"Below min amount of rows processed in ingestion {rows} / {tenant_pipelines[tenantId]['minRowsProcessed']} -> informing manager")
         msg = {
             "tenant": tenantId,
             "warning": "minRowsProcessed"
@@ -55,7 +60,7 @@ def handleStatistics(statistics, producer):
         producer.flush()
 
     elif speed < tenant_pipelines[tenantId]["minimumIngestionSpeed"]:
-        print("below min ingestion speed -> inform manager")
+        print(f"Ingestion performing below min ingestion speed {speed:.2f} / {tenant_pipelines[tenantId]['minimumIngestionSpeed']} -> informing manager")
         msg = {
             "tenant": tenantId,
             "warning": "minimumIngestionSpeed"
@@ -71,7 +76,7 @@ def generateReport(tenant, statistics, badRows, producer):
     totalTime = statistics["total_time"]
     rows = statistics["rows"]
     size = statistics["total_size"]
-    speed = statistics["rows_per_second"] * 48
+    speed = statistics["speed"] * 48
     print(statistics)
 
     logFile = f"../../logs/stream/{tenant}_{start}_stream_ingestion.log"
