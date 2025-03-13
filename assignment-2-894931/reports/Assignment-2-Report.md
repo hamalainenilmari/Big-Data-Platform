@@ -659,3 +659,6 @@ After measuring the data quality, the results would be stored in the platform fo
 
 ### 3.5 Multiple batch ingestion pipelines of a tenant
 
+If tenants would have multiple batch ingestion pipelines, with each having unique workload and suitable for a specific type of data, the platform design would need to be modified. The staging input directory component would work the same way, with HDFS as technology. If the tenant has different data types needed to ingest, each data type speficied for each ingestion pipeline would be stored in it's own location in the HDFS. The manager would check for new data in the staging directory as before, but with configuration that data found from a specific location would lead to invoking a corresponding pipeline. The pipeline technology could be Apache Spark as before, or a new pipeline could be built with other technologies depending on the data ingestion needs. The manager would call the specific pipeline, which would consume the data from correspoding staging input directory location. The processed data could be inserted into the same data storage component as previously.
+
+![batch multiple pipelines architecture](../images/batch_multiple_pipelines_architecture.png)
