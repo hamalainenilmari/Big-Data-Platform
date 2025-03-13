@@ -374,11 +374,11 @@ This log shows the agreement violation of staging input directory maximum storag
 
 ### 2.1 Stream Ingestion
 
-The stream ingestion provided by this platform consists of a messaging system, stream ingestion pipeline and a data storage. Messaging system technology is Apache Kafka. The Kafka topics are defined in the cluster, and the tenant's produce real-time data into those topics. Stream processing technology Apache Flink, which is good for tracking running aggregations and detecting anomalies. Flink is used to transform the raw source data into data storage compatible format. Flink provides stateful computations with streaming data at large scale, high performance and low latency. Data storage component is Cassandra, as before.
+The stream ingestion provided by this platform consists of a messaging system, stream ingestion pipeline and a data storage. Messaging system technology is Apache Kafka. The Kafka topics are defined in the cluster, and the tenant's produce real-time data into those topics. Stream processing technology is Apache Flink, which is good for tracking running aggregations and detecting anomalies. Flink is used to transform the raw source data into data storage compatible format. Flink provides stateful computations with streaming data at large scale, high performance and low latency. Data storage component is Cassandra, as before.
 
 In real-time ingestion provided by the platform some components of the platform are dedicated to individual tenants and some parts are shared between all tenants. The messaging system is shared between all tenants in the multi-tenancy model. The platform hosts an Kafka server with multiple brokers. The tenant-specific Kafka topics are added to the Kafka broker cluster alongside the other topics of tenants.
 
-Individually dedicated parts of the platform are the stream ingestion pipeline and the data storage. The stream ingestion pipeline is developed by the tenant itself and the platform invokes the execution of the pipeline. Pipelines are added and removed based on pay-per-use principle of the platform. The data storage components (coredms), Cassandra clusters, are also dedicated to individual tenants. Each tenant has their own data storage component running on it's own virtual machine in the platform infrastructure.
+Individually dedicated parts of the platform are the stream ingestions pipeline and the data storage. The stream ingestion pipeline is developed by the tenant itself and the platform invokes the execution of the pipeline. Pipelines are added and removed based on pay-per-use principle of the platform. The data storage components (coredms), Cassandra clusters, are also dedicated to individual tenants. Each tenant has their own data storage component running on it's own virtual machine in the platform infrastructure.
 
 ### 2.2 Stream Ingestion Manager
 
@@ -464,9 +464,7 @@ The transformed data inserted into Cassandra is in the following format:
 (2, "2024-01-01 03:51:53", "2024-01-01 04:18:37", 2, 4.230000019073486, 1, 255, 198, 2, 25.399999618530273, 1.0, 0.5, 0.0, 0.0, 27.899999618530273, 0.0)
 ```
 
-We tested the stream ingestion performance with the two tenants producing streaming data. We run the tenant producers locally for approximately 4 minutes, with data sent to the platform's messaging system in 0.1 second intervals.
-
-Statistics:
+We tested the stream ingestion performance with the two tenants producing streaming data. We run the tenant producers locally for approximately 4 minutes, with data sent to the platform's messaging system in 0.1 second intervals. The statistics were following:
 
 Chicago taxi tenant:
 
@@ -501,7 +499,7 @@ Log files:
 * logs/stream/ny_ingestion.log
 * logs/stream/chicago_ingestion.log
 
-We also tested chicago tenant streaming pipeline with large-scale streaming. We produced approximately 100 000 rows of data with the data being read in batches from a large input file and sent to the platform as fast as possible. This is the output log of the ingestion.
+We also conducted performance testing with chicago tenant streaming pipeline with large-scale streaming. We produced approximately 100 000 rows of data with the data being read in batches from a large input file and sent to the platform as fast as possible. The performance metrics were following:
 
 ```log
 2025-03-12 10:03:41,281 - INFO - chicagotenant - Stream ingestion statistics:
@@ -518,21 +516,41 @@ The ingestion took approximately 16 minutes, and 108 871 rows were inserted. 345
 
 ### 2.4 Stream Ingestion Monitor
 
-The platform has a component stream ingestion monitor, which watches over the performance of stream ingestion pipeline instances. The pipelines report the data processing performance, with average ingestion time, total ingestion size and number of messages received/inserted. The pipelines send the report to a specific Kafka topic the monitor is listening to, after pipeline execution stop has been called. The pipelines also send discarded input data rows in real-time to the monitor. The monitor component could use these reports for monitoring the system performance and tenant actions, and based on the information take actions such as scale components. Also as the discarded rows are produced to monitor in real-time, the monitor could take actions based on some explicitely set limits, such as 100 discarded rows in 10 seconds.
+The platform has a component stream ingestion monitor, which watches over the performance of stream ingestion pipeline instances. The pipelines report the data processing performance, with average ingestion time, total ingestion size and number of messages received/inserted. The pipelines send two kind of metrics to the monitor. The pipelines send ingestion status metrics in 10 second intervals, which contain tenant id, timestamp, number of rows processed, rows processed per seconds and number of discarded rows. The monitor component could use these reports for monitoring the system performance and tenant actions, and based on the information take actions such as scale components. Also as the discarded rows are produced to monitor in real-time, the monitor could take actions based on some explicitely set limits, such as 100 discarded rows in 10 seconds.
 
-The report contains information for:
+![platform architecture - real-time ingest with monitor](../images/realtime_architecture_monitor.png)
+
+Example message:
+
+```json
+{"tenant_id": "chicagotenant", "timestamp": "2025-03-13T17:06:53.530044", "rows_processed": 449, "rows_per_second": 44.9, "discarded_rows": 16}
+```
+
+The pipelines also send a total ingestion report to a specific Kafka topic the monitor is listening to, after pipeline execution stop has been called. The report contains information for:
 
 * identification of tenant (based on the topic)
-* pipeline component information (based on the topic)
 * ingestion start time
 * ingestion end time
 * total ingestion time
 * number of messages ingested
 * total ingestion size
 * average ingestion time/speed (messages/rows/data ingested per second)
-* number of errors during ingestion (aggregated from the discarded data messages)
 
-The monitor stores the report in following format:
+Example message:
+
+```json
+{
+  "tenant_id": "nytenant",
+  "start_time": "2025-03-12 09:14:21",
+  "end_time": "2025-03-12 09:16:52",
+  "total_time": 91.77,
+  "total_rows": 5500,
+  "total_size": 260,
+  "ingestion_speed": 2.88
+}
+```
+
+Total ingestion size is stored as kilobytes and ingestion speed as kilobytes per second. The monitor creates the final execution report based on the ingestion statistics and discarded rows data. The monitor produces and stores a log file of the total ingestion metrics in the following format: 
 
 ```log
 2025-03-12 10:03:41,281 - INFO - chicagotenant - Stream ingestion statistics:
@@ -545,29 +563,23 @@ The monitor stores the report in following format:
 2025-03-12 10:03:41,282 - INFO - Number of rows not inserted due to format not matching schema: 3454
 ```
 
-The pipeline component would record and store this report information. The pipeline produces this information to another Kafka topic, such as "tenant_chicago_ingestion_report", where stream ingestion monitor consumes the data and take possible actions based on it. The monitor creates the final execution report based on the ingestion statistics and discarded rows data.
+### 2.5 Stream ingestion pipeline actions based on ingestion metrics
 
-![platform architecture - real-time ingest with monitor](../images/realtime_architecture_monitor.png)
-
-### 2.5 Monitor gets report from pipeline
-
-The stream ingestion monitor component overwatches the performance of ingestion components. The monitor is consuming messages from Kafka topics specified for each tenant pipeline reporting. The monitor implementation can be found on locaiton *code/streamingest/stream_monitor.py*.
-
-The monitor informes the stream manager if the report execution is showing alarming statistics. Each tenant has a unique configuration which determines the pipeline execution limits to follow. The configuration is in following format:
+The stream ingestion monitor component overwatches the performance of ingestion components. The monitor is consuming messages from Kafka topics specified for each tenant pipeline reporting. The monitor implementation can be found on locaiton *code/streamingest/stream_monitor.py*. The monitor informes the stream manager if the report execution is showing alarming statistics. Each tenant has a unique configuration which determines the pipeline execution limits to follow. The configuration is in following format:
 
 ```json
 {
     "minimumIngestionSpeed": 2,
-    "minRowsInserted": 10,
+    "minRowsProcessed": 10,
     "maxDiscardedRowsRelation": 0.01
 }
 ```
 
-The configurations contains limit for minimum ingestion speed in kilo bytes per second. The value is needed for making sure that the pipeline is performing as expected for the tenant. For example, if we know that a tenant should be producing 10 kB every second, but ingestion speeed is below the 2, something is wrong. Minimum rows inserted means the lower limit of rows inserted during one execution run. If we know that tenant sends always a batch of data at a time, this can be higher than 1. Otherwise, it should be at least one, to make sure that when ingestion is started,a t least one unit data is really ingested. The final, maximum discarded rows relation stores the information about how many data units consumed where discarded on relation to total data consumed. If the relation exceeds the limit, the platform acts accordingly.
+The configurations contains limit for minimum ingestion speed in kilobytes per second. The value is needed for making sure that the pipeline is performing as expected for the tenant. For example, if we know that a tenant should be producing 10 kB every second, but ingestion speeed is below the 2, something is wrong. Minimum rows inserted means the lower limit of rows inserted during one execution run. If we know that tenant sends always a batch of data at a time, this can be higher than 1. Otherwise, it should be at least one, to make sure that when ingestion is started, at least one unit data is really ingested. The final, maximum discarded rows relation stores the information about how many data units consumed where discarded on relation to total data consumed. If the relation exceeds the limit, the platform acts accordingly.
 
 The monitor will inform the manager about the following problems:
 
-maxDiscardedRowsRelation:
+**Maximum number of rows discarded is exceeded**
 
 ```json
 {
@@ -576,10 +588,9 @@ maxDiscardedRowsRelation:
 }
 ```
 
-When manager gets this ingestion result message, it will stop the pipeline 
+When manager gets this ingestion result message, it will stop the pipeline. The platform could also send an alert to the tenant.
 
-
-Numbers of rows inserted is less than a specific set threshold. For example, if the tenant configuration tells that this tenant should produce continuosly, this could indicate that something is wrong with the pipeline. Based on the information, the manager could scale the pipeline component horizontally or up.The monitor send the following message to manager:
+**Minimum number of rows inserted is below the limit**
 
 ```json
 {
@@ -588,7 +599,9 @@ Numbers of rows inserted is less than a specific set threshold. For example, if 
 }
 ```
 
-Ingestion speed is below a specific set threshold. This could indicate problems in the pipeline execution or data storage performance. Based on the information manager could scale the component. The monitor sends the following message to manager:
+Numbers of rows inserted is less than a specific set threshold. For example, if the tenant configuration tells that this tenant should produce continuosly, this could indicate that something is wrong with the pipeline. When manager receives this message, it will restart the tenant ingestion pipeline by sending stop and start messages to it. In a real production environment, the manager could scale the pipeline component horizontally or up.
+
+**Performance is below Minimum Ingestion Speed**
 
 ```json
 {
@@ -596,3 +609,34 @@ Ingestion speed is below a specific set threshold. This could indicate problems 
   "warning": "minimumIngestionSpeed"
 }
 ```
+
+Ingestion speed is below a specific set threshold. This could indicate problems in the pipeline execution or data storage performance. The manager restarts the pipeline when receiving this status message.
+
+The following pictures the flow when monitor receives an ingestion status report which and realizes that the relation of rows discarded is exceeding the limit of tenant:
+
+Manager is listening to tenants topics, receives a message and starts the corresponding tenant ingestion pipeline execution.
+![flow part 1](../images/stream_flow_metrics1.png)
+
+Pipeline execution is started, pipeline sends metrics to monitor
+![flow 2](../images/flow2.png)
+
+Monitor receives metrics and realizes that the maximum amount of rows discarded in one inteerval (10s) of ingestion is exceeded. The limit is 0.001 (0.1 % of messages), and amount is 0.03. Monitor sends warning message to manager.
+![flow 3](../images/flow3.png)
+
+Manager receives the warning message and stops the pipeline execution.
+![flow 4](../images/flow4.png)
+
+The pipeline execution is stopped.
+![flow 5](../images/flow5.png)
+
+## Part 3 - Integration and Extension
+
+### 3.1 Batch ingestion logging
+
+### 3.2 Stream ingestion to multiple data sinks
+
+### 3.3 Data encryption
+
+### 3.4 Quality of data
+
+### 3.5 Multiple batch ingestion pipelines of a tenant
