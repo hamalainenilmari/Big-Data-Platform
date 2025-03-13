@@ -9,7 +9,7 @@ tenant_pipelines = {
     "chicagotenant": {
         "minimumIngestionSpeed": 10,      # kB/s
         "minRowsProcessed": 1,            # min number of rows ingested during execution before a problem
-        "maxDiscardedRowsRelation": 0.001 # % of how many rows of input data can be discarded before a problem
+        "maxDiscardedRowsRelation": 0.2 # % of how many rows of input data can be discarded before a problem
     },
     "nytenant": {
         "minimumIngestionSpeed": 2,
