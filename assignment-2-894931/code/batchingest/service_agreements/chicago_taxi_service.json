@@ -2,7 +2,7 @@
     "id": "tenant_chicago",
     "pipeline": "batch_ingest_pipeline.py",
     "fileStorageLocation": "/tenantChicagoTaxi",
-    "coredmsKeyspace": "taxiservices",
+    "coredmsKeyspace": "chicagotenant",
     "coredmsTable": "trips",
     "fileTypesSupported": {
         "csv": true,
