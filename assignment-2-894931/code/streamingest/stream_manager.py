@@ -8,12 +8,32 @@ def kafka_delivery_error(err, msg):
     if err is not None:
         print(f'Message delivery failed: {err}')
 
+def startPipeline(tenant, producer):
+    print(f"new msg for tenant {tenant}, not running -> start execution")
+
+    msg = json.dumps({"action": "start"}) # message to start pipeline execution
+    control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
+
+    producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
+    producer.flush()
+    return (True, 0) # reset tenants time since last msg, set to running
+
+def stopPipeline(tenant, producer):
+    print(f"Stopping tenant {tenant} pipeline execution ...")
+
+    msg = json.dumps({"action": "stop"}) # message to start pipeline execution
+    control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
+
+    producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
+    producer.flush()
+
 # Stream ingestion manager
 def main():
     parser = argparse.ArgumentParser()
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', '--broker', default="localhost:9092", help='Broker as "server:port"')
-    parser.add_argument('-t', '--topics', nargs="+", default=["chicagotenant_trips", "nytenant_trips"], help='tenants kafka topics')
+    parser.add_argument('-t', '--topics', nargs="+", default=["chicagotenant_trips", "nytenant_trips", \
+                                                              "pipeline_execution_warning"], help='tenants kafka topics')
     parser.add_argument('-g', '--consumer_group', default="manager", help='consumer group')
     
     args = parser.parse_args()
@@ -25,7 +45,7 @@ def main():
     for item in topics:
         tenants[item.split("_")[0]] = (False, 0)
 
-    print("tenants: ")
+    print("Listening to topics: ")
     print(tenants)
 
     #create configuration file for kafka connection
@@ -36,9 +56,8 @@ def main():
         
     consumer = Consumer(kafka_conf)
     consumer.subscribe(topics)
-
     kafka_conf_producer={
-            'bootstrap.servers': 'localhost:9092'
+            'bootstrap.servers': broker
         } 
 
     # producer for sending msgs to starting / stopping pipelines
@@ -48,7 +67,6 @@ def main():
     try:
         while True: # consume in a loop
             # check for new messages of tenants topics every 10 seconds
-            time.sleep(10)
             msg = consumer.poll(10.0)
 
             if msg is None:
@@ -56,15 +74,11 @@ def main():
                 for key, value in tenants.items():
                     tenants[key] = (value[0], value[1] + 10)
                     lastMessageTime = tenants[key][1]
-                    print(f"Time since last tenant {key} message: {lastMessageTime} s")
 
-                    if (lastMessageTime >= 40 and tenants[key][0]): 
+                    if (lastMessageTime >= 60 and tenants[key][0]): 
                         # no new messages in 60 seconds and tenant is running, send message to stop tenant pipeline
-                        msg = json.dumps({"action": "stop"}) # message to start pipeline execution
-                        control_topic = f"{key}_ingestioncontrol" # corresponding topic
-                        print(f"send message: {msg}, topic: {control_topic}")
-                        producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
-                        producer.flush()
+                        print(f"No new message for tenant {key} since: {lastMessageTime} s")
+                        stopPipeline(tenant, producer)
                         tenants[key] = (False, lastMessageTime) # set tenant to not running
                 continue
 
@@ -76,24 +90,44 @@ def main():
                 # new message inbound
                 topic = msg.topic()
                 tenant = topic.split("_")[0]
-                for key, value in tenants.items():
-                    if key == tenant:
-                        if (not tenants[tenant][0]): # if tenant not running, start execution
-                            print(f"new msg for tenant {tenant}, not running -> start execution")
+                #print("topic:" , topic, ", tenant: ", tenant)
 
-                            msg = json.dumps({"action": "start"}) # message to start pipeline execution
-                            control_topic = f"{tenant}_ingestioncontrol" # corresponding topic
-
-                            producer.produce(control_topic, msg.encode('utf-8'), callback=kafka_delivery_error)
-                            producer.flush()
-                            tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
-                        else: # execution already going on, no need to send message
-                            tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
-                            #print("tenant already running")
-                    else:
-                        tenants[key] = (value[0], value[1] + 10)
-                        lastMessageTime = tenants[key][1]
-                        print(f"Time since last tenant {key} message: {lastMessageTime} s")
+                # listen to pipeline exeucution statistics
+                if topic == "pipeline_execution_warning":
+                    # Received warning about status of a tenant's pipeline execution from monitor
+                    warningMsg = json.loads(msg.value().decode('utf-8'))
+                    tenant = warningMsg["tenant"]
+                    warning = warningMsg["warning"]
+                    
+                    if warning == "minimumIngestionSpeed":
+                        print(f"Received warning about tenant {tenant} pipeline: ingestion speed  \
+                              is below performance limit. Restarting pipeline ...")
+                        stopPipeline(tenant, producer)
+                        time.sleep(10) # not scalable restarting mechanism, but will have to do
+                        startPipeline(tenant, producer)
+                        
+                    if warning == "minRowsProcessed":
+                        print(f"Received warning about tenant {tenant} pipeline: rows inserted in execution  \
+                              is below performance limit. Restarting pipeline ...")
+                        stopPipeline(tenant, producer)
+                        time.sleep(10)
+                        startPipeline(tenant, producer)
+                    
+                    if warning == "maxDiscardedRowsRelation":
+                        print(f"Received warning about tenant {tenant} pipeline: maximum discarded rows  \
+                              relation is exceeded. Stopping pipeline ...")
+                        stopPipeline(tenant, producer)
+                        time.sleep(10)
+                        
+                else: 
+                    # tenant topic message, check if we need to start pipeline
+                    for key, value in tenants.items():
+                        if key == tenant:
+                            if (not tenants[tenant][0]): # if tenant not running, start execution
+                                tenants[tenant] = startPipeline(tenant, producer)
+                            else: 
+                                # execution already going on, no need to send message
+                                tenants[tenant] = (True, 0) # reset tenants time since last msg, set to running
 
     except Exception as e:
         print(f"Error: {e}")
