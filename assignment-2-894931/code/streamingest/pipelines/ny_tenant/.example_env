@@ -1,4 +1,7 @@
 KAFKA_BROKER_ADDRESS=localhost
 CASSANDRA_ADDRESS=localhost
-CASSANDRA_KEYSPACE=taxiservices
+CASSANDRA_KEYSPACE=nytenant
 CASSANDRA_TABLE=trips
+KAFKA_JAR=file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-sql-connector-kafka-3.4.0-1.20.jar
+CASSANDRA_JAR=file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-connector-cassandra_2.12-3.2.0-1.19.jar
+PYTHON_JAR=file:///home/ilmarih/bdp_25_tech/flink-1.20.1/opt/flink-python-1.20.1.jar
