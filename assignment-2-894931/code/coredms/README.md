@@ -2,8 +2,10 @@
 
 ## This platform component is designed and implemented in assignment 1
 
-This component is the data storage of the platform. Technology is Apache Cassandra.
-The Cassandra cluster of 4 nodes can be started by running docker compose up.
+This component is the data storage of the platform. Technology is Apache Cassandra. The Cassandra cluster of 4 nodes can be started by running:
+
+``$ docker compose up -d``
+
 After the containers are healthy and up you can enter one of them and create the following keyspace and table to the Cassandra cluster by running
 
 ``$ docker exec -it <container_name> /bin/bash``
@@ -18,6 +20,8 @@ Then enter cassandra shell by running:
 
 ``$ cqlsh``
 
+##### Note that when running stream ingestion, use the two different tenants with different input data, but when running batch ingestion create identical tables to both tenants
+
 Then to create 2 keyspaces for 2 different tenants run:
 
 ``$ CREATE KEYSPACE chicagotenant WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 2, 'DC2': 1} AND durable_writes = true;``
@@ -27,7 +31,7 @@ Then to create 2 keyspaces for 2 different tenants run:
 And then to create the tables run:
 
 ``$
-CREATE TABLE chicagoTenant.trips (
+CREATE TABLE chicagotenant.trips (
     trip_id text,
     taxi_id text,
     trip_start_timestamp timestamp,
@@ -76,4 +80,4 @@ And
 
 To test that ingestion is working correctly, you can try to query rows in cqlsh after running the ingestion pipeline.
 
-``$ SELECT COUNT(*) FROM tenantchicago.trips;``
+``$ SELECT COUNT(*) FROM chicagotenant.trips;``

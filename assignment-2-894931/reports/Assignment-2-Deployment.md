@@ -13,6 +13,10 @@ To run the platform, the following technologies must be installed:
 * Flink Cassandra jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-connector-cassandra_2.12/3.2.0-1.19
 * Flink python jar: https://mvnrepository.com/artifact/org.apache.flink/flink-python/1.20.1
 
+Install the dependencies by running:
+
+``$ pip install -r requirements.txt``
+
 **Coredms**:
 
 The data storage of both ingestion mechanisms is the same coredms. Go to *code/coredms* and run docker compose up. This deploys the cassandra cluster with 3 nodes in containers locally. The folder contains instructions on how to create a keyspace and a table.

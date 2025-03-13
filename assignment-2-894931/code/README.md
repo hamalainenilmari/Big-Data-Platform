@@ -1,2 +1,11 @@
-# This directory is about the code.
->Note: we must be able to compile and/or run the code. No BINARY files are within the code. External libraries should be automatically downloaded (e.g., via Maven, npm, pip, docker pull)
+# This directory contains the components of this data platform
+
+**Mysimbdp-coredms**: docker compose of 4 node Cassandra cluster
+
+**Mysimbdp-batchingest**: batch ingestion components
+
+**Mysimbdp-streamingest**: stream ingestion components
+
+**Tenant**: example tenant kafka producers to simulate data insertion into the platform
+
+Each of these components and tenant contain instructions on how to run.

@@ -1,8 +1,8 @@
-# Mysimbdp-dataingest instructions
+# Messaging System
 
-This component contains kafka server and consumer used for data ingesting: listening to messages and inserting the data into coredems.
+This component is from assignment 1. This component contains kafka cluster.
 
-Starting Kafka server:
+Starting Kafka cluster:
 
 First create .env file in the kafka_server folder from the example_env.
 
@@ -23,15 +23,7 @@ docker exec -it <container_name> kafka-topics.sh --create \
   --partitions 1 \
   --topic <your_topic_name>
 
-For trying the platform with Chicago Taxi trip data:
-
-``
-$ docker exec -it kafka_server-kafka0-1 kafka-topics.sh --create \
-  --bootstrap-server localhost:9092 \
-  --replication-factor 3 \
-  --partitions 15 \
-  --topic taxiTrips
-``
+The topics needed to run the platform are written in the deployment info.
 
 After the topic is created it is time to start the kafka consumers. Go to folder consumer and install the requirements:
 

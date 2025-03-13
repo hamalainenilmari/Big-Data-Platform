@@ -1,0 +1,8 @@
+2025-03-12 09:16:53,110 - INFO - chicagotenant - Stream ingestion statistics:
+2025-03-12 09:16:53,110 - INFO - Ingestion started at: 2025-03-12 09:14:23
+2025-03-12 09:16:53,110 - INFO - Ingestion ended at: 2025-03-12 09:16:52
+2025-03-12 09:16:53,110 - INFO - Total ingestion time: 89.78 s
+2025-03-12 09:16:53,110 - INFO - Total number of rows inserted: 7475
+2025-03-12 09:16:53,110 - INFO - Total ingestion size: 358.8 kB
+2025-03-12 09:16:53,110 - INFO - Ingestion speed: 4.00 kB/s
+2025-03-12 09:16:53,110 - INFO - Number of rows not inserted due to format not matching schema: 452
