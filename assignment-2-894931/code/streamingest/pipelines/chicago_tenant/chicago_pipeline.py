@@ -291,7 +291,7 @@ def execute():
 # Stopped pipeline execution, send run statistics to monitor
 def finishExecution(startTime, totalRows, kafka_producer):
     endTime = time.time()
-    totalTime = endTime - startTime - 60 # stopping since no new messages for 60 seconds
+    totalTime = endTime - startTime # - 60 # stopping since no new messages for 60 seconds
     totalSize = ((totalRows*48)/1000)
     speed = (totalSize/totalTime)
 
