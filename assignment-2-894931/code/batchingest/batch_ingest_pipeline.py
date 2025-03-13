@@ -3,6 +3,10 @@ import argparse
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import col
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_file", help="input data file")
@@ -11,8 +15,11 @@ parser.add_argument("--table", help="data storage cassandra table")
 
 args = parser.parse_args()
 
+cas_add = os.getenv("CASSANDRA_ADDRESS")
+
 # Create spark session
 spark = SparkSession.builder.appName("HDFSSparkCassandraIngest")\
+    .config("spark.cassandra.connection.host", cas_add)\
     .config("spark.cassandra.connection.localDC", "DC1")\
     .config("spark.cassandra.input.consistency.level", "LOCAL_ONE")\
     .getOrCreate()
