@@ -6,7 +6,7 @@
 
 This platform has different constraints for the platform usage defined individually in each tenant's service agreement. There are constrains for source data added to the platform. This way each tenant has different level of the platform, defined by their customer level. The service agreement is stored as an JSON file.
 
-One service agreement constraing is the number of different input file types supported by the platform.. Minimum service supports only 1 file-format, such as CSV. With higher level service, the platform will support multiple source file formats, such as CSV, JSON, XML and txt. The number of different source file types supported means more freedom to the tenant and due depends on the service level.
+One service agreement constraing is the number of different input file types supported by the platform.. Minimum service supports only 1 file-format, such as CSV. With higher level service, the platform will support multiple source file formats, such as CSV, JSON, XML, Parquet and txt. The number of different source file types supported means more freedom to the tenant and due depends on the service level.
 
 Another service level quality constraint is data ingestion speed. This is implemented by different service agreement constraints. The service agreement holds an interval of time after which the platform checks if the tenant has added new input data to the staging input directory. Another constraint is the maximum amount of data that can be ingested on one run. After the limit is reached, the platforms halts for another specified interval of time, ingestion interval, before continuing the ingestion. Higher service level means shorter intervals and higher amount of maximum ingestion data and therefore faster ingestion speed. Defining the intervals and maximum amount of data for one ingestion based on the tenant service level is essential for the platform, as executing the tenant pipeline uses platform's recources, which causes infastructure costs. The ingestion interval is stored as seconds and maximum amount of data in megabytes.
 
@@ -28,60 +28,59 @@ The service agreement holds the following information:
 * **maxIngestionIntervalSize**: maximum amount of data that is ingested on one run (in MB)
 * **ingestInterval**: the amount of time (in seconds) the manager waits to continue input data ingestion after reaching the maximum amount of data that is ingested on one run
 
-Example service agreement schemas of two different tenants:
+Example service agreement schemas of two very different tenants:
 
-Lower service level with one input data format support, max staging dir storage of 10GB, maximum of 20 files, input data checking interval of one hour, maximum ingestion interval size of 100 MB and ingestion interval time of 10 minutes.
-
-TODO: add example domains and why such agreement for each
+This example if for a tenant, which is a small retail store. As the input data is retail information such as sales, the data is in simple csv format. The data is inserted to the platform once a day, so a relatively low data volume and speed means that the tenant does not need very high level service from the platform. This tenant has lower service level with one input data format support, max staging dir storage of 5MB, maximum of 20 files, input data checking interval of two hour, maximum ingestion interval size of 50 MB and ingestion interval time of 10 minutes.
 
 ```json
 {
-    "id": "tenant_chicago",
+    "id": "tenant_retail",
     "pipeline": "batch_ingest_pipeline.py",
-    "fileStorageLocation": "/tenantChicagoTaxi",
-    "coredmsKeyspace": "taxiservices",
-    "coredmsTable": "trips",
+    "fileStorageLocation": "/tenantRetail",
+    "coredmsKeyspace": "retailservices",
+    "coredmsTable": "sales",
     "fileTypesSupported": {
         "csv": true,
         "json": false,
         "txt": false,
         "xml": false
     },
-    "maxStagingStorage": 10000.0,
+    "maxStagingStorage": 5000.0,
     "maxNumFiles": 20,
-    "inputCheckInterval": 3600,
-    "maxIngestionIntervalSize": 100.0,
+    "maxStagingStorage": 7200,
+    "maxIngestionIntervalSize": 50.0,
     "ingestInterval": 600
 }
 ```
 
-A bit higher service level with three input data type support, max staging dir storage of 1TB, maximum of 50 files and
-ingestion interval of 1 minute.
+The other example tenant is a huge transportation cargo company. As the tenant has huge amount of ships with real time location tracking and other data, the tenant needs high level service from the platform. The tenant ingests data very often, so the interval of checking for new data is only 60 seconds. As the data comes in huge batches, the maximum staging storage is 1 TB, and maximum number of files is 500. The maximum amount ingested in one execution is 500 GB. Higher service level has support for all the data types of the platform.
 
 ```json
 {
-    "id": "tenantAbc",
+    "id": "tenant_transportation",
     "pipeline": "abc_pipeline.py",
-    "fileStorageLocation": "/tenantAviationCompany",
+    "fileStorageLocation": "/tenantTransportation",
     "fileTypesSupported": {
         "csv": true,
         "json": true,
         "txt": true,
-        "xml": false
+        "xml": true
     },
-    "maxStorage": 1000000.0,
-    "maxNumFiles": 50,
-    "interval": 60
+    "maxStagingStorage": 1000000.0,
+    "maxNumFiles": 500,
+    "maxStagingStorage": 60,
+    "maxIngestionIntervalSize": 500000.0,
+    "ingestInterval": 60
 }
 ```
+
+The two examples demostrate the different needs of the platform of different tenants, and why each field is crucial.
 
 ### 1.2 Batch Ingest Pipeline
 
 To perform batch ingestion with this platform, each tenant will put their source data files into a staging file directory hosted by this platform. The technology for staging file directory is Hadoop Distributed File System (HDFS). Due to the distribution, HDFS is fault-tolerant and it provides high throughput data access to application data making it suitable technology for this component.
 
-Each tenant has developed their own batch ingestion pipeline. The pipeline will take the tenant's source data
-from the corresponding HDFS location, process the data and insert the processed data into the storage component
-mysimbdp-coredms, which is provided by the platform.
+Each tenant has developed their own batch ingestion pipeline. The pipeline will take the tenant's source data from the corresponding HDFS location, process the data and insert the processed data into the storage component mysimbdp-coredms, which is provided by the platform.
 
 Example implementation of batch ingestion pipeline can be found on *code/tenant/*. The main technology is Apache Spark, which is an engine for executing data engineering and processing large amounts of data. Spark contains ready made drivers for ingesting data from HDFS and inserting it to Apache Cassandra, which is the storage technology of this platform. The platform's batchingestmanager calls the tenant pipeline component, with the file to ingest being an input parameter. In the pipeline, fist a spark session is created, with connection to the tenant's corresponding Cassandra keyspace and table. Then the component reads the source data file and processes it by:
 
@@ -94,32 +93,21 @@ After the batch data processing the processed data is inserted into correspondin
 
 ### 1.3 Batch Ingestion Manager
 
-The platform contains a component for managing different tenant batch ingestion pipelines, *batchingestmanager*.
-The manager is responsible for invoking the tenants pipelines to start the ingestion. The pipelines are a
-black box for the manager, meaning that the manager is only responsible for starting the pipelines and does not
-need any other information about the pipelines.
+The platform contains a component for managing different tenant batch ingestion pipelines, *batchingestmanager*. The manager is responsible for invoking the tenants pipelines to start the ingestion. The pipelines are a black box for the manager, meaning that the manager is only responsible for starting the pipelines and does not need any other information about the pipelines.
 
-The manager retrieves the service level agreement information about each tenant in JSON form. The agreement
-contains information about each tenant's ingestion interval in seconds. The manager is running continuosly, and
-scheduling the pipelines. When the tenant's ingestion interval has ran, the manager checks the tenant's staging input directory location in the platforms HDFS from the service agreement. Then the manager checks for new files in the location. The manager uses the service level agreement to make sure that the tenant is acting according to the agreement. If the tenant has inserted source data into the staging directory with data types not being accepted in the service agreement, the manager will remove them. Also the manager checks that the maximum storage amount in the staging directory is not exceeded. If the limit is exceeded, the manager will remove files until the storage amount is under the limit. The manager also checks that the number of input files is not exceeding the limit, and removes files until amount is under the limit if needed. In real production platform, the insertion of new files exceeding the limits would be prevented.
+The manager retrieves the service level agreement information about each tenant in JSON form. The agreement contains information about each tenant's ingestion interval in seconds. The manager is running continuosly, and scheduling the pipelines. When the tenant's ingestion interval has ran, the manager checks the tenant's staging input directory location in the platforms HDFS from the service agreement. Then the manager checks for new files in the location. The manager uses the service level agreement to make sure that the tenant is acting according to the agreement. If the tenant has inserted source data into the staging directory with data types not being accepted in the service agreement, the manager will remove them. Also the manager checks that the maximum storage amount in the staging directory is not exceeded. If the limit is exceeded, the manager will remove files until the storage amount is under the limit. The manager also checks that the number of input files is not exceeding the limit, and removes files until amount is under the limit if needed. In real production platform, the insertion of new files exceeding the limits would be prevented.
 
 Finally the manager will call the tenant's ingestion pipeline with each accepted file. After all the files are ingested, the manager waits for the interval time amout until checking for the tenant's source data files again.
 
 ![platform architecture - batch ingest](../images/batch_architecture.png)
 
-### 1.4 Design for multi-tenancy
+### 1.4 Design for multi-tenancy and performance testing
 
-TODO: explain multi-tenancy model
+The platform design which supports batch ingestion contains multiple components, which of some are shared for all tenants and some are dedicated for individual tenants. The staging input directory component is shared for all tenants. Each tenant has access to their location in HDFS, where they can insert their input data files. The other shared component is the batch ingestion manager. The manager has information about each tenant's staging input directory location and the specific pipeline. The tenant's batch ingestion pipeline is unique component for the tenant. The pipeline has information about the tenant HDFS location and data storage. In a real production platform, each tenant would have their own data storage component coredms instance in the platform (implemented as shared component due to lack of resources). With new platform users the platform would increase infrastructure and when tenants are removed, their instances would be deleted.
 
-In a real production platform, each tenant would have their own coredms instance running in the platform.
-With new platform users the platform would increase infrastructure and when tenants are removed,
-their instances would be deleted.
+We tested the platform against two different tenants with different level service agreements. Both tenants used the same pipeline to emphasize the effect of the service agreement details. Both tenants also used the same input data formats, but with different values.
 
-We tested the platform against two different tenants with different level service agreements. Both tenants used the same pipeline to emphasize the effect of the service agreement details. Both tenants also used the same input data.
-
-In the first test, we measure the ingestion speed of the two different tenants, when they have different level service agreements. Both tenant 1 and tenant 2 have 10 files of 5 000 rows inserted into their corresponding staging file directories provided by the platform. One file has size of approximately 2 MB. Tenants have the same amount of input data, to point out the effect of maximum ingestion interval total data size defined in the unique service level agreement to ingestion speed.
-
-Tenant 1 has higher level service agreement, and in this test case the tenant's maximum ingestion interval size limit is not reached. Tenant 2 has lower level agreement with stricter maximum intercal size, meaning after ingestion of 3 files, the manager will halt the tenant's pipeline execution for 60 seconds before continuing the ingestion of the input files. In this case the maximum storage and number of files service agreement details are not exceeded.
+In the first test, we measure the ingestion speed of the two different tenants, when they have different level service agreements. Both tenant 1 and tenant 2 have 10 files of 5 000 rows inserted into their corresponding staging file directories provided by the platform. One file has size of approximately 2 MB. Tenants have the same amount of input data, to point out the effect of maximum ingestion interval total data size defined in the unique service level agreement to ingestion speed. Tenant 1 has higher level service agreement, and in this test case the tenant's maximum ingestion interval size limit is not reached. Tenant 2 has lower level agreement with stricter maximum interval size, meaning after ingestion of 3 files, the manager will halt the tenant's pipeline execution for 60 seconds before continuing the ingestion of the input files. In this case the maximum storage and number of files service agreement details are not exceeded.
 
 Tenant 1 service agreement:
 
@@ -172,9 +160,12 @@ Results:
 | 1               |  384            | 0.05                   |
 | 2               |  571            | 0.04                   |
 
-We can see that for the tenant 1 with higher level service agreement, ingestion speed was 33 % faster than the lower level agreement having tenant 2. As the input data contained 50 000 rows total, the corresponding ingestion speeds measured by rows are 130 rows/s and 88 rows/s. This test environment is rather minimal, but it indicates the impact of the service level agreement to the ingestion speed difference.
+We can see that for the tenant 1 with higher level service agreement, ingestion speed was 33 % faster than the lower level agreement having tenant 2. The reason for this is the maximum ingestion interval total data size, which is higher for tenant 1. As the input data contained 50 000 rows total, the corresponding ingestion speeds measured by rows are 130 rows/s and 88 rows/s. This test environment is rather minimal, but it indicates the impact of the service level agreement to the ingestion speed difference.
 
-The full log files are *tenant_chicago_1741351815_ingestion.log* and *example_tenant_123_1741351815_ingestion.log*.
+The full log files are:
+
+* logs/batch/tenant_chicago_1741351815_ingestion.log
+* logs/batch/example_tenant_123_1741351815_ingestion.log*.
 
 In the second test, we will violate the service level agreement constraints. During ingestion, tenant 2 will exceed the maximum input storage of the staging input directory defined to the tenant. From the log *tenant_chicago_1741351815_ingestion.log* we can see the error message, which tells that the tenant is breaking the service agreement of maximum staging input directory storage and the ingestion is not started.
 
@@ -202,7 +193,7 @@ In this final part, we measure the maximum amount of data per this platform can 
 
 **2 files of 25000 rows each (10 MB/file):**
 
-The runtime of both tenants stayd approximately the same for each test, so we show only one.
+The runtime of both tenants stayed approximately the same for each test as they are using the same pipeline, so we show only one.
 
 | Rows of data | Total time (s)  | Ingestion speed (MB/s) |
 |--------------|-----------------|------------------------|
@@ -235,18 +226,9 @@ logs:
 * tenant_chicago_1741354983_ingestion.log
 * example_tenant_123_1741354983_ingestion.log
 
-The final test of 2 files of 50 000 rows (22 MB/file) resulted in the platform halting so we found the limit.
-When running the platform locally with one machine (HDFS, Spark, Cassandra), and two parallel tenants,
-the maximum amount of data per second we can ingest by batch ingestion is approximately
-0.30 MB/s (738 rows/s) per tenant. We can assume that this would approximately double up when running with only one tenant. We can assume that this would also linearly decrease with the amount of tenants increasing.
+The final test of 2 files of 50 000 rows (22 MB/file) resulted in the platform halting so we have found the platform limit. When running the platform locally with one machine (HDFS, Spark, Cassandra), and two parallel tenants, the maximum amount of data per second we can ingest by batch ingestion is approximately 0.30 MB/s (738 rows/s) per tenant, so in total approximately 1500 rows a second. We can assume that this would approximately double up when running with only one tenant. We can assume that this would also linearly decrease with the amount of tenants increasing.
 
 ### 1.5 Logging
-
-Define metrics:
-
-* why do we log these info, why are the data needed?
-* how are the log data used to manage service quality (platform not too slow etc)
-* are the logging data metrics defined in the service agreement (we promise that this is minimum ingest speed etc)
 
 The platform logs multiple factors by the batch ingestion manager, which runs the tenants ingestion pipelines. When the manager invokes the tenant's pipeline execution, the corresponding log file is initialized with the tenant id. Then the manager checks for new files from the tenant's staging input directory. The manager logs the following general information aspects:
 

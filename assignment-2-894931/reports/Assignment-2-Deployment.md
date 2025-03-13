@@ -8,15 +8,10 @@ To run the platform, the following technologies must be installed:
 * Python and pip
 * HDFS - Hadoop (version 3.4.1), download from https://www.apache.org/dyn/closer.cgi/hadoop/common/
 * Apache Spark (version 3.5.5), download from https://www.apache.org/dyn/closer.lua/spark/spark-3.5.5/spark-3.5.5-bin-hadoop3.tgz
-* Java (openjdk version "1.8.0_392"
-OpenJDK Runtime Environment (build 1.8.0_392-8u392-ga-1~20.04-b08)
-OpenJDK 64-Bit Server VM (build 25.392-b08, mixed mode)) - sudo apt install openjdk-11-jdk
-* Apache Flink (version ), download from https://dlcdn.apache.org/flink/flink-1.20.1/flink-1.20.1-bin-scala_2.12.tgz
+* Java (e.g. openjdk version 1.8.0_392)
 * Flink Kafka jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-sql-connector-kafka/3.4.0-1.20
 * Flink Cassandra jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-connector-cassandra_2.12/3.2.0-1.19
 * Flink python jar: https://mvnrepository.com/artifact/org.apache.flink/flink-python/1.20.1
-
-add python to be same as python3
 
 **Coredms**:
 
@@ -95,7 +90,7 @@ This will start the manager, which invokes the batch_ingest_pipeline and ingest 
 
 For performing near real-time data ingestion with the platform, you must have Cassandra Cluster (coredms) and Kafka Broker cluster (messagingystem) set up. You need to be running stream manager, stream monitor and the tenant pipelines simultaneously.
 
-Start up the kafka broker cluster:
+1. Start up the kafka broker cluster:
 
 Go to code/streamingest/messaging_system/
 
@@ -128,19 +123,28 @@ Then create the following Kafka topics:
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestioncontrol``
 
-Then create the monitor manager connection topic:
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report``
+
+Then create the monitor manager connection topics:
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic pipeline_execution_warning``
+
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic ingestion_status``
 
 Then lets run the tenant pipelines. The pipelines components are always running and listening to messages to start/stop ingestion. Go to location *code/streamingest/pipelines/*. Add the .env files to each tenant folder according to the example env.
 
 Add the the downloaded jar file locations to both pipelines. Keep the file:// before the location
 
-With two terminals, go to each tenant folder and run ``$ python ny_pipeline.py`` and ``$ python chicago_pipeline.py``. (or python3 ...)
+With two terminals, go to each tenant folder and run:
 
-Then start stream ingest manager py running going to *code/streamingest/* and running 
+``$ python ny_pipeline.py``
+``$ python chicago_pipeline.py``
+
+Then start stream ingest manager py running going to *code/streamingest/* and running:
+
 ``$ python3 stream_manager.py``
-The two tenant topics are hardcoded as default arguments. The manager keeps listening to new messages to tenant pipeline topics, and based on input starts the pipelines. If no new messages for 60 seconds, manager sends stop message to pipeline.
+
+The tenant topics are hardcoded as default arguments. The manager keeps listening to new messages to tenant pipeline topics, and based on input starts the pipelines. If no new messages for 60 seconds, manager sends stop message to pipeline.
 
 Then start monitor by running:
 
@@ -150,14 +154,10 @@ Monitor gets pipeline execution report from pipelines.
 
 Finally, we can start producing input data streams.
 
-start producing data for both tenant by going to */tenant/* and running
+Start producing data for both tenant by going to */tenant/* and running:
+
 ``$ python3 chicago/kafka_produrer.py``
 
 and
 
 ``$ python3 ny/kafka_produrer.py``
-
-get ny taxi set from https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
-Download 2024 january Yellow Taxi Trip Records (PARQUET)
-
-get chicago taxi set from
