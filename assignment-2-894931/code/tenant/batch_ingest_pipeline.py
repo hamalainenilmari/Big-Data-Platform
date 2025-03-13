@@ -4,8 +4,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql.functions import col
 
-# TODO process multiple files from input folder, get argument for which files
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--input_file", help="input data file")
 parser.add_argument("--keyspace", help="data storage cassandra keyspace")
