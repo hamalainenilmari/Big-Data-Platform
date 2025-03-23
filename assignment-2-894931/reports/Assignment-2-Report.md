@@ -165,7 +165,7 @@ We can see that for the tenant 1 with higher level service agreement, ingestion 
 The full log files are:
 
 * logs/batch/tenant_chicago_1741351815_ingestion.log
-* logs/batch/example_tenant_123_1741351815_ingestion.log*.
+* logs/batch/example_tenant_123_1741351815_ingestion.log
 
 In the second test, we will violate the service level agreement constraints. During ingestion, tenant 2 will exceed the maximum input storage of the staging input directory defined to the tenant. From the log *tenant_chicago_1741351815_ingestion.log* we can see the error message, which tells that the tenant is breaking the service agreement of maximum staging input directory storage and the ingestion is not started.
 
