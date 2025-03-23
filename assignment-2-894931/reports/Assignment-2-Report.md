@@ -6,13 +6,13 @@
 
 This platform has different constraints for the platform usage defined individually in each tenant's service agreement. There are constrains for source data added to the platform. This way each tenant has different level of the platform, defined by their customer level. The service agreement is stored as an JSON file.
 
-One service agreement constraing is the number of different input file types supported by the platform.. Minimum service supports only 1 file-format, such as CSV. With higher level service, the platform will support multiple source file formats, such as CSV, JSON, XML, Parquet and txt. The number of different source file types supported means more freedom to the tenant and due depends on the service level.
+One service agreement constraint is the number of different input file types supported by the platform. Minimum service supports only 1 file-format, such as CSV. With higher level service, the platform will support multiple source file formats, such as CSV, JSON, XML, Parquet and txt. The number of different source file types supported means more freedom to the tenant and due depends on the service level.
 
 Another service level quality constraint is data ingestion speed. This is implemented by different service agreement constraints. The service agreement holds an interval of time after which the platform checks if the tenant has added new input data to the staging input directory. Another constraint is the maximum amount of data that can be ingested on one run. After the limit is reached, the platforms halts for another specified interval of time, ingestion interval, before continuing the ingestion. Higher service level means shorter intervals and higher amount of maximum ingestion data and therefore faster ingestion speed. Defining the intervals and maximum amount of data for one ingestion based on the tenant service level is essential for the platform, as executing the tenant pipeline uses platform's recources, which causes infastructure costs. The ingestion interval is stored as seconds and maximum amount of data in megabytes.
 
 Another critical service level constaint is the maximum storage of the platform's staging input directory. The service uses platform's memory and the max storage amount is due correlated to the service agreement level. The staging input directory max storage is stores as megabytes (MB).
 
-The service agreement schema would also contain other needed values, such as tenant identification, the tenant's batch ingestion pipeline, which the platform executes and the corresponding staging input directory in the platform. In real production context the pipeline component would be stored in other form, e.g. some API.
+The service agreement schema would also contain other needed values, such as tenant identification, the tenant's batch ingestion pipeline, which the platform executes and the corresponding staging input directory in the platform. In real production context the pipeline component would be stored in other form, e.g. some API. In a real production setting, the service agreement would also contraints like uptime of the service and maximum response time.
 
 The service agreement holds the following information:
 
@@ -165,7 +165,7 @@ We can see that for the tenant 1 with higher level service agreement, ingestion 
 The full log files are:
 
 * logs/batch/tenant_chicago_1741351815_ingestion.log
-* logs/batch/example_tenant_123_1741351815_ingestion.log*.
+* logs/batch/example_tenant_123_1741351815_ingestion.log
 
 In the second test, we will violate the service level agreement constraints. During ingestion, tenant 2 will exceed the maximum input storage of the staging input directory defined to the tenant. From the log *tenant_chicago_1741351815_ingestion.log* we can see the error message, which tells that the tenant is breaking the service agreement of maximum staging input directory storage and the ingestion is not started.
 
