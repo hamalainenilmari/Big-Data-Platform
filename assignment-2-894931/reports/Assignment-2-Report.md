@@ -12,7 +12,7 @@ Another service level quality constraint is data ingestion speed. This is implem
 
 Another critical service level constaint is the maximum storage of the platform's staging input directory. The service uses platform's memory and the max storage amount is due correlated to the service agreement level. The staging input directory max storage is stores as megabytes (MB).
 
-The service agreement schema would also contain other needed values, such as tenant identification, the tenant's batch ingestion pipeline, which the platform executes and the corresponding staging input directory in the platform. In real production context the pipeline component would be stored in other form, e.g. some API.
+The service agreement schema would also contain other needed values, such as tenant identification, the tenant's batch ingestion pipeline, which the platform executes and the corresponding staging input directory in the platform. In real production context the pipeline component would be stored in other form, e.g. some API. In a real production setting, the service agreement would also contraints like uptime of the service and maximum response time.
 
 The service agreement holds the following information:
 
