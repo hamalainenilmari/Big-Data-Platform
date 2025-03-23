@@ -12,7 +12,7 @@ from hdfs.util import HdfsError
 # Start executing pipeline of tenant
 def startExecution(tenant):
     # Initialize logging for pipeline execution loop
-    logFile = f"logs/{tenant['id']}_{int(time.time())}_ingestion.log"
+    logFile = f"logs/batch/{tenant['id']}_{int(time.time())}_ingestion.log"
 
     logger = logging.getLogger(f"tenant_{tenant['id']}")
     logger.setLevel(logging.INFO)
@@ -68,16 +68,16 @@ def executePipeline(tenant, logger):
                 """
             combinedStorageUsed += (file_size)
 
-        logger.info(f"Statistics:\n  *  Amount of files in tenant's staging input directory: {numFiles}\n  *  Combined Storage Used: {(combinedStorageUsed/1000000):.2f} /{tenant['maxStorage']} MB")
+        logger.info(f"Statistics:\n  *  Amount of files in tenant's staging input directory: {numFiles}\n  *  Combined Storage Used: {(combinedStorageUsed/1000000):.2f} /{tenant['maxStagingStorage']} MB")
         
         if (numFiles > tenant["maxNumFiles"]):
             logger.warning("Tenant Service Agreement limit reached: input file amount limit exceeded")
             logger.warning(f"Remove exceeding files to start ingestion.")
             stopPipeline(0,0, logger, tenant)
-        elif (combinedStorageUsed > tenant["maxStorage"]*1000000):
+        elif (combinedStorageUsed > tenant["maxStagingStorage"]*1000000):
             logger.warning("Tenant Service Agreement limit reached: storage limit exceeded")
             logger.warning(f"Storage used: {combinedStorageUsed / 1000000} MB")
-            logger.warning(f"Storage limit: {tenant['maxStorage']} MB")
+            logger.warning(f"Storage limit: {tenant['maxStagingStorage']} MB")
             logger.warning(f"Remove exceeding files to start ingestion.")
             stopPipeline(0,0, logger, tenant)
         else:
@@ -86,19 +86,20 @@ def executePipeline(tenant, logger):
                 # If we have ingested the max amount of tenant, sleep
                 if (ingestedFilesSize >= tenant["maxIngestionIntervalSize"]*1000000):
                     logger.info(f"Ingestion interval limit reached. Starting ingestion again after {tenant['interval']} seconds ...")
-                    time.sleep(tenant['interval'])
+                    time.sleep(tenant['inputCheckInterval'])
                     ingestedFilesSize = 0
                 
                 start_time_inv_file = time.time()
                 logger.info(f"Ingesting {file}")
+                print(f"calling tenant pipeline with keyspace {tenant['coredmsKeyspace']} table {tenant['coredmsTable']}")
                 # TODO add spark location to env variable
                 cmd = f"/home/ilmarih/bdp_25_tech/spark-3.5.5-bin-hadoop3/bin/spark-submit --master local[*] \
-                --conf spark.cassandra.connection.host=localhost \
+                --conf spark.cassandra.connection.host=34.88.51.152 \
                 --conf spark.cassandra.connection.port=9042 \
                 --conf spark.cassandra.connection.local_dc=DC1 \
                 --conf spark.cassandra.connection.timeoutMS=30000 \
                 --packages com.datastax.spark:spark-cassandra-connector_2.12:3.5.0,com.github.jnr:jnr-posix:3.1.15,com.github.jnr:jnr-ffi:2.2.11 \
-                code/tenant/{tenant['pipeline']} \
+                code/batchingest/{tenant['pipeline']} \
                 --input_file {folder}/{file} \
                 --keyspace {tenant['coredmsKeyspace']} \
                 --table {tenant['coredmsTable']}"
@@ -129,8 +130,8 @@ def stopPipeline(total_time, total_size, logger, tenant):
         logger.info(f"Ingestion speed: {((total_size/1000000)/total_time):.2f} MB/s")
     if (total_size == 0 and total_time == 0):
 
-        logger.info(f"Checking for new files after {tenant['interval']} seconds ...")
-        time.sleep(tenant['interval'])
+        logger.info(f"Checking for new files after {tenant['inputCheckInterval']} seconds ...")
+        time.sleep(tenant['inputCheckInterval'])
         executePipeline(tenant, logger)
     
 def main():

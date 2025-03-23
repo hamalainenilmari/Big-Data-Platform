@@ -10,9 +10,9 @@
         "txt": false,
         "xml": false
     },
-    "maxStagingStorage": 100.0,
+    "maxStagingStorage": 100000.0,
     "maxNumFiles": 20,
     "inputCheckInterval": 10,
-    "maxIngestionIntervalSize": 100.0,
+    "maxIngestionIntervalSize": 100000.0,
     "ingestInterval": 10
 }
