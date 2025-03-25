@@ -24,9 +24,26 @@ In our case, we will use the at least once -guarantee. It means that even in cas
 
 ### 1.3 Data times and windows
 
+The data pipeline in the platform contains several unique times associated with data. One time element is the event time, which means the time the message is produced. This time is automatically stored in the data record with rounded value (15 minutes), as the Trip End Timestamp contains it. Other time element is the time the message is entered into the system. One time element is the time when the data is processed. Because in streaming analytics we are interested in amount of trips per geographical area per some time unit, we use the trip end timestamp in stream processing to aggregate the data.
 
+In stream processing, windows are used to group the data for processing in time-bound chunks. As streams keep producing events indefinitely, windows allow us to divide this continuous flow of data into manageable discrete frames and then process them like batches. Window is a chuch of data.
+
+There are different types of windows, with sliding and tumbling windows being the feasible possibilites in this context. Tumbling window defines a fixed-size, non-overlapping window of data. Once a window is complete, the system moves to the next, window slides forward by the window size. E.g. with 10 minute tumbling window, data would be grouped from 00:00 to 09:59, with next group being 10:00 to 19:59. Used for calculating aggregations of events over fixed time intervals. Sliding window is also a fixed-size window, but it slides over the stream at regural intervals, i.e. windows overlap. A sliding window with a slide of 30 seconds would capture the data from 0:00 to 0:59, 0:30 to 1:29, 1:00 to 1:59. Sliding windows are used for e.g. tracking moving averages, such as computing average temperature in the last 5 minutes, updating every minute.
+
+As we want to calculate aggregations of taxi trips over fixed time intervals, we are using tumbling window. We are yet to determine if use time-based (window of 1, 10, 60 minute?) or count-based (window of 100, 500, 1000 trips?).
+
+Out-of-order data records could be caused the taxi trip IoT device failures, network failures etc. This is expected, as the data is coming from distributed sources with unreliable networks.
+
+A watermark is a progress marker for stream processing that helps the system decide when to move forward to avoid waiting indefinetely for out-of-order events. It allows the system to process a late event. As we are calculating amount of trips per area over time we will be using watermarks. The watermark acts as a threshold that marks the oldest event we will still process even if the event is late. 
+TODO add watermark info
 
 ### 1.4 Performance metrics of streaming analytics
+
+There are several important performance metris for streaming analytics for the taxi service provider tenant. An essential metric is event throughput. It measures the number of events processed per second by the streaming analytics application, indicating how efficiently the system can handle the incoming taxi trip streaming data. We can measure it with Kafka or Flink.
+
+End-to-end latency. Time taken from when event is produced by tenant until it is processed and stored into silver data location in HDFS. It is used to ensure real-time insights are generated within acceptable delays. The real-time analytics are not useful, if they are not provided in real-time also.
+
+Processing time per event. Time taken to process a single event withing the streaming analytics pipeline. It helps in optimizing recources. Ensures system can keep up with incoming data rates.
 
 ### 1.5 Architecture of streaming analytics service
 
@@ -36,6 +53,12 @@ streaming computing service
 tenantstreamapp
 tenantbatchapp
 mysimbdp-coredms
+
+The platform contains messaging system, of which technology is Apache Kafka. Tenants produce data to the platform by sending data records using Kafka Producers. The messaging system component contains Kafka cluster, to which the tenants producers send data. The streaming computing service of the platform is implemented with technology choice of Apache Flink, which is extremely efficieny for tracking running aggregations and detecting anomalies. The streaming computing service runs Flink cluster (?), and the tenantstreamapp is a Flink job, which is executed in the platforms Flink cluster. The core data management system (coredms) contains two separate data storage components; one for operational data and one for analytical data. The operational data storage is Cassandra cluster, as previously in this platform. The analytical data storage is Hadoop Distributed File System (HDFS). In real scenario a data lake would be more suitable choice for analytical data, but for simplicity we will use HDFS, which is efficient for handling large data and supporting batch analysis. The HDFS storage system is separated into two storages, silver and gold data. Tenantbatchapp is the component, which runs batch data analytics of the silver data and produces gold data. Apache Airflow is used for orchestrating the workflow, scheduling the periodic running of the tenantbatchapp.
+
+![Platform achitecture](../images/architecture.png)
+
+The workflow is the following. Tenants produce real time data with Kafka producers producing data into the messaging system. The tenants streaming application Flink job is running on the platform Flink cluster, and consuming the streaming data of the tenant. The tenantstreamapp processes the data by cleaning it and stores the processes data into mysimbdp-coredms Cassandra cluster. At the same time, the tenantstreamapp is producing silver data, i.e. running aggregations of taxi trips per area over time on the data. The produced silver data is sent to the tenant in real-time and stored to the analytical data storage HDFS silver data st0rage. Tenantbatchapp runs periodically and consumes the silver data, generates gold data from it and stores the gold data into analytical data HDFS gold data storage.
 
 ## Part 2 - Implementation of streaming analytics
 
