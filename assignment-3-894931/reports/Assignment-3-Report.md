@@ -31,6 +31,7 @@ In stream processing, windows are used to group the data for processing in time-
 There are different types of windows, with sliding and tumbling windows being the feasible possibilites in this context. Tumbling window defines a fixed-size, non-overlapping window of data. Once a window is complete, the system moves to the next, window slides forward by the window size. E.g. with 10 minute tumbling window, data would be grouped from 00:00 to 09:59, with next group being 10:00 to 19:59. Used for calculating aggregations of events over fixed time intervals. Sliding window is also a fixed-size window, but it slides over the stream at regural intervals, i.e. windows overlap. A sliding window with a slide of 30 seconds would capture the data from 0:00 to 0:59, 0:30 to 1:29, 1:00 to 1:59. Sliding windows are used for e.g. tracking moving averages, such as computing average temperature in the last 5 minutes, updating every minute.
 
 As we want to calculate aggregations of taxi trips over fixed time intervals, we are using tumbling window. We are yet to determine if use time-based (window of 1, 10, 60 minute?) or count-based (window of 100, 500, 1000 trips?).
+We will create 1 hour tumbling window, where taxi trip amounts are aggregated per the location area. After the 1 hour window has passed, the resulting data is stored in the HDFS silver data storage as csv, with each row corresponding to one area.
 
 Out-of-order data records could be caused the taxi trip IoT device failures, network failures etc. This is expected, as the data is coming from distributed sources with unreliable networks.
 
@@ -63,6 +64,36 @@ The workflow is the following. Tenants produce real time data with Kafka produce
 ## Part 2 - Implementation of streaming analytics
 
 ### 2.1 Tenantstreamapp
+
+Input streaming data has the following schema:
+
+```json
+{
+  "Trip ID": "0000184e7cd53cee95af32eba49c44e4d20adcd8",
+  "Taxi ID": "f538e6b729d1aaad4230e9dcd9dc2fd9a168826ddadbd67c2f79331875dc586863d73aa3169fb266dc5e5ed6cdc8687537de8071a51556146f5251d4d8e8237f", 
+  "Trip Start Timestamp": "2024-01-19T17:00:00Z", 
+  "Trip End Timestamp": "2024-01-19T18:00:00Z", 
+  "Trip Seconds": 4051, 
+  "Trip Miles": 17.12, 
+  "Pickup Census Tract": 17031980000, 
+  "Dropoff Census Tract": 17031320100, 
+  "Pickup Community Area": 76, 
+  "Dropoff Community Area": 32, 
+  "Fare": 45.5, 
+  "Tips": 10.0, 
+  "Tolls": 0.0, 
+  "Extras": 4.0, 
+  "Trip Total": 60.0, 
+  "Payment Type": "Credit Card", 
+  "Company": "Flash Cab", 
+  "Pickup Centroid Latitude": 41.97907082, 
+  "Pickup Centroid Longitude": -87.903039661, 
+  "Pickup Centroid Location": "POINT (-87.9030396611 41.9790708201)", 
+  "Dropoff Centroid Latitude": 41.884987192, 
+  "Dropoff Centroid Longitude": -87.620992913, 
+  "Dropoff Centroid  Location": "POINT (-87.6209929134 41.8849871918)"
+}
+```
 
 ### 2.2 Tenantbatchapp
 
