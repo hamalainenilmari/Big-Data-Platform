@@ -197,6 +197,22 @@ The log file *silver_data_final_test.log contains the result of second of the si
 
 ### 2.4 Wrong data
 
+As the analytical data needs pickup location area and trip start timestamp, we will simulate situtation where wrong data is sent to the platform in different amounts. As the streaming analytics component is made in a secure way, all the data it needs (pickupp location, timestamps) are verified to be in the input data. If the input data is missing those or they are in wrong format, the component will ignore the record. We will show it.
+
+First we will send data that is missing pickup location area.
+
+Then we will send data that is missing start timestamp.
+
+Then we will send data that has pickup location as int instead of string.
+
+Then we will send data that has timestamp as empty string.
+
+First we will send data where every 10th record has no pickup area location
+
+Then we will send data where every second record has no start timestamp
+
+Lastly, we will send data where every row is missing
+
 ### 2.5 Performance with tenantstreamap parallellism configurations
 
 ## Part 3 - Extension

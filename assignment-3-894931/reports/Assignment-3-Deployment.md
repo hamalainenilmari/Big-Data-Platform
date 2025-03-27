@@ -21,7 +21,7 @@ Install the dependencies by running:
 
 The data storage of both ingestion mechanisms is the same coredms. Go to *code/coredms* and run docker compose up. This deploys the cassandra cluster with 3 nodes in containers locally. The folder contains instructions on how to create a keyspace and a table.
 
-**Batch ingestion**:
+**Batch analytics**:
 
 HDFS is the staging input directory technology. After installing it, set the following configurations:
 
@@ -90,7 +90,7 @@ After you have created a folder to the local HDFS and inserted source data there
 
 This will start the manager, which invokes the batch_ingest_pipeline and ingest the processed data into the Cassandra table.
 
-**Stream ingestion**:
+**Stream analytics**:
 
 For performing near real-time data ingestion with the platform, you must have Cassandra Cluster (coredms) and Kafka Broker cluster (messagingystem) set up. You need to be running stream manager, stream monitor and the tenant pipelines simultaneously.
 
@@ -165,3 +165,6 @@ Start producing data for both tenant by going to */tenant/* and running:
 and
 
 ``$ python3 ny/kafka_produrer.py``
+
+**Airflow**
+
