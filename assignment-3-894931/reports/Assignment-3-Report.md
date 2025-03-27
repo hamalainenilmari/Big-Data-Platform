@@ -95,9 +95,105 @@ Input streaming data has the following schema:
 }
 ```
 
+For the tenantstreamapp to be able to correctly generate the analytics from the streaming data, the input data must contain the following values. Pickup community area is essential, as it is used for the main analytics, which is the number of trips per pickup area over time. Obviously, the trip start time is also crucial. Other value used for the analytics is the trip total fare, but it is not enforced, as the main on-demand analytics can be generated without the trip costs. The times are expected to be in format "2025-03-27T09:59:22Z", from where it is assigned as the timestamp and changed to integer timestamp format.
+
+The generated output analytics silver data is in following format:
+
+| pickup location  | amount of trips | total fares | start          | end            |
+|-----|----------|-----------|---------------|---------------|
+| 32   | 7       | 252.50    | 1743076720000 | 1743076720000 |
+| 2   | 2        | 22.15    | 1743076720000 | 1743076720000 |
+
+The data is inserted into the silver data storage without the headers.
+
+The input data from Kafka producers is serialized into bytes. The tenantstreamapp Flink application deserealises the data into string format, without enforcing any schema. Then the tenantstreamapp validates the schema, by checking if the data contains the needed values. If trip total is missing, it is simply inserted to 0. After generating the analytics over the tumbling window, the resulting Flink Row-format data is serialized into string-format, and inserted into the HDFS silver data storage.
+
+TODO data sent back to tenant
+
 ### 2.2 Tenantbatchapp
 
+The tenant implementation for batch analytics is the tenantbatchapp component, which is a Spark job. The component takes as input the generated silver data and produces gold data, which is more defined analytical data. The component sums up the fares and number of trips of the silver data. The batch analytics service provided by the platform is implemented with Apache Spark, which is a distributed computing framework for fast and large-scale data processing, especially for batch workloads. The platform hosts a Spark processing engine, and the tenantbatchapps are executed by submitting the application as Spark job to the platform engine. The tenantbatchapp is ran periodically. The component consumes all the latest generated silver data from the HDFS silver data storage. An example configuration could be that tenantstreamapp produces silver data records, which contain taxi trips statistics of an 1 hour window of different locations. Then the batch analytics component could consume the generated silver data every 24 hours, generating more detailed taxi trip statistics, enabling more in-depth, long term analysis.
+
+The batch analytics component workflow is the following. First the platform checks for new untouchable input silver data from HDFS silver data storage. If new data is not found, the platform will stop the workflow exetution, and wait for predefined time interval, before starting the workflow again. In this small scale context, we will halt for 1 minute, but in production the interval could be for example from 10 minutes to 1 hour. If new input data is found, the workflow stores the file locations, and moves the execution to the tenantbatchapp-component, which gets the input files. Then the tenantbatchapp job is submitted to the Spark engine with the input files. After the batch analytics component has produced the gold data, the final workflow step begins. In this step the platform modifies the processed silver data file names to include a mark, that the file is processed. The file name will be transformed from "silverdata.csv" to "silverdata_processed.csv". This last step makes sure that the tenantbatchapp does not process the same silver data twice and produce incorrect, misleading analytics.
+
+The underlying workflow orchestrator is implemented with Apache Airflow, which is a platform for automating and managing data pipelines. Airflow works by concepts of directed acyclic graphs with each task containing possible dependencies to others. The batch analytics workflow is defined in Airflow, and it is scheduled to run every minute. Again, of course, in a real production environment this schedule would be different.
+
 ### 2.3 Performance testing
+
+The test environment for testing the streaming analytics contains tenant data producers, tenantstreamapp, coredms analytical data storage HDFS for silver (and gold data). The streaming data is simulated by reading the Chicago Taxi Trip data and sending data row by row to the Kafka topic. As the timestamps of the dataset are rounded to fiveteen minutes, for more realistic scenario we will use the current time minus fiveteen minutes for the trip start time. The end time will be the current time, which means that each trip is 15 minutes long, but as the end time is not used the in the analytics this uncommonness wont matter.
+
+As the main focus of this testing is the streaming analytics, we will not be storing the operational data into Cassandra data storage, and we will not be performing the batch analytics.
+
+We have the following configurations:
+
+* 2 kafka brokers
+* topic partioined into 2
+* replication factor of 2
+* flink job parallellism of 1
+
+We will start the testing by using 1 producer producing record of data every second. The output silver data should contain close to 60 total trips per one output file. We use tumbling window of 20 seconds.
+
+After producing for 104 seconds, with 100 messages sent, we have the following silver data:
+![test silver 1](../images/test_silver1.png)
+
+The contents of one file were:
+
+
+| pickup location  | amount of trips | total fares | start          | end            |
+|-----|----------|-----------|---------------|---------------|
+|8|4|49.42|1743088220000|1743088240000|
+|76|3|252.88|1743088220000|1743088240000|
+|56|1|58.5|1743088220000|1743088240000|
+|28|2|54.2|1743088220000|1743088240000|
+|21|1|3.25|1743088220000|1743088240000|
+|50|1|31.75|1743088220000|1743088240000|
+|22|1|32.75|1743088220000|1743088240000|
+|38|1|30.5|1743088220000|1743088240000|
+|32|5|nan|1743088220000|1743088240000|
+
+We can see that the total number of trips was 19, which is expectable in the 20 second tumbling window.
+CPU and memory usage both rose up approximately 10 %.
+
+For the next test, we will use tumbling window of 60 seconds, 1 producer producing two messages per second.
+mem 74, cpu 20
+
+After running for 150 seconds, we have tree silver data outputs as expected. Each contains the expected data. CPU and memory rose up the same 10 %.
+
+Next test will be 2 producers producing 10 messages a second (20msg total / s).
+
+After running for 120 seconds, output files are as expected. CPU and memory again 10 &.
+
+Next test will be 5 producers, each producing 10 messages a second (50 msg total / s)
+After running for 2 minutes.
+CPU raised 20 %.
+The data is starting to show meaningful statistics:
+
+Top areas:
+
+| pickup location  | amount of trips | total fares | start          | end            |
+|-----|----------|-----------|---------------|---------------|
+|76|273|nan|1743090780000|1743090840000|
+|32|183|nan|1743090780000|1743090840000|
+
+Opposed to lowest:
+
+| pickup location  | amount of trips | total fares | start          | end            |
+|-----|----------|-----------|---------------|---------------|
+|15|1|31.25|1743090780000|1743090840000|
+|30|1|12.75|1743090780000|1743090840000|
+
+Next test 5 producers producing 20 messages a second (total 100 msg / s)
+
+CPU rose up to 50 %. 
+
+Next test 5 producers producing without sleep
+
+Aftering producing for a little over 2 minutes, the platform started to halt. As we are running locally, we cannot say which component was the first to freeze. It is Kafka or the Flink. But, because HDFS contains only 2 silver data files, we can assume that the flink job freezed as it should have started writing to the third file as the third window was started. 
+
+The CPU raised up to 100 %. Memory raised only 10 %.
+
+The log file *silver_data_final_test.log contains the result of second of the silver data outputs. The most number of trips per area was approximately 8500, while the lowest has single ones. In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics.
+
 
 ### 2.4 Wrong data
 
