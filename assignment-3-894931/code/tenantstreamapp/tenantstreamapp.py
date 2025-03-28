@@ -21,7 +21,7 @@ from pyflink.datastream import StreamExecutionEnvironment, CheckpointingMode, Fs
 from pyflink.common.serialization import Encoder
 from pyflink.datastream.connectors.file_system import StreamingFileSink, OutputFileConfig, RollingPolicy
 import math
-import logging
+
 
 # this function generates the aggregated analytical data of taxi trips per window
 class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
@@ -42,7 +42,7 @@ class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
 
             # Extract Community area
             community_area = data.get("Pickup Community Area")
-            if community_area is None or (isinstance(key, float) and math.isnan(key)) or key == 'NaN' or key == 'nan':
+            if community_area is None or (isinstance(key, float) and math.isnan(key)) or key == 'NaN' or key == 'nan' or not isinstance(community_area, int):
                 print(f"Skipping element due to missing pickup communnity area")
                 num_pickup_area_errors += 1
                 continue
@@ -56,7 +56,7 @@ class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
             
             # Extract total fare of trip
             total_price = data.get("Trip Total")
-            if total_price is None or total_price == 'NaN':
+            if total_price is None or (isinstance(total_price, float) and math.isnan(total_price)) or total_price == 'NaN' or total_price == 'nan':
                 # no need to skip value
                 total_price = 0.0
             
@@ -76,12 +76,12 @@ class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
         # number of timestamp errors
         yield metrics_output_tag, (window.start, total_row_count, discarded_row_count, num_pickup_area_errors, num_timestamp_errors)
         
-        if not elements_list or len(elements_list) == 0:
-            # should not happen
-            print("empty list")
+        if not cleansed_elements or len(cleansed_elements) == 0:
+            print("No schema matching data in window of specific key")
             return
         
         if key is None or (isinstance(key, float) and math.isnan(key)) or key == 'NaN' or key == 'nan':
+            # this should not happen
             return
         
         # Aggregate total number of trips and prices
@@ -89,7 +89,7 @@ class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
         total_price = sum(elem[2] for elem in cleansed_elements)
         
         if total_price is None or total_price == 'NaN':
-            print("error with total price")
+            print("error with total price, setting to 0")
             total_price = 0
 
         # final aggregated data of this window
@@ -110,6 +110,7 @@ def parse_datetime(iso_string):
         return datetime.now(pytz.UTC)
     
 
+# assign timestamp to each record for windowing
 class AssignTimestampAssigner(TimestampAssigner):
     def extract_timestamp(self, element, record_timestamp):
         try:
@@ -129,7 +130,7 @@ def execute():
     env.set_stream_time_characteristic(TimeCharacteristic.EventTime)
 
     env.enable_checkpointing(20000, CheckpointingMode.EXACTLY_ONCE) # TODO check this
-    #env.set_state_backend(FsStateBackend("hdfs://localhost:9000/flink/checkpoints"))
+    env.set_state_backend(FsStateBackend("hdfs://localhost:9000/flink/checkpoints"))
 
     # JARs of kafka (source) and Cassandra (sink) connectors
     kafka_jar = os.getenv("KAFKA_JAR")
@@ -161,7 +162,19 @@ def execute():
         'fetch.max.wait.ms': '100',
         }) \
         .build()
-    """
+    
+    # Kafka sink for sending analytics to tenant
+    kafka_sink = KafkaSink.builder() \
+        .set_bootstrap_servers("localhost:9092") \
+        .set_record_serializer(
+            KafkaRecordSerializationSchema.builder()
+                .set_topic("chicagotenant_analytics")
+                .set_value_serialization_schema(SimpleStringSchema()) 
+                .build()
+        ) \
+        .build()
+    
+    
     # HDFS sink for silver data, this will create a new output file for each window
     hdfs_sink = StreamingFileSink.for_row_format(
         base_path="hdfs://localhost:9000/chicagoTenant/silverData",  # HDFS base directory
@@ -173,9 +186,10 @@ def execute():
         .build()) \
     .with_rolling_policy(RollingPolicy.on_checkpoint_rolling_policy()) \
     .build()
-    """
+    
+    # local log file sink
     log_sink = StreamingFileSink.for_row_format(
-        base_path="/home/ilmarih/bdp_25/assignment-3-894931/logs",  # HDFS base directory
+        base_path="../../logs", 
         encoder=Encoder.simple_string_encoder()
     ) \
     .with_output_file_config(
@@ -184,6 +198,7 @@ def execute():
         .build()) \
     .with_rolling_policy(RollingPolicy.on_checkpoint_rolling_policy()) \
     .build()
+
     # tenant input streaming data from kafka
     stream = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
 
@@ -195,23 +210,25 @@ def execute():
     
     # generate analytics in tumbling windows
     windowed_stream = (stream
-        .filter(lambda x: x is not None)                        # Filter out None values
-        .key_by(lambda x: json.loads(x).get("Pickup Community Area"))                                 # Key by community area
-        .window(TumblingEventTimeWindows.of(Time.seconds(30)))  # tumbling window TODO check this
-        .process(                                               # Aggregate number of trips per area & total fares
+        .filter(lambda x: x is not None)                                # Filter out None values
+        .key_by(lambda x: json.loads(x).get("Pickup Community Area"))   # Key by community area
+        .window(TumblingEventTimeWindows.of(Time.seconds(30)))          # tumbling window TODO check this
+        .process(                                                       # Aggregate number of trips per area & total fares
             TaxiAnalyticsProcessWindowFunction(),
             output_type=Types.ROW([
-                Types.INT(),                                    # community area
-                Types.INT(),                                    # number of trips per window
-                Types.FLOAT(),                                  # total fares
-                Types.LONG(),                                   # window start timestamp
-                Types.LONG()                                    # window end timestamp
+                Types.INT(),                                            # community area
+                Types.INT(),                                            # number of trips per window
+                Types.FLOAT(),                                          # total fares
+                Types.LONG(),                                           # window start timestamp
+                Types.LONG()                                            # window end timestamp
                 ]))
     )
+
+    # get processing metrics from window side output
     metrics_output_tag = OutputTag("metrics", Types.TUPLE([Types.LONG(), Types.INT(), Types.INT(), Types.INT(), Types.INT()]))
     metrics_stream = windowed_stream.get_side_output(metrics_output_tag)
     
-    # sum each keyed data metrics to get total metrics of window
+    # sum up each keyed data metrics to get total metrics of window
     summed_metrics = (
             metrics_stream
             .key_by(lambda x: 1)  # Single key for global sum
@@ -220,6 +237,25 @@ def execute():
                     output_type=Types.TUPLE([Types.LONG(), Types.INT(), Types.INT(), Types.INT(), Types.INT()]))  # Sum up all counts
             )
     
+    # if data quality under limit, send the data to tenant
+    quality_alert_metrics = summed_metrics.filter(lambda x: (1 - x[2]/x[1]) < 0.99) # hardcoded for example
+
+    # map metrics to json
+    quality_to_string = quality_alert_metrics.map(
+        lambda x: json.dumps({
+            "window": x[0],
+            "rows": x[1],
+            "discarded": x[2],
+            "data_quality": 1 - x[2] / x[1] if x[1] != 0 else None,
+            "pickup_errors": x[3],
+            "timestamp_errors": x[4]
+        }),
+        Types.STRING()
+    )
+
+    # send quality alert metrics to tenant
+    quality_to_string.sink_to(kafka_sink)
+
     # transform the metrics into log format
     log_stream = summed_metrics.map(lambda row: 
         f"window: {row[0]}\nrecords per window: {row[1]}\n" \
@@ -232,7 +268,7 @@ def execute():
     
     # Add the sink to the stream
     csv_stream = windowed_stream.map(lambda row: f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}", Types.STRING())
-    #csv_stream.add_sink(hdfs_sink)
+    csv_stream.add_sink(hdfs_sink)
 
     try:
         res = env.execute("FlinkSilverDataAnalyticsPipeline")
