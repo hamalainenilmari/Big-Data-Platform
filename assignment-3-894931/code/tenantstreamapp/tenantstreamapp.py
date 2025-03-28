@@ -134,19 +134,17 @@ def execute():
 
     # JARs of kafka (source) and Cassandra (sink) connectors
     kafka_jar = os.getenv("KAFKA_JAR")
-    cassandra_jar = os.getenv("CASSANDRA_JAR")
+    hadoop_jar = os.getenv("HADOOP_JAR")
     python_jar = os.getenv("PYTHON_JAR")
 
-    env.add_jars(kafka_jar, cassandra_jar, python_jar,
-                    "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar",
-                    "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-hadoop-fs-1.19.0.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-common-3.4.1.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-hadoop-compatibility_2.12-1.20.1.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-hdfs-3.3.6.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-hdfs-client-3.3.6.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-auth-3.3.6.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-core-1.2.1.jar",
-                     "file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-connector-cassandra_2.12-3.2.0-1.19.jar"
+    env.add_jars(kafka_jar, python_jar, hadoop_jar
+                    #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar",
+                    #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-hadoop-fs-1.19.0.jar",
+                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-common-3.4.1.jar",
+                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-hadoop-compatibility_2.12-1.20.1.jar",
+                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-hdfs-3.3.6.jar",
+                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-hdfs-client-3.3.6.jar",
+                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-core-1.2.1.jar",
                      )
     
     # Kafka Source for input data
