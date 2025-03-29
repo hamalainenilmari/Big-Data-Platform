@@ -52,7 +52,7 @@ The workflow is the following. Tenants produce real time data with Kafka produce
 
 ## Part 2 - Implementation of streaming analytics
 
-### 2.1 Tenantstreamapp
+### 2.1 Streaming analytics application
 
 The tenantstreamapp is the component which generates the analytical silver data from the source data stream. The implementation can be found from *code/tenantstreampapp/tenantstreampp.py*.
 
@@ -92,10 +92,10 @@ For the tenantstreamapp to be able to correctly generate the analytics from the 
 
 The generated output analytics silver data is in following format:
 
-| pickup location  | amount of trips | total fares | window start          | window end            |
-|-----|----------|-----------|---------------|---------------|
-| 32   | 7       | 252.50    | 1743076720000 | 1743076720000 |
-| 2   | 2        | 22.15    | 1743076720000 | 1743076720000 |
+| pickup location  | amount of trips | total fares | window start  | window end    |
+|------------------|-----------------|-------------|---------------|---------------|
+|   32             | 7               | 252.50      | 1743076720000 | 1743076720000 |
+| 2                | 2               | 22.15       | 1743076720000 | 1743076720000 |
 
 The data is inserted into the silver data storage and send to the tenant without the headers.
 
@@ -126,89 +126,103 @@ We have the following platform configuration:
 * replication factor of 1
 * flink job parallellism of 1
 * tumbling window of 1 minute
+* tumbling window allowed lateness 15 seconds
+* timestamp allowed lateness 1 minute
 
 We are using limited computing power because of local testing.
 
-For testing, we will use tumbling windows of 1 minutes, with window input data allowed lateness being 15 seconds and record timestamp lateness of 1 minute. This means that if the data arrives more than 15 seconds later than the timestamp (trip start datetime), the data is discarded from window and if it arrives later than 1 minute it is discarded totally.
+For testing, we will use tumbling windows of 1 minutes, with window input data allowed lateness being 15 seconds and record timestamp lateness of 1 minute. This means that if the data arrives more than 15 seconds later than the timestamp (trip start datetime), the data is discarded from window and if it arrives later than 1 minute it is discarded totally. The log files of each test case can be founf from *logs/tests/*
 
+**Test 1:**
 
-test 1
-We will start the testing by using 1 producer producing record of data every second. The following is a log file containing metrics of single window:
+We will start the testing by using 1 producer producing record of data every second. The following is the log file containing metrics of single window:
 
 |window|records per window|records processed per second|rows discarded|data quality|pickup area errors|timestamp errors|
 |-----|----------|-----------|---------------|---------------|-------------|------------|
-|1743261840000|38|0.6333333333333333|2|0.9473684210526316|2|0|
+|1743261840000|57|0.9649122807017544|2|0.95|2|0|
 
-CPU and memory usage both rose up approximately 10 %. The log file is 2025-03-29--15/test1.log
+CPU and memory usage both rose up approximately 10 %. We can see that the number of records processed in the window is what expected, as the window is 60 seconds long and we produced 60 messages in 60 seconds.
 
-test2
-For the next test, we will use tumbling window of 60 seconds, 1 producer producing two messages per second.
+**Test 2:**
 
-metrics:
+In the seconds test, we had one data producer producing two messages per second.
+
+Resulted metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|--------------|--------------------|----------------|
 | 1743263880000 | 114               | 1.9                         | 6             | 0.9473684210526316 | 6                  | 0              |
 
+Again, CPU and memory usage both rose up approximately 10 %. The metrics are what we expected on behalf of the records processed per window. Data processing speed (records processed per second), was 0.95, relative to the input data (1.9 data units processed per 2 consumed in a second)
 
-mem 74, cpu 20
+**Test 3:**
 
-test3
-Next test will be 1 producer producing 10 messages a second (10msg total / s).
+In this test we had one data producer producing 10 messages a second.
+
+The resulting metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743264420000 | 545               | 9.083333333333334           | 20            | 0.963302752293578    | 20                 | 0              |
 
-CPU and memory again 10 &.
-test4
-Next test will be  producers, each producing 10 messages a second (50 msg total / s)
+CPU and memory usage again rose both again the 10 % familiar to us already. What we can see from the metrics, is the increasing processing latency of the streaming application, as the window is missing approximately 10 % of the records it could contain based on the data producing. Now the relative percentage of processing per consuming was 0.983. This can also be caused by Kafka latencies.
+
+**Test 4**:
+
+In this test we had five data producers, each producing 10 messages a second (total 50 msg /s).
+
+Metrics were following
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743264720000 | 2752              | 45.86666666666667           | 72            | 0.9738372093023255   | 72                 | 0              |
 
+CPU usage raised by 20 %, and memory approximately 15 %. The relative processing speed compared to data consuming was approximately 0.917 (45.866/50). As a side note, the data is starting to show meaningful statistics for analytics:
 
-CPU raised 20 %.
-The data is starting to show meaningful statistics:
-
-Top areas:
-
-Silver data: 8,497,7125.7900390625,1743264720000,1743264780000'
-Silver data: 32,411,6057.759765625,1743264720000,1743264780000'
+Most taxi trips per area:
 
 | pickup location  | amount of trips | total fares | start          | end            |
 |-----|----------|-----------|---------------|---------------|
-|76|273|nan|1743090780000|1743090840000|
-|32|183|nan|1743090780000|1743090840000|
+|8|497|7125|1743264720000|1743264780000|
+|32|411|6057|1743264720000|1743264780000|
 
 Opposed to lowest:
 
 | pickup location  | amount of trips | total fares | start          | end            |
 |-----|----------|-----------|---------------|---------------|
-|15|1|31.25|1743090780000|1743090840000|
-|30|1|12.75|1743090780000|1743090840000|
+|14|1|31.25|1743264840000|1743264900000|
 
-Silver data: 14,1,7.75,1743264840000,1743264900000'
+**Test 5:**
 
-test 5
-Next test 5 producers producing 20 messages a second (total 100 msg / s)
+In this test we had five data producers producing 20 messages a second (total 100 msg /s).
+
+Metrics were following:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743265020000 | 4063              | 67.71666666666667           | 112           | 0.9724341619492985   | 112                | 0              |
 
+CPU usage rose 50 %, and memory usage 20 %. We are starting to see the platform starting to slow down with this amount of data coming in. The relation of record procession speed compared to data ingestion is now only 0.68 (67.7 / 100), which is 74 % of the relation when ingesting 50 messages a second.
 
-CPU rose up to 50 %. 
+**Test 6:**
 
-Next test 5 producers producing without sleep
+In this test we had five data producers producing 30 messages a second (total 150 msg /s).
 
-Aftering producing for a little over 2 minutes, the platform started to halt. As we are running locally, we cannot say which component was the first to freeze. It is Kafka or the Flink. But, because HDFS contains only 2 silver data files, we can assume that the flink job freezed as it should have started writing to the third file as the third window was started.
+Resulting metrics:
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+|1743279300000 | 5360|89.33333333333333 |149 |0.9722014925373135 |149 | 0|
+
+CPU and memory usage rose approximately 50 % again, with the usage amount waving a lot. Now the processing speed relative to data consuming was only 0.595. We can see that the platform is starting to decrease a lot in the streaming analytics data processing when amount of data consumed per second increases this high.
+
+**Test 7:**
+
+In this final test we had 5 data producers producing data without sleep. Aftering producing for a little over 2 minutes, the platform started to halt. As we are running locally, we cannot say which component was the first to freeze. It is Kafka or the Flink. But, because HDFS contains only 2 silver data files, we can assume that the flink job freezed as it should have started writing to the third file as the third window was started.
 
 The CPU raised up to 100 %. Memory raised only 10 %.
 
-In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics.
-
+In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics. Also because we tested the whole platform locally, it is hard to measure the resource (CPU, memory, ...) usage of the streaming component, because the computer we are running these tests on has many other processes running at the same time, such as data producing.
 
 ### 2.4 Wrong data
 
