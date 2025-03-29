@@ -6,11 +6,8 @@ import time
 import datetime
 import os
 from dotenv import load_dotenv
-
 from datetime import datetime, timedelta
 import pandas as pd
-
-
 
 # This component is from assignment 1
 # This component can be used for simulating real time data producing
@@ -41,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--broker', default=kafka_add, help='Broker as "server:port"')
     parser.add_argument('-i', '--input_file', default="../../../data/chicago/sample0.csv", help='Input file')
     parser.add_argument('-c', '--chunksize', default=1, help='chunk size for big file')
-    parser.add_argument('-s', '--sleeptime', default=0.1, help='sleep time in second')
+    parser.add_argument('-s', '--sleeptime', default=0.033, help='sleep time in second')
     parser.add_argument('-t', '--topic', default="chicagotenant_trips", help='kafka topic')
     
     args = parser.parse_args()
@@ -82,7 +79,7 @@ if __name__ == '__main__':
             kafka_producer.produce(KAFKA_TOPIC, json_data.encode('utf-8'), callback=kafka_delivery_error)
             print("produced: ", i)
             kafka_producer.flush()
-            time.sleep(0.5)
+            time.sleep(1)
             stopTime = time.time() - start_time
             i += 1
     
