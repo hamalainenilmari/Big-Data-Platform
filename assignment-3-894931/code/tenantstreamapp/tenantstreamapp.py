@@ -1,17 +1,14 @@
 from pyflink.datastream import StreamExecutionEnvironment, TimeCharacteristic, OutputTag
 from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
 from pyflink.common import Types, Row
-from pyflink.datastream.functions import RuntimeContext
 from pyflink.common.watermark_strategy import WatermarkStrategy
-from pyflink.datastream.state import ValueStateDescriptor
 from pyflink.common.serialization import SimpleStringSchema, Encoder
 import json
 from datetime import datetime
 import os
-from confluent_kafka import Consumer, Producer
 from dotenv import load_dotenv
 from pyflink.datastream.window import TumblingEventTimeWindows
-from pyflink.datastream.functions import ProcessWindowFunction, ReduceFunction
+from pyflink.datastream.functions import ProcessWindowFunction
 from pyflink.common.watermark_strategy import WatermarkStrategy, TimestampAssigner
 from pyflink.common.typeinfo import Types
 from pyflink.common.time import Time
@@ -21,7 +18,6 @@ from pyflink.datastream import StreamExecutionEnvironment, CheckpointingMode, Fs
 from pyflink.common.serialization import Encoder
 from pyflink.datastream.connectors.file_system import StreamingFileSink, OutputFileConfig, RollingPolicy
 import math
-
 
 # this function generates the aggregated analytical data of taxi trips per window
 class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
@@ -129,7 +125,7 @@ def execute():
     env.set_parallelism(1) # TODO check this
     env.set_stream_time_characteristic(TimeCharacteristic.EventTime)
 
-    env.enable_checkpointing(20000, CheckpointingMode.EXACTLY_ONCE) # TODO check this
+    env.enable_checkpointing(200, CheckpointingMode.EXACTLY_ONCE) # TODO check this
     env.set_state_backend(FsStateBackend("hdfs://localhost:9000/flink/checkpoints"))
 
     # JARs of kafka (source) and Cassandra (sink) connectors
@@ -201,16 +197,25 @@ def execute():
     stream = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
 
     # assign timestamp for windowing
+    """
     stream = stream.assign_timestamps_and_watermarks(
-            WatermarkStrategy.for_monotonous_timestamps()
+            WatermarkStrategy.for_bounded_out_of_orderness(Time.seconds(120)) # if data comes in more than 10s after trip start -> discard
             .with_timestamp_assigner(AssignTimestampAssigner())
             )
-    
+    """
+    late_data_tag = OutputTag("late_data", Types.STRING())
+
     # generate analytics in tumbling windows
     windowed_stream = (stream
+        .assign_timestamps_and_watermarks(
+            WatermarkStrategy.for_bounded_out_of_orderness(Time.seconds(120)) # if data comes in more than 10s after trip start -> discard
+            .with_timestamp_assigner(AssignTimestampAssigner())
+            )
         .filter(lambda x: x is not None)                                # Filter out None values
         .key_by(lambda x: json.loads(x).get("Pickup Community Area"))   # Key by community area
-        .window(TumblingEventTimeWindows.of(Time.seconds(30)))          # tumbling window TODO check this
+        .window(TumblingEventTimeWindows.of(Time.seconds(10)))          # tumbling window TODO check this
+        .allowed_lateness(10)                                           # aggregate late data to statistics, if no more than 20 secs late
+        .side_output_late_data(late_data_tag)
         .process(                                                       # Aggregate number of trips per area & total fares
             TaxiAnalyticsProcessWindowFunction(),
             output_type=Types.ROW([
@@ -222,6 +227,11 @@ def execute():
                 ]))
     )
 
+    # send late data to tenant
+    late_data_stream = windowed_stream.get_side_output(late_data_tag)
+    late_mapped = late_data_stream.map(lambda x: f"Record ignored from analytics due lateness: {x}", output_type=Types.STRING())
+    late_mapped.sink_to(kafka_sink)
+    
     # get processing metrics from window side output
     metrics_output_tag = OutputTag("metrics", Types.TUPLE([Types.LONG(), Types.INT(), Types.INT(), Types.INT(), Types.INT()]))
     metrics_stream = windowed_stream.get_side_output(metrics_output_tag)
@@ -240,7 +250,7 @@ def execute():
 
     # map metrics to json
     quality_to_string = quality_alert_metrics.map(
-        lambda x: json.dumps({
+        lambda x: "data quality alert" + json.dumps({
             "window": x[0],
             "rows": x[1],
             "discarded": x[2],
@@ -267,6 +277,10 @@ def execute():
     # Add the sink to the stream
     csv_stream = windowed_stream.map(lambda row: f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}", Types.STRING())
     csv_stream.add_sink(hdfs_sink)
+    
+    # Send the generated silver data (analytics) to tenant
+    silver_data = csv_stream.map(lambda x: f"Silver data: {x}", Types.STRING())
+    silver_data.sink_to(kafka_sink)
 
     try:
         res = env.execute("FlinkSilverDataAnalyticsPipeline")
