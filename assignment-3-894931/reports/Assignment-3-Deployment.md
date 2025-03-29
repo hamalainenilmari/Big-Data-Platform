@@ -1,7 +1,5 @@
 # This is a deployment guide for running this platform locally
 
-**This assignment contains two separate parts, one for batch ingestion and another for stream ingestion.**
-
 To run the platform, the following technologies must be installed:
 
 * Docker and Docker compose
@@ -18,10 +16,17 @@ Install the dependencies by running:
 
 ``$ pip install -r requirements.txt``
 
-**Coredms**:
+Create .env based on the example env file. Generate kafka cluster ID from messaging_system instructions and add your JAR paths.
+
+## Coredms
+
+**Cassandra:**
 
 *This component is not necessary for simulating the real time analytics.*
+
 The operational data storage of real-time data ingestion is Cassandra. Go to *code/coredms* and run docker compose up. This deploys the cassandra cluster with 3 nodes in containers locally. The folder contains instructions on how to create a keyspace and a table.
+
+**HDFS:**
 
 Hadoop Distributed File System (HDFS) is analytical data storage of this platform. After installing it, set the following configurations:
 
@@ -84,13 +89,9 @@ Create silver and gold data locations:
 
 Usual Linux syntax can be used to manipulate the HDFS (rm, cp, mkdir, ...)
 
-To query data from HDFS:
+## Stream analytics
 
-**Stream analytics**:
-
-For performing near real-time data ingestion with the platform, you must have Cassandra Cluster (coredms) and Kafka Broker cluster (messagingystem) set up. You need to be running stream manager, stream monitor and the tenant pipelines simultaneously.
-
-1. Start up the kafka broker cluster:
+Start up the kafka broker cluster:
 
 Go to code/streamingest/messaging_system/
 
