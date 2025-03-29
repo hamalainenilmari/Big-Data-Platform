@@ -76,6 +76,8 @@ def rename_processed_files(ti):
 # main step, submit batch analytics job for spark
 def submit_spark_job(ti):
     spark_path = os.getenv("SPARK_PATH")
+    batch_path = os.getenv("BATCH_APP_PATH")
+
 
     # get files to process
     files = ti.xcom_pull(task_ids="get_new_silverdata_files", key="new_files_output")
@@ -83,7 +85,7 @@ def submit_spark_job(ti):
     cmd = [
          f"{spark_path}/bin/spark-submit", 
          "--master", "local[4]", 
-         "/home/ilmarih/airflow/dags/batch.py"
+         f"{batch_path}"
     ] + ["--input_files"] + files
     
     # Run the command to submit the Spark job
