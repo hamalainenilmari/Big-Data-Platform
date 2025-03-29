@@ -1,6 +1,6 @@
 from pyflink.datastream import StreamExecutionEnvironment, TimeCharacteristic, OutputTag
 from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer, KafkaSink, KafkaRecordSerializationSchema
-from pyflink.common import Types, Row
+from pyflink.common import Types, Row, Duration
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.common.serialization import SimpleStringSchema, Encoder
 import json
@@ -27,7 +27,6 @@ class TaxiAnalyticsProcessWindowFunction(ProcessWindowFunction):
 
         # all records of this key
         elements_list = list(elements)
-        
         # log errors of input data
         num_pickup_area_errors = 0
         num_timestamp_errors = 0
@@ -122,10 +121,10 @@ class AssignTimestampAssigner(TimestampAssigner):
 def execute():
     # set stream execution configurations
     env = StreamExecutionEnvironment.get_execution_environment()
-    env.set_parallelism(1) # TODO check this
+    env.set_parallelism(1)
     env.set_stream_time_characteristic(TimeCharacteristic.EventTime)
 
-    env.enable_checkpointing(200, CheckpointingMode.EXACTLY_ONCE) # TODO check this
+    env.enable_checkpointing(5000, CheckpointingMode.EXACTLY_ONCE) #  Delivery Guarantee, dont want duplicates
     env.set_state_backend(FsStateBackend("hdfs://localhost:9000/flink/checkpoints"))
 
     # JARs of kafka (source) and Cassandra (sink) connectors
@@ -133,15 +132,7 @@ def execute():
     hadoop_jar = os.getenv("HADOOP_JAR")
     python_jar = os.getenv("PYTHON_JAR")
 
-    env.add_jars(kafka_jar, python_jar, hadoop_jar
-                    #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-shaded-hadoop-2-uber-2.7.5-9.0.jar",
-                    #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-hadoop-fs-1.19.0.jar",
-                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-common-3.4.1.jar",
-                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/flink-hadoop-compatibility_2.12-1.20.1.jar",
-                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-hdfs-3.3.6.jar",
-                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-hdfs-client-3.3.6.jar",
-                     #"file:///home/ilmarih/bdp_25_tech/flink-1.20.1/lib/hadoop-core-1.2.1.jar",
-                     )
+    env.add_jars(kafka_jar, python_jar, hadoop_jar)
     
     # Kafka Source for input data
     kafka_ip = os.getenv("KAFKA_BROKER_ADDRESS")
@@ -170,6 +161,7 @@ def execute():
     
     
     # HDFS sink for silver data, this will create a new output file for each window
+    
     hdfs_sink = StreamingFileSink.for_row_format(
         base_path="hdfs://localhost:9000/chicagoTenant/silverData",  # HDFS base directory
         encoder=Encoder.simple_string_encoder()
@@ -197,24 +189,19 @@ def execute():
     stream = env.from_source(source, WatermarkStrategy.no_watermarks(), "Kafka Source")
 
     # assign timestamp for windowing
-    """
-    stream = stream.assign_timestamps_and_watermarks(
-            WatermarkStrategy.for_bounded_out_of_orderness(Time.seconds(120)) # if data comes in more than 10s after trip start -> discard
-            .with_timestamp_assigner(AssignTimestampAssigner())
-            )
-    """
+
     late_data_tag = OutputTag("late_data", Types.STRING())
 
     # generate analytics in tumbling windows
     windowed_stream = (stream
         .assign_timestamps_and_watermarks(
-            WatermarkStrategy.for_bounded_out_of_orderness(Time.seconds(120)) # if data comes in more than 10s after trip start -> discard
+            WatermarkStrategy.for_bounded_out_of_orderness(Duration.of_minutes(2)) # if data comes in more than this after trip start -> discard
             .with_timestamp_assigner(AssignTimestampAssigner())
             )
         .filter(lambda x: x is not None)                                # Filter out None values
         .key_by(lambda x: json.loads(x).get("Pickup Community Area"))   # Key by community area
-        .window(TumblingEventTimeWindows.of(Time.seconds(10)))          # tumbling window TODO check this
-        .allowed_lateness(10)                                           # aggregate late data to statistics, if no more than 20 secs late
+        .window(TumblingEventTimeWindows.of(Time.seconds(60)))          # tumbling window
+        .allowed_lateness(20)                                           # aggregate late data to statistics, if no more than 20 secs late
         .side_output_late_data(late_data_tag)
         .process(                                                       # Aggregate number of trips per area & total fares
             TaxiAnalyticsProcessWindowFunction(),
@@ -240,7 +227,7 @@ def execute():
     summed_metrics = (
             metrics_stream
             .key_by(lambda x: 1)  # Single key for global sum
-            .window(TumblingEventTimeWindows.of(Time.seconds(30)))  # Same windowing
+            .window(TumblingEventTimeWindows.of(Time.seconds(60)))  # Same windowing
             .reduce(lambda a, b: (a[0], a[1]+b[1], a[2]+b[2], a[3]+b[3], a[4]+b[4]),
                     output_type=Types.TUPLE([Types.LONG(), Types.INT(), Types.INT(), Types.INT(), Types.INT()]))  # Sum up all counts
             )
@@ -267,7 +254,7 @@ def execute():
     # transform the metrics into log format
     log_stream = summed_metrics.map(lambda row: 
         f"window: {row[0]}\nrecords per window: {row[1]}\n" \
-        + f"records processed per second: {row[1]/30}\nrows discarded: {row[2]}\n" \
+        + f"records processed per second: {row[1]/60}\nrows discarded: {row[2]}\n" \
         + f"data quality: {1 - row[2]/row[1]}\npickup area errors: {row[3]}\ntimestamp errors: {row[4]}",\
     Types.STRING())
     
