@@ -12,6 +12,7 @@ To run the platform, the following technologies must be installed:
 * Flink Kafka jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-sql-connector-kafka/3.4.0-1.20
 * Flink Cassandra jar file: https://mvnrepository.com/artifact/org.apache.flink/flink-connector-cassandra_2.12/3.2.0-1.19
 * Flink python jar: https://mvnrepository.com/artifact/org.apache.flink/flink-python/1.20.1
+* Flink Hadoop jar: https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-hadoop-2-uber/2.7.5-9.0
 
 Install the dependencies by running:
 
@@ -19,13 +20,12 @@ Install the dependencies by running:
 
 **Coredms**:
 
-The data storage of both ingestion mechanisms is the same coredms. Go to *code/coredms* and run docker compose up. This deploys the cassandra cluster with 3 nodes in containers locally. The folder contains instructions on how to create a keyspace and a table.
+*This component is not necessary for simulating the real time analytics.*
+The operational data storage of real-time data ingestion is Cassandra. Go to *code/coredms* and run docker compose up. This deploys the cassandra cluster with 3 nodes in containers locally. The folder contains instructions on how to create a keyspace and a table.
 
-**Batch analytics**:
+Hadoop Distributed File System (HDFS) is analytical data storage of this platform. After installing it, set the following configurations:
 
-HDFS is the staging input directory technology. After installing it, set the following configurations:
-
-1. Modify *etc/hadoop/core-site.xml* to match:
+Modify *etc/hadoop/core-site.xml* to match:
 
 ```xml
 <configuration>
@@ -36,12 +36,12 @@ HDFS is the staging input directory technology. After installing it, set the fol
 </configuration>
 ```
 
-2. Create folders for namenode and datanode in the hadoop-3.4.1 root folder:
+Create folders for namenode and datanode in the hadoop-3.4.1 root folder:
 
-``$ mkdir datanode``
+``$ mkdir datanode namenode``
 ``$ mkdir namenode``
 
-3. Modify *etc/hadoop/hdfs-site.xml* to match (make sure the paths to previously created folders are correct):
+Modify *etc/hadoop/hdfs-site.xml* to match (make sure the paths to previously created folders are correct):
 
 ```xml
 <configuration>
@@ -70,25 +70,21 @@ If you cannot ssh to localhost without a passphrase, execute the following comma
 ``$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys``
 ``$ chmod 0600 ~/.ssh/authorized_keys``
 
-4. Format the HDFS filesystem by running:
+Format the HDFS filesystem by running:
 
 ``$ bin/hdfs namenode -format``
 
-5. Start NameNode daemon and DataNode daemon:
+Start NameNode daemon and DataNode daemon:
 ``$ sbin/start-dfs.sh``
 
-To create sample data, use the instruction on *data/* folder.
-
-To insert data to hdfs tenant, run:
-``$bin/hdfs dfs -put -f ../../bdp_25/assignment-2-894931/data/*.csv /tenantChicagoTaxi/``
+Create silver and gold data locations:
+``$bin/hdfs dfs -mkdir chicagoTenant/``
+``$bin/hdfs dfs -mkdir chicagoTenant/silverData/``
+``$bin/hdfs dfs -mkdir chicagoTenant/goldData/``
 
 Usual Linux syntax can be used to manipulate the HDFS (rm, cp, mkdir, ...)
 
-After you have created a folder to the local HDFS and inserted source data there, you can simulate running the platform. To start the ingestion, run:
-
-``$ python3 code/batchingest/batch_ingest_manager.py``
-
-This will start the manager, which invokes the batch_ingest_pipeline and ingest the processed data into the Cassandra table.
+To query data from HDFS:
 
 **Stream analytics**:
 
@@ -166,5 +162,29 @@ and
 
 ``$ python3 ny/kafka_produrer.py``
 
+**Batch analytics**
+
 **Airflow**
+
+Indicate airflow home dir in the dir orchestrator
+
+export AIRFLOW_HOME=/home/ilmarih/airflow
+(venv) ilmarih@DESKTOP-NRPJ5AT:~/bdp_25/assignment-3-894931/code/coordinator$ airflow db init
+
+start webserver: 
+
+ airflow webserver -p 8080
+
+ go to another terminal
+
+ again
+
+export AIRFLOW_HOME=/home/ilmarih/airflow
+
+then run 
+
+airflow scheduler
+
+start Spark cluster
+
 
