@@ -1,0 +1,77 @@
+window: 1743247650000
+records per window: 8
+records processed per second: 0.26666666666666666
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743247680000
+records per window: 11
+records processed per second: 0.36666666666666664
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743247920000
+records per window: 13
+records processed per second: 0.43333333333333335
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743247950000
+records per window: 15
+records processed per second: 0.5
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743247980000
+records per window: 15
+records processed per second: 0.5
+rows discarded: 2
+data quality: 0.8666666666666667
+pickup area errors: 2
+timestamp errors: 0
+window: 1743248010000
+records per window: 4
+records processed per second: 0.13333333333333333
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743255450000
+records per window: 5
+records processed per second: 0.16666666666666666
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743256020000
+records per window: 12
+records processed per second: 0.4
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743256050000
+records per window: 11
+records processed per second: 0.36666666666666664
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743256860000
+records per window: 5
+records processed per second: 0.16666666666666666
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0
+window: 1743256890000
+records per window: 7
+records processed per second: 0.23333333333333334
+rows discarded: 0
+data quality: 1.0
+pickup area errors: 0
+timestamp errors: 0

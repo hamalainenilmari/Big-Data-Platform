@@ -258,7 +258,7 @@ Lastly, we will send data where every row is missing (expect for start time so w
 
 Two parallel producers, with two parallel tenantstreamapps running, one for each tenant.
 
-10 messages a second each
+20 messages a second each
 Both parallellism 1
 
 
@@ -276,16 +276,41 @@ tenant2 :
 | 1743268320000 | 447               | 7.45                        | 17            | 0.9619686800894854   | 17                 | 0              |
 
 
+test2
 
 Both parallellism 2
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743271440000 | 524                | 8.733333333333333            | 0              | 1.0          | 0                  | 0                |
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743272580000 | 1031               | 17.183333333333334           | 0              | 1.0          | 0                  | 0                |
 
 
 
-Both parallellism 4
+Both parallellism 4, with 20 messages a second for each
+
+cpu raiset 30-40 %
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743271920000 | 961                | 16.016666666666666           | 0              | 1.0          | 0                  | 0                |
+
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743271920000 | 967                | 16.116666666666667           | 0              | 1.0          | 0                  | 0                |
 
 Both parallellism 8
 
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743272220000 | 707                | 11.783333333333333           | 0              | 1.0          | 0                  | 0                |
 
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743272220000 | 676                | 11.266666666666667           | 0              | 1.0          | 0                  | 0                |
 
 
 ## Part 3 - Extension
