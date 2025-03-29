@@ -107,31 +107,17 @@ Then start the cluster by running:
 
 Then create the following Kafka topics:
 
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 15  --topic nytenant_trips``
-
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report``
-
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestion_report_warning``
-
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic nytenant_ingestioncontrol``
-
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 15  --topic chicagotenant_trips``
 
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report``
+``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_analytics``
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report_warning``
 
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestioncontrol``
+Then run the stream analytics component by code/tenantstreamapp
 
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report``
+``$ python3 tenantstreamapp.py`` 
 
-Then create the monitor manager connection topics:
 
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic pipeline_execution_warning``
-
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic ingestion_status``
-
-Then lets run the tenant pipelines. The pipelines components are always running and listening to messages to start/stop ingestion. Go to location *code/streamingest/pipelines/*. Add the .env files to each tenant folder according to the example env.
 
 Add the the downloaded jar file locations to both pipelines. Keep the file:// before the location
 
@@ -140,27 +126,10 @@ With two terminals, go to each tenant folder and run:
 ``$ python ny_pipeline.py``
 ``$ python chicago_pipeline.py``
 
-Then start stream ingest manager py running going to *code/streamingest/* and running:
-
-``$ python3 stream_manager.py``
-
-The tenant topics are hardcoded as default arguments. The manager keeps listening to new messages to tenant pipeline topics, and based on input starts the pipelines. If no new messages for 60 seconds, manager sends stop message to pipeline.
-
-Then start monitor by running:
-
-``$ python3 stream_monitor.py``
-
-Monitor gets pipeline execution report from pipelines.
-
-Finally, we can start producing input data streams.
-
 Start producing data for both tenant by going to */tenant/* and running:
 
 ``$ python3 chicago/kafka_produrer.py``
 
-and
-
-``$ python3 ny/kafka_produrer.py``
 
 **Batch analytics**
 
