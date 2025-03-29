@@ -155,7 +155,7 @@ Then initialize database:
 
 Then start airflow webserver:
 
-``$ airflow webserver -p 8080``
+``$ airflow webserver -p 8085``
 
 Create user by:
 
@@ -169,8 +169,23 @@ Then run:
 
 ``$ airflow scheduler``
 
+Then create folder dags to your airflow home and add the orchestator/batch_workflow.py to it.
 
+``$ mkdir /home/ilmarih/airflow/dags``
+``$ cp code/orchestrator/batch_workflow.py /home/ilmarih/airflow/dags``
 
-start Spark cluster
+Now if you restart the airflow scheduler and log in to the web server from localhost:8080, you should see the DAG with id "spark_pipeline". Before we can start it, we still need to start Spark.
 
+**Spark:**
 
+Go to your Spark installation folder.
+
+Run:
+
+``$ sbin/start-master.sh``
+
+``$ sbin/start-worker.sh spark://localhost:7077``
+
+Then we can start the batch workflow. For this to produce gold data succesfully, you need to have produced silver data previously by running the stream analytics.
+
+Go to the Airflow GUI by http://localhost:8085, search DAG bu id "spark_pipeline" and start it. If you have silverData produced in the correct location (batch app tries to search from current hour), then this workflow will produce the goldData, which can be queried from HDFS chicagoTenant/goldData.
