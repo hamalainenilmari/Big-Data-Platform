@@ -83,6 +83,7 @@ Start NameNode daemon and DataNode daemon:
 ``$ sbin/start-dfs.sh``
 
 Create silver and gold data locations:
+
 ``$bin/hdfs dfs -mkdir chicagoTenant/``
 ``$bin/hdfs dfs -mkdir chicagoTenant/silverData/``
 ``$bin/hdfs dfs -mkdir chicagoTenant/goldData/``
@@ -114,24 +115,15 @@ Then create the following Kafka topics:
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_analytics``
 
-
 Then run the stream analytics component by code/tenantstreamapp
 
-``$ python3 tenantstreamapp.py`` 
+``$ python3 tenantstreamapp.py``
 
+Make sure you have the correct dataset downloaded. Check more information from folder data/.
 
-
-Add the the downloaded jar file locations to both pipelines. Keep the file:// before the location
-
-With two terminals, go to each tenant folder and run:
-
-``$ python ny_pipeline.py``
-``$ python chicago_pipeline.py``
-
-Start producing data for both tenant by going to */tenant/* and running:
+Start producing data for tenant by going to */tenant/chicago* and running:
 
 ``$ python3 chicago/kafka_produrer.py``
-
 
 **Batch analytics**
 
