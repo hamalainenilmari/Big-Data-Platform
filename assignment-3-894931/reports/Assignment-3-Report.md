@@ -222,116 +222,133 @@ In this final test we had 5 data producers producing data without sleep. Afterin
 
 The CPU raised up to 100 %. Memory raised only 10 %.
 
-In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics. Also because we tested the whole platform locally, it is hard to measure the resource (CPU, memory, ...) usage of the streaming component, because the computer we are running these tests on has many other processes running at the same time, such as data producing.
+In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics. Also because we tested the whole platform locally, it is hard to measure the resource (CPU, memory, ...) usage of the streaming component, because the computer we are running these tests on has many other processes running at the same time, such as the data producing. These tests cases still give us some indication about how the platform streaming analytics processing speed decreases with the speed of data coming to the platform increasing.
 
-### 2.4 Wrong data
+### 2.4 Handling of bad data
 
-As the analytical data needs pickup location area and trip start timestamp, we will simulate situtation where wrong data is sent to the platform in different amounts. As the streaming analytics component is made in a secure way, all the data it needs (pickupp location, timestamps) are verified to be in the input data. If the input data is missing those or they are in wrong format, the component will ignore the record. We will show it. 
+In this testing, we are testing behaviour as we are generating bad data to the platform. As the analytical data needs pickup location area and trip start timestamp, we will simulate situtation where wrong data is sent to the platform in different amounts. As the streaming analytics component is made in a secure way, all the data it needs (pickupp location, timestamps) are verified to be in the input data. If the input data is missing those or they are in wrong format, the component will ignore the record. The log files of these tests can be found from *logs/wrong_data/*.
 
-First we will send data that is missing pickup location area.
+**Test 1:**
 
-Sending 1 message a second.
+In the first test we will send data to the platform that is missing pickup location area, which is the key of analytics data produced. We are using one data producer and sending 1 message a second.
 
-wrong_tests
-
-test1.log
+Resulting metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743266100000 | 44                | 0.7333333333333333          | 10            | 0.7727272727272727   | 10                 | 0              |
 
+We can see that 10 rows are discarded, and each of those are from the pickup area error. We produced 60 messages in 60 seconds, while the streaming component processed 44. The reason for this can be various, but is propably Kafka related.
 
-Then we will send data that is missing start timestamp.
+**Test 2:**
 
-This data error will actually not get logged in current implementation, as the data is discarded right away because it cant be assigned a timestamp.
-
-test 2
-Then we will send data that has pickup location as int instead of string.
+In this test we will send data that has pickup location as int instead of string.
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743266520000 | 23                | 0.38333333333333336         | 2             | 0.9130434782608696   | 2                  | 0              |
 
-test3 
-We will send data where every second record has no pickup area location
+We can see that the 2 rows discarded were both from pickup area errors.
+
+**Test 3:**
+
+In this test we will send data where every second record has no pickup area location
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743266880000 | 58                | 0.9666666666666667          | 29            | 0.5                  | 29                 | 0              |
 
-test4
-Lastly, we will send data where every row is missing (expect for start time so wont get discarded straight away), with 1 producer producing 20 messages a second
+We can see that even though every second record is missing, pickup area location, a crucial value, the platform processes the streaming input without inceared processing time.
+
+**Test 4:**
+
+Lastly, we will send data where every row is missing (expect for start time so wont get discarded straight away), with 1 producer producing 20 messages a second.
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743267480000 | 529               | 8.816666666666666           | 529           | 0.0                  | 529                | 0              |
 
+We can see that every row is correctly discarded. We sent 20 messages a second to the platform, and the records processed per second was only 8.8, which means that the processing time of the component decreased a lot. This indicates that processing mismatching schema of input data increases the platform load. In this kind of cases its important that we have the feature to send an alert to the tenant, so they can fix the problem without the platform having to freeze their component.
 
+We also tested sending data that is missing start timestamp, which is also essential value as it is used for timestamping and windowing. This data error does not currently get logged in current implementation, as the data is discarded right away because it cant be assigned a timestamp.
 
 ### 2.5 Performance with tenantstreamap parallellism configurations
 
-Two parallel producers, with two parallel tenantstreamapps running, one for each tenant.
+In this test scenario, we try different streaming analytics component parallel processing settings and measure the effects. For each test we have two parallel producers, with two parallel tenantstreamapps running, one for each tenant. For each test we produced 20 messages a second with each data producer (total 40 msg /s). The log files can be found from *logs/parallel/*.
 
-20 messages a second each
-Both parallellism 1
+**Test 0:**
 
-test 0
-tenant 1:
+In this test had parallel processing set to 1, meaning no parallel processing at all.
+
+Tenant 1 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743273000000 | 1043               | 17.383333333333333           | 0              | 1.0          | 0                  | 0                |
 
-
-tenant2 :
+Tenant 2 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743273000000 | 1042               | 17.366666666666667           | 0              | 1.0          | 0                  | 0                |
 
-test2
+We can see, that both streaming analytics components had relatively good data processing speed. The relative speed compared to data ingestion was 0.865 (17.36 / 20) for both.
 
-Both parallellism 2
+**Test 2:**
+
+In this test, both streaming analytics components had parallel processing set to 2 (meaning processing tasks are split to two concurrent processing instances).
+
+Tenant 1 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743272580000 | 1022               | 17.033333333333              | 0              | 1.0          | 0                  | 0                |
 
+Tenant 2 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743272580000 | 1031               | 17.183333333333334           | 0              | 1.0          | 0                  | 0                |
 
+We can see that the records processing speed slowed very little, but no real impact. This kind of difference can also be due to Kafka etc. No differences in CPU usage.
 
+**Test 3:**
 
-Both parallellism 4, with 20 messages a second for each
+In this test we set parallellism to 4 for both tenants.
 
-cpu raiset 30-40 %
+Tenant 1 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743271920000 | 961                | 16.016666666666666           | 0              | 1.0          | 0                  | 0                |
 
+Tenant 2 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743271920000 | 967                | 16.116666666666667           | 0              | 1.0          | 0                  | 0                |
 
-Both parallellism 8
+The record processing speed can be seen to decrease a bit. With 4 parallel processing instances, the speed decreased 9 % compared to 2 parallel instances. In this case, CPU usage raised relatively 10 %.
+
+**Test 4:**
+
+In this test we had parallellism set to 8 for both.
+
+Tenant 1 metrics:
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743272220000 | 707                | 11.783333333333333           | 0              | 1.0          | 0                  | 0                |
 
+Tenant 2 metrics:
+
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743272220000 | 676                | 11.266666666666667           | 0              | 1.0          | 0                  | 0                |
 
-Several possible reasons:
+In this case we can see the data processing speed decreased a lot, with the component able to process only half of received data in a time.
 
- task scheduling and coordination overhead increased
- resource usage: cpu, memory, networks
-
+There are several possible reasons why the higher parallellism decreases the platform data processing speed. It can be due to task scheduling and coordination overhead increasement and resource usage (cpu, memory, networks) increasement. Also in this case where we had only 1 Kafka broker and run everything locally, we can not get very good results. We can assume, that with better infrastructure some degree of parallellism would speed up the data processing.
 
 ## Part 3 - Extension
 
