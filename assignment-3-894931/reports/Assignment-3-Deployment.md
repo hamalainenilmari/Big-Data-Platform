@@ -106,13 +106,14 @@ Then start the cluster by running:
 
 ``$ docker compose up -d``
 
+This platform can be run with also 1 Kafka broker, if 3 is too much for your device. Create the topic replications according to number of brokers.
+
 Then create the following Kafka topics:
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 3  --partitions 15  --topic chicagotenant_trips``
 
 ``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_analytics``
 
-``$ docker exec -it messaging_system-kafka0-1 kafka-topics.sh --create  --bootstrap-server localhost:9092  --replication-factor 1  --partitions 1  --topic chicagotenant_ingestion_report_warning``
 
 Then run the stream analytics component by code/tenantstreamapp
 
