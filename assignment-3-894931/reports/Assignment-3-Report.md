@@ -131,6 +131,8 @@ We are using limited computing power because of local testing.
 
 For testing, we will use tumbling windows of 1 minutes, with window input data allowed lateness being 15 seconds and record timestamp lateness of 1 minute. This means that if the data arrives more than 15 seconds later than the timestamp (trip start datetime), the data is discarded from window and if it arrives later than 1 minute it is discarded totally.
 
+
+test 1
 We will start the testing by using 1 producer producing record of data every second. The following is a log file containing metrics of single window:
 
 |window|records per window|records processed per second|rows discarded|data quality|pickup area errors|timestamp errors|
@@ -139,22 +141,41 @@ We will start the testing by using 1 producer producing record of data every sec
 
 CPU and memory usage both rose up approximately 10 %. The log file is 2025-03-29--15/test1.log
 
+test2
 For the next test, we will use tumbling window of 60 seconds, 1 producer producing two messages per second.
+
+metrics:
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|--------------|--------------------|----------------|
+| 1743263880000 | 114               | 1.9                         | 6             | 0.9473684210526316 | 6                  | 0              |
 
 
 mem 74, cpu 20
 
+test3
+Next test will be 1 producer producing 10 messages a second (10msg total / s).
 
-Next test will be 2 producers producing 10 messages a second (20msg total / s).
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743264420000 | 545               | 9.083333333333334           | 20            | 0.963302752293578    | 20                 | 0              |
 
-After running for 120 seconds, output files are as expected. CPU and memory again 10 &.
+CPU and memory again 10 &.
+test4
+Next test will be  producers, each producing 10 messages a second (50 msg total / s)
 
-Next test will be 5 producers, each producing 10 messages a second (50 msg total / s)
-After running for 2 minutes.
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743264720000 | 2752              | 45.86666666666667           | 72            | 0.9738372093023255   | 72                 | 0              |
+
+
 CPU raised 20 %.
 The data is starting to show meaningful statistics:
 
 Top areas:
+
+Silver data: 8,497,7125.7900390625,1743264720000,1743264780000'
+Silver data: 32,411,6057.759765625,1743264720000,1743264780000'
 
 | pickup location  | amount of trips | total fares | start          | end            |
 |-----|----------|-----------|---------------|---------------|
@@ -168,38 +189,104 @@ Opposed to lowest:
 |15|1|31.25|1743090780000|1743090840000|
 |30|1|12.75|1743090780000|1743090840000|
 
+Silver data: 14,1,7.75,1743264840000,1743264900000'
+
+test 5
 Next test 5 producers producing 20 messages a second (total 100 msg / s)
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743265020000 | 4063              | 67.71666666666667           | 112           | 0.9724341619492985   | 112                | 0              |
+
 
 CPU rose up to 50 %. 
 
 Next test 5 producers producing without sleep
 
-Aftering producing for a little over 2 minutes, the platform started to halt. As we are running locally, we cannot say which component was the first to freeze. It is Kafka or the Flink. But, because HDFS contains only 2 silver data files, we can assume that the flink job freezed as it should have started writing to the third file as the third window was started. 
+Aftering producing for a little over 2 minutes, the platform started to halt. As we are running locally, we cannot say which component was the first to freeze. It is Kafka or the Flink. But, because HDFS contains only 2 silver data files, we can assume that the flink job freezed as it should have started writing to the third file as the third window was started.
 
 The CPU raised up to 100 %. Memory raised only 10 %.
 
-The log file *silver_data_final_test.log contains the result of second of the silver data outputs. The most number of trips per area was approximately 8500, while the lowest has single ones. In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics.
+In this kind of small simulated test environment where the tests were run for couple of minutes, not very detailed analytics can be made (can't take into account real time of trip, events in the city, weather etc.), but this shows that if the silver data was for example for 15 minutes of trips, the data would contain useful information for analytics.
 
 
 ### 2.4 Wrong data
 
-As the analytical data needs pickup location area and trip start timestamp, we will simulate situtation where wrong data is sent to the platform in different amounts. As the streaming analytics component is made in a secure way, all the data it needs (pickupp location, timestamps) are verified to be in the input data. If the input data is missing those or they are in wrong format, the component will ignore the record. We will show it.
+As the analytical data needs pickup location area and trip start timestamp, we will simulate situtation where wrong data is sent to the platform in different amounts. As the streaming analytics component is made in a secure way, all the data it needs (pickupp location, timestamps) are verified to be in the input data. If the input data is missing those or they are in wrong format, the component will ignore the record. We will show it. 
 
 First we will send data that is missing pickup location area.
 
+Sending 1 message a second.
+
+wrong_tests
+
+test1.log
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743266100000 | 44                | 0.7333333333333333          | 10            | 0.7727272727272727   | 10                 | 0              |
+
+
 Then we will send data that is missing start timestamp.
 
+This data error will actually not get logged in current implementation, as the data is discarded right away because it cant be assigned a timestamp.
+
+test 2
 Then we will send data that has pickup location as int instead of string.
 
-Then we will send data that has timestamp as empty string.
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743266520000 | 23                | 0.38333333333333336         | 2             | 0.9130434782608696   | 2                  | 0              |
 
-First we will send data where every 10th record has no pickup area location
+test3 
+We will send data where every second record has no pickup area location
 
-Then we will send data where every second record has no start timestamp
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743266880000 | 58                | 0.9666666666666667          | 29            | 0.5                  | 29                 | 0              |
 
-Lastly, we will send data where every row is missing
+test4
+Lastly, we will send data where every row is missing (expect for start time so wont get discarded straight away), with 1 producer producing 20 messages a second
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743267480000 | 529               | 8.816666666666666           | 529           | 0.0                  | 529                | 0              |
+
+
 
 ### 2.5 Performance with tenantstreamap parallellism configurations
+
+Two parallel producers, with two parallel tenantstreamapps running, one for each tenant.
+
+10 messages a second each
+Both parallellism 1
+
+
+tenant 1:
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743268320000 | 433               | 7.216666666666667           | 17            | 0.9607390300230947   | 17                 | 0              |
+
+
+tenant2 :
+
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
+|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
+| 1743268320000 | 447               | 7.45                        | 17            | 0.9619686800894854   | 17                 | 0              |
+
+
+
+Both parallellism 2
+
+
+
+Both parallellism 4
+
+Both parallellism 8
+
+
+
 
 ## Part 3 - Extension
 
