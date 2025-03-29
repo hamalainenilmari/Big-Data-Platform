@@ -178,9 +178,7 @@ Now if you restart the airflow scheduler and log in to the web server from local
 
 **Spark:**
 
-Go to your Spark installation folder.
-
-Run:
+Go to your Spark installation folder. Run:
 
 ``$ sbin/start-master.sh``
 
@@ -188,4 +186,4 @@ Run:
 
 Then we can start the batch workflow. For this to produce gold data succesfully, you need to have produced silver data previously by running the stream analytics.
 
-Go to the Airflow GUI by http://localhost:8085, search DAG bu id "spark_pipeline" and start it. If you have silverData produced in the correct location (batch app tries to search from current hour), then this workflow will produce the goldData, which can be queried from HDFS chicagoTenant/goldData.
+Go to the Airflow GUI by localhost:8085, search DAG bu id "spark_pipeline" and start it. If you have silverData produced in the correct location (batch app tries to search from current hour), then this workflow will produce the goldData, which can be queried from HDFS chicagoTenant/goldData.
