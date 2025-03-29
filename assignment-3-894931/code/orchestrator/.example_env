@@ -1,0 +1,2 @@
+HADOOP_PATH=/home/ilmarih/bdp_25_tech/hadoop-3.4.1
+SPARK_PATH=/home/ilmarih/bdp_25_tech/spark-3.5.5-bin-hadoop3
