@@ -13,11 +13,15 @@ default_args = {
     "retry_delay": timedelta(minutes=1)
 }
 
-load_dotenv()
+# ADD HERE YOUR PATHS
+hadoop_path="/home/ilmarih/bdp_25_tech/hadoop-3.4.1"
+spark_path="/home/ilmarih/bdp_25_tech/spark-3.5.5-bin-hadoop3"
+batch_path="/home/ilmarih/bdp_25/assignment-3-894931/code/tenantbatchapp/tenantbatchapp.py"
+
 
 # this step looks for new silver data input files from HDFS
 def get_new_files(ti):
-    hadoop_path = os.getenv("HADOOP_PATH")
+    #hadoop_path = os.getenv("HADOOP_PATH")
     time_zone = pytz.timezone('Europe/Helsinki')
     current_time = datetime.now(time_zone)
 
@@ -54,7 +58,7 @@ def get_new_files(ti):
 
 # final step, rename processed files to avoid duplicate processing
 def rename_processed_files(ti):
-    hadoop_path = os.getenv("HADOOP_PATH")
+    #hadoop_path = os.getenv("HADOOP_PATH")
 
     time_zone = pytz.timezone('Europe/Helsinki')
 
@@ -75,8 +79,8 @@ def rename_processed_files(ti):
 
 # main step, submit batch analytics job for spark
 def submit_spark_job(ti):
-    spark_path = os.getenv("SPARK_PATH")
-    batch_path = os.getenv("BATCH_APP_PATH")
+    #spark_path = os.getenv("SPARK_PATH")
+    #batch_path = os.getenv("BATCH_APP_PATH") 
 
 
     # get files to process
