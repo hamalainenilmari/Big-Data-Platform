@@ -1,6 +1,6 @@
 # Messaging System
 
-This component is from assignment 1. This component contains kafka cluster.
+This component is from assignment 1, 2. This component contains kafka cluster.
 
 Starting Kafka cluster:
 

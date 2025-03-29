@@ -1,8 +1,8 @@
-# Staging Input Directory
+# Silver and gold data storage
 
 Technology is HDFS. After installing it, set the following configurations:
 
-1. Modify *etc/hadoop/core-site.xml* to match:
+Modify *etc/hadoop/core-site.xml* to match:
 
 ```xml
 <configuration>
@@ -13,12 +13,12 @@ Technology is HDFS. After installing it, set the following configurations:
 </configuration>
 ```
 
-2. Create folders for namenode and datanode in the hadoop-3.4.1 root folder:
+Create folders for namenode and datanode in the hadoop-3.4.1 root folder:
 
 ``$ mkdir datanode``
 ``$ mkdir namenode``
 
-3. Modify *etc/hadoop/hdfs-site.xml* to match (make sure the paths to previously created folders are correct):
+Modify *etc/hadoop/hdfs-site.xml* to match (make sure the paths to previously created folders are correct):
 
 ```xml
 <configuration>
@@ -47,16 +47,16 @@ If you cannot ssh to localhost without a passphrase, execute the following comma
 ``$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys``
 ``$ chmod 0600 ~/.ssh/authorized_keys``
 
-4. Format the HDFS filesystem by running:
+Format the HDFS filesystem by running:
 
 ``$ bin/hdfs namenode -format``
 
-5. Start NameNode daemon and DataNode daemon:
+Start NameNode daemon and DataNode daemon:
 ``$ sbin/start-dfs.sh``
 
-To create sample data, use the instruction on *data/* folder.
+Create silver and gold data storage locations:
 
-To insert data to hdfs tenant, run:
-``$bin/hdfs dfs -put -f ../../bdp_25/assignment-2-894931/data/*.csv /tenantChicagoTaxi/``
+``$bin/hdfs dfs -mkdir chicagoTenant/silverData``
+``$bin/hdfs dfs -mkdir chicagoTenant/goldData``
 
 Usual Linux syntax can be used to manipulate the HDFS (rm, cp, mkdir, ...)
