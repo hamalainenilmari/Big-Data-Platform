@@ -195,7 +195,7 @@ def execute():
     # generate analytics in tumbling windows
     windowed_stream = (stream
         .assign_timestamps_and_watermarks(
-            WatermarkStrategy.for_bounded_out_of_orderness(Duration.of_minutes(2)) # if data comes in more than this after trip start -> discard
+            WatermarkStrategy.for_bounded_out_of_orderness(Duration.of_minutes(1)) # if data comes in more than this after trip start -> discard
             .with_timestamp_assigner(AssignTimestampAssigner())
             )
         .filter(lambda x: x is not None)                                # Filter out None values
@@ -247,6 +247,8 @@ def execute():
         }),
         Types.STRING()
     )
+
+    quality_alert_metrics.print()
 
     # send quality alert metrics to tenant
     quality_to_string.sink_to(kafka_sink)

@@ -125,28 +125,51 @@ Start producing data for tenant by going to */tenant/chicago* and running:
 
 ``$ python3 chicago/kafka_produrer.py``
 
-**Batch analytics**
+You can also run the tenant kafka consumer, which consumes the silver data and data quality alerts.
 
-**Airflow**
+``$ python3 chicago/analytics_consumer.py``
 
-Indicate airflow home dir in the dir orchestrator
+The tenantstreamapp produces silver data the HDFS chicagoTenant/silverData storage, and stores processing metrics to local folder logs/.
 
-export AIRFLOW_HOME=/home/ilmarih/airflow
-(venv) ilmarih@DESKTOP-NRPJ5AT:~/bdp_25/assignment-3-894931/code/coordinator$ airflow db init
+## Batch analytics
 
-start webserver: 
+**Airflow:**
 
- airflow webserver -p 8080
+Go to folder orchestrator and nstall Apache Airflow there:
 
- go to another terminal
+``$ pip install "apache-airflow[celery]==2.10.5" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.5/constraints-3.8.txt"``
 
- again
+Check [here](https://airflow.apache.org/docs/apache-airflow/stable/installation/installing-from-pypi.html) for more information if you get install errors.
 
-export AIRFLOW_HOME=/home/ilmarih/airflow
+Create folder airflow in your root directory.
 
-then run 
+Indicate airflow home dir in the bdp orchestrator folder you are currently in.
 
-airflow scheduler
+Export the airflow home like:
+
+``$ export AIRFLOW_HOME=/home/ilmarih/airflow``
+
+Then initialize database:
+
+``$ airflow db init``
+
+Then start airflow webserver:
+
+``$ airflow webserver -p 8080``
+
+Create user by:
+
+``$ airflow users create --username admin --firstname firstname --lastname lastname --role Admin --email admin@email.com``
+
+Go to another terminal, again run
+
+``$ export AIRFLOW_HOME=/home/ilmarih/airflow``
+
+Then run:
+
+``$ airflow scheduler``
+
+
 
 start Spark cluster
 
