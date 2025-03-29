@@ -261,27 +261,28 @@ Two parallel producers, with two parallel tenantstreamapps running, one for each
 20 messages a second each
 Both parallellism 1
 
-
+test 0
 tenant 1:
 
-| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
-|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
-| 1743268320000 | 433               | 7.216666666666667           | 17            | 0.9607390300230947   | 17                 | 0              |
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743273000000 | 1043               | 17.383333333333333           | 0              | 1.0          | 0                  | 0                |
 
 
 tenant2 :
 
-| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality        | Pickup Area Errors | Timestamp Errors |
-|--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
-| 1743268320000 | 447               | 7.45                        | 17            | 0.9619686800894854   | 17                 | 0              |
-
+| Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
+|---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
+| 1743273000000 | 1042               | 17.366666666666667           | 0              | 1.0          | 0                  | 0                |
 
 test2
 
 Both parallellism 2
+
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
-| 1743271440000 | 524                | 8.733333333333333            | 0              | 1.0          | 0                  | 0                |
+| 1743272580000 | 1022               | 17.033333333333              | 0              | 1.0          | 0                  | 0                |
+
 
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
@@ -311,6 +312,11 @@ Both parallellism 8
 | Window        | Records per Window | Records Processed per Second | Rows Discarded | Data Quality | Pickup Area Errors | Timestamp Errors |
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743272220000 | 676                | 11.266666666666667           | 0              | 1.0          | 0                  | 0                |
+
+Several possible reasons:
+
+ task scheduling and coordination overhead increased
+ resource usage: cpu, memory, networks
 
 
 ## Part 3 - Extension
