@@ -13,7 +13,7 @@ From *data/* you can find sample of the Chicago taxi trip data set.
 
 From *code/* you can find all the implementations of the platform:
 
-* *mysimbdp-coredms*: contains cassandra cluster set up (from assignment 1,2, is not necessart for streaming analytics)
+* *cassandra*: contains cassandra cluster set up (from assignment 1,2, is not necessart for streaming analytics)
 * *hdfs*: instructions for configurating HDFS silver and gold data storage
 * *messaging_system*: contains messaging system (kafka cluster set up)
 * *orchestrator*: contains Apache Airflow batch analytics workflow orchestrator
