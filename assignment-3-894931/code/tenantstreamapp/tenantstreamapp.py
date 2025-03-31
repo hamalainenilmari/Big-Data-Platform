@@ -233,7 +233,7 @@ def execute():
             )
     
     # if data quality under limit, send the data to tenant
-    quality_alert_metrics = summed_metrics.filter(lambda x: (1 - x[2]/x[1]) < 0.99) # hardcoded for example
+    quality_alert_metrics = summed_metrics.filter(lambda x: (1 - x[2]/x[1]) < 0.99) # Change this if you want different limit
 
     # map metrics to json
     quality_to_string = quality_alert_metrics.map(
