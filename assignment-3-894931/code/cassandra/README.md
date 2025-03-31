@@ -1,4 +1,4 @@
-# Mysimbdp-coredms instructions
+# Cassandra data storage instructions
 
 ## This platform component is designed and implemented in assignment 1
 
