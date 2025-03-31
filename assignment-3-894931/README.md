@@ -15,7 +15,7 @@ From *code/* you can find all the implementations of the platform:
 
 * *cassandra*: contains cassandra cluster set up (from assignment 1,2, is not necessary for streaming analytics)
 * *hdfs*: instructions for configurating HDFS silver and gold data storage
-* *messaging_system*: contains messaging system (kafka cluster set up)
+* *messaging_system*: contains messaging system (kafka cluster set up, from assignment 1,2)
 * *orchestrator*: contains Apache Airflow batch analytics workflow orchestrator
 * *tenant*: contains example tenant data producer, and data consumer (for consuming silver data)
 * *tenantbatchapp*: contains batch analytics processing component
