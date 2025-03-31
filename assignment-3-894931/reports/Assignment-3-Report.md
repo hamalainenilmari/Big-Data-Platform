@@ -354,10 +354,40 @@ There are several possible reasons why the higher parallellism decreases the pla
 
 ### 3.1 API for batch data ML
 
-### 3.2 Bounded data tenantbatchapp trigger
+
+The platform could have a machine learning component for batch data. The data ingestion would work the same as in the batch analytics component. The platform would contain and provide RESTful API, using which the tenants can send their batch of processed data for machine learning tasks. The tenant would send the batch by the API, from where the data would be forwarded to the platform's ML component. The component would perform machine learning inference, and return the results to to the API component. Then the API component would send the results to the tenant. The results could be sent in two ways to the tenant, depending on the ML inference processing time. If the ML task is fast, the tenant access the API by GUI procided by the platform, send the data to it and receive the result after waiting a while. If the ML tasks would take long, the other option would be that the tenant sends the data to the API, returns later and requests the results from the API, which would fetch the result from some temporary storage and send to the tenant. The API would manage authentication and authorization of the tenant.
+
+The tenants who would use ML services of the platform would have ensure that their input batch data would comply with schemas required by the ML inference component. The tenant would have to authenticate to the API to send the batch of data. The results could contain various insights, such as anomaly detections and demand predictions.
+
+![architecture with ML component](../images/ml.png)
+
+### 3.2 Bounded data batch analytics trigger
+
+If the raw data sent by the tenant to the messaging system would be bounded, we would modify the workflow of analytics. The platform would have couple of methods for detecting the end of data stream. The tenant could inform a specific amount of raw data that is send, and after we get to the count the platform would know that this is the end. The tenant could give some time, that after which the batch analytics would be conducted. Also the platform would have some kind of deadline for interval of last data received, e.g. 1 minute after which the analytics would be started. After we hit the trigger based on the previous options, the tenantbatchapp would be called to perform batch analytics of the silver data just generated.
+
+The workflow would be the following. Based on the method for detecting the end of data stream (time based, count based etc), after detecting the end of stream, the tenantstreamapp would trigger tenantbatchapp to perform the batch analytics. The trigger mechanism could be a specific Kafka message from streamapp to batchapp for example. The batchapp would be continuosly listening to messages of the Kafka topic, and when it receives the message to start, it would perform the batch analytics of the produced silver data from the bounded data stream.
+
+![architecture with bounded data producing](../images/bounded_produce_arc.png)
 
 ### 3.3 Critical condition detection architecture
 
+The streaming analytics component could detect a critical condition from the real time data stream being ingested, for example very high rate of alerts. An alert could be e.g. bad format data or anomalies in the data. The streamapp would have configurations, which define the limits these alerts, which being exceeded would trigger the alert mechanism. The tenantstreamapp would signal batch analytics component to perform another execution of batch analytics of the produced silver data. The result of this would be stored in a cloud storage, and an alert to the corresponding tenant would be sent. The tenant could then fetch the results from the cloud storage and analyze what is the reason behind these problems.
+
+The workflow could be implemented with Apache Airflow. The workflow would be listening to alerts from defined Kafka alert topic. After receiving an alert, the workflow would continue to second tasks, which would be to execute the batch analytis of the silver data of specific tenant based on the alert. The third task would be to send the batch analytics results to the cloud data storage and send an alert to the tenant that there are problems with the input data and the location of the results.
+
+![architecure with alert storage](../images/alert.png)
+
 ### 3.4 Different schemas
 
+To ensure that the streaming analytics component would always use the latest schemas, there would a schema
+registry, from where the schemas are fetched. The schemas would contain information such as schema version, data values expected and data types. The schema registry would contain information of each tenant of the schema id/version they are currently using. The tenants would send the new schemas to the platform and inform which schemas they want to use. If the input data being ingested by the streaming application would not match the schema which is currently defined to be used, an alert would be sent to the tenant as according to the previous part.
+
+The implementation of tenantstreamapp would be changed such that instead of hardcoded schemas, when the app is executed it would first fetch the schemas. Then based on the schemas, the component would process the input data. This way the tenant can modify their input data with the streaming analytics component still being able to perform analytics and processing without technical intervention.
+
+If the developer of tenantsteamapp would have to be aware of new schemas of the input data before deploying tenantstreampp, the platform would provide an API for tenants for creating/modifying the schemas. Each new schema would be stored to the schema registry, and the action would be stored. Then when the developer would deploy the tenantstreamapp, he would check for the notification of changed schemas, and based on the notifications, modify the tenantstreamapp.
+
 ### 3.5 End-to-end exactly once delivery
+
+The current workflow of tenantstreamapp is ingestin input data streams from Kafka, performing aggegation analytics over tumbling windows and storing the results to HDFS as files. End-to-end exactly once delivery is a delivery guarantee that ensures that each input data record is handled/processed only once through the workflow. To achieve end-to-end exactly once delivery in the current tenantstreamapp design and implementation would be possible.
+
+The current flink implementation already has checkpointing implemented, which is needed for storing consistent processing states. The HDFS silver data sink is also configured for using rolling policy with the defined checkpoints. The stateful operations checkpoint data is stored to HDFS. The Kafka source configuration would need to enable semantic for exactly once ingesting. Enabling full end-to-end exactly once delivery could cause higher latency and increased resource consumption.
