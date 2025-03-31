@@ -58,7 +58,7 @@ The tenantstreamapp is the component which generates the analytical silver data 
 
 Input streaming data has the following schema:
 
-```json
+```jsonc
 {
   "Trip ID": string,
   "Taxi ID": string, 
