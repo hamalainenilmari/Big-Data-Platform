@@ -364,8 +364,7 @@ There are several possible reasons why the higher parallellism decreases the pla
 
 ### 3.1 API for batch data ML
 
-
-The platform could have a machine learning component for batch data. The data ingestion would work the same as in the batch analytics component. The platform would contain and provide RESTful API, using which the tenants can send their batch of processed data for machine learning tasks. The tenant would send the batch by the API, from where the data would be forwarded to the platform's ML component. The component would perform machine learning inference, and return the results to to the API component. Then the API component would send the results to the tenant. The results could be sent in two ways to the tenant, depending on the ML inference processing time. If the ML task is fast, the tenant access the API by GUI procided by the platform, send the data to it and receive the result after waiting a while. If the ML tasks would take long, the other option would be that the tenant sends the data to the API, returns later and requests the results from the API, which would fetch the result from some temporary storage and send to the tenant. The API would manage authentication and authorization of the tenant.
+The platform could have a machine learning component for batch data. The platform would contain and provide RESTful API, using which the tenants can send their batch of processed data for machine learning tasks. The tenant would send the batch by the API, from where the data would be forwarded to the platform's ML component. The component would perform machine learning inference, and return the results to to the API component. Then the API component would send the results to the tenant. The results could be sent in two ways to the tenant, depending on the ML inference processing time. If the ML task is fast, the tenant access the API by GUI procided by the platform, send the data to it and receive the result after waiting a while. If the ML tasks would take long, the other option would be that the tenant sends the data to the API, returns later and requests the results from the API, which would fetch the result from some temporary storage and send to the tenant. The API would manage authentication and authorization of the tenant.
 
 The tenants who would use ML services of the platform would have ensure that their input batch data would comply with schemas required by the ML inference component. The tenant would have to authenticate to the API to send the batch of data. The results could contain various insights, such as anomaly detections and demand predictions.
 
@@ -386,6 +385,8 @@ The streaming analytics component could detect a critical condition from the rea
 The workflow could be implemented with Apache Airflow. The workflow would be listening to alerts from defined Kafka alert topic. After receiving an alert, the workflow would continue to second tasks, which would be to execute the batch analytis of the silver data of specific tenant based on the alert. The third task would be to send the batch analytics results to the cloud data storage and send an alert to the tenant that there are problems with the input data and the location of the results.
 
 ![architecure with alert storage](../images/alert.png)
+
+Another possible design would be that the whole workflow is implemented with Airflow. When the tenant wants to start the streaming data analytics and sending the data, the workflow would start the streaming component. Then based on the trigger mechanism (e.g. count based), the workflow would execute the batch analytics component.
 
 ### 3.4 Different schemas
 
