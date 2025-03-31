@@ -1,2 +1,1571 @@
-the content of this file should be the output of the log of your own git project for this assignment
-using git log command to export your git log
+commit badd52cb0ff68857f62ce942755c4185092f609f
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 19:15:34 2025 +0300
+
+    add to right location
+
+commit 78a15b1d15e3daf8635da5a61370c2eb04cf4be0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 19:14:57 2025 +0300
+
+    add other example workflow for batch trigger
+
+commit 2d0acca1f0aa62d591aa0f594010e189bb767f83
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 19:07:44 2025 +0300
+
+    add answers
+
+commit 73d38e6cadc188cabada0265ae6dfed6153c142a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:50:15 2025 +0300
+
+    modify final report
+
+commit ff89519b86b292c336f611291dd641028366836d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:40:48 2025 +0300
+
+    edit report
+
+commit f366449efd920d051b52e0b981d43df539284483
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:25:29 2025 +0300
+
+    add kafka info
+
+commit 37d1b0e0e9a890402b73229ef8c9d2ec6073d5dc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:08:10 2025 +0300
+
+    add log info
+
+commit ad6493ff43955ef8e007fa7262c071b48280eee1
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:05:14 2025 +0300
+
+    add data info
+
+commit 06045ac5374f42ff75726e9e7a16e8cf1244c565
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:04:26 2025 +0300
+
+    add stream app info
+
+commit f73b43cb262dfec45dc60325ed5d9bfe43fe4cf6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 12:00:00 2025 +0300
+
+    edit info
+
+commit 2bfd5ddd572e861501b81ee364c332fc8bc615dd
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:58:10 2025 +0300
+
+    add info to tenantbatchapp
+
+commit d8928a78a6b476cb561bc9c05e17c16e0fe6862d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:55:20 2025 +0300
+
+    edit infos
+
+commit 2a29ba7b8d2362d28053c1930bfce4052f60e1f8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:45:55 2025 +0300
+
+    add new cassandra location
+
+commit d032338a8ca8d80a31762deb65050c696e7b2f8a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:45:34 2025 +0300
+
+    rename cassandra part
+
+commit aefb6e0631c60f9e65c3c41f7c400d8eba160df5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:42:17 2025 +0300
+
+    edit requirements
+
+commit 01c274c34b4809f2d92f7071ddc9e857606725c5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:40:04 2025 +0300
+
+    update self grading
+
+commit 5d4f711acf1e5262ae2b40d4731e2e25b0a62abb
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:09:03 2025 +0300
+
+    edit format
+
+commit 2309d79b0d4aee65bf2b08e3eec2aa87151acf94
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:08:41 2025 +0300
+
+    edit
+
+commit c5ff7ecf6b9c659185fee60effdd0f228452d403
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 31 11:06:30 2025 +0300
+
+    add answers to part 3
+
+commit 5326365b20b372bb8e65caa1884d395654107875
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 23:32:58 2025 +0200
+
+    minor edit
+
+commit fcf6e06698074588098ae04b724c1d343d33ad95
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 23:31:32 2025 +0200
+
+    final deployment info
+
+commit 69112b03b84a29ab6a4a04db0f5beb194c15c174
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 23:23:50 2025 +0200
+
+    add deployment info
+
+commit 0f5894bc5442ce404d82b1f7c1c6c86c5323ff6d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 23:06:01 2025 +0200
+
+    minor edits
+
+commit 3694fe9f92a151de05c687f28ac096d321d89a8e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 22:57:43 2025 +0200
+
+    deploy info
+
+commit 536a9f105c9060cd6eb22c38982f05b20ae17706
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 22:53:03 2025 +0200
+
+    add example env
+
+commit a61de28c1a0dfc24ae458afb51c3f2e2948067c8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 22:52:53 2025 +0200
+
+    add deployment info
+
+commit a809ad5cfaabcfb80d659965d92f6ed1b4189691
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 22:28:00 2025 +0200
+
+    add orchestator folder
+
+commit 5fbab95843d99ac8b4c531b4fe5569a9812a27bb
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 22:08:55 2025 +0200
+
+    add data info
+
+commit bc473bb1d46e820a214e29daa1d33560c0562e77
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:54:59 2025 +0200
+
+    add kafka example env
+
+commit 9ca1f4ef07665d86ae5551bec9136e61034dcab6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:46:17 2025 +0200
+
+    add deploy info
+
+commit c583274d0f5970a3efbb32b48a5f5d3f7e18a9ca
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:25:26 2025 +0200
+
+    edit readmes
+
+commit a509bb817a762e08b7084cd9ba8984ec2c780b2f
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:23:57 2025 +0200
+
+    edit batch app
+
+commit 4b90c938d65de973982e3a63623cc891be61a361
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:23:39 2025 +0200
+
+    minor stream edits
+
+commit dafbe925f97a8e553693c258043825529bcb98d5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:21:28 2025 +0200
+
+    edit example env
+
+commit 18d852f3115c4041b935c11c6ff4160cd8f63d94
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 21:15:54 2025 +0200
+
+    add data sample
+
+commit 12ef5e3c294c978680fadd2b9d04e1c49f9a8031
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 20:47:12 2025 +0200
+
+    add part 2
+
+commit bd51e671f511f15414f26f1c35f5836d1dc21518
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 20:21:51 2025 +0200
+
+    more logs
+
+commit a8bec0d72336cb89b87259c66940c16ca71ab062
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 18:49:10 2025 +0200
+
+    more logs
+
+commit 9f8dca6c12a945f801bec498d1707c068b05d14a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 18:29:49 2025 +0200
+
+    add more logs
+
+commit bce3befef74526649dba5aa6210f9e0d8220e568
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 17:19:32 2025 +0200
+
+    add logs, answers
+
+commit 3b66bf6261391867876ee007e249d34371e8f6b4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 16:24:56 2025 +0200
+
+    add logs & asnwers
+
+commit 8934a459c50e3c7c2da49f20b985c3904ded73cc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 15:40:47 2025 +0200
+
+    edit tenant producer
+
+commit 98c1650a3da161b5b3c9ee7df4c6fdc338fbd9cc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 15:40:28 2025 +0200
+
+    update architecture picture
+
+commit 50f28b2bf50386f20b41b1a194be633216e0674a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 15:40:07 2025 +0200
+
+    add answers
+
+commit f96aafe61406f6be481a5ae54971522bf1ccb4a2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 15:39:51 2025 +0200
+
+    add requirements
+
+commit 70310320a4e2b17b89afc0947b122936408a10e6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 29 09:45:25 2025 +0200
+
+    clean up code
+
+commit dc90ae2f947fbdc5e5a2c01e64b3155c07e088a6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 28 18:30:00 2025 +0200
+
+    add jar location to env variable
+
+commit 448a1bde0d5248f7e1ea5f2e26636a7e070fae1a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 28 18:20:07 2025 +0200
+
+    add feature to send data quality alert to tenant
+
+commit d52c6b97caa79025d263f785e77f25d5026e1301
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 28 18:19:48 2025 +0200
+
+    add simple tenant kafka consumer for data quality monitoring
+
+commit 63202e71e5742e553ab0e236ed678bcfd3752639
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 28 14:55:35 2025 +0200
+
+    add metrics logging to stream app
+
+commit 599503a030c6e4d99450c05f8c2ec55632f7151a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 27 20:49:03 2025 +0200
+
+    edit batch component
+
+commit b57550480d165c64e176b04f7416752fca142982
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 27 20:48:48 2025 +0200
+
+    add more answers
+
+commit 7fc973d69a21df94bb69553414b3f0997e46035d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 27 20:48:33 2025 +0200
+
+    add initial metrics
+
+commit 4c6091d76d171109390e24fc7d36395a76b8497b
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 27 18:31:13 2025 +0200
+
+    add some answers
+
+commit f62b4bdec28ff1c69294b5580ed4fdbaf71c12c2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 26 18:22:39 2025 +0200
+
+    add initial batch analytics app
+
+commit 69689f7a085ca862b4afe0351ba83022d42b3500
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 26 17:58:29 2025 +0200
+
+    add tenantstreamapp initial version
+
+commit 255cc01cd72e6e564f0a42a831483f82060efb3e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 25 23:16:06 2025 +0200
+
+    add tenant kafka producer
+
+commit e2532dfac648c892622c9447a474944da8d62487
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 25 23:15:47 2025 +0200
+
+    add reports
+
+commit 8bffc224f55ef48bb6dcba504206513239bfc827
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 25 13:12:35 2025 +0200
+
+    add kafka, hdfs
+
+commit 07b03b6b792f49dd98405b9efa001892e22905f5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 25 13:12:08 2025 +0200
+
+    add answers to part 1
+
+commit e15e9e8915211ddbfdddf514c274348179e7b77e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 25 10:55:59 2025 +0200
+
+    add some initial answers to part 1
+
+commit 9166283f32cd827710940ceedb81863bfa1ec6a2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 24 14:14:54 2025 +0200
+
+    add assignment 3 skeleton
+
+commit 529af762329839390d2e24ce4daf38b9d358a4be
+Merge: eb38340 f1549dd
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 23 21:33:54 2025 +0200
+
+    Merge branch 'main' of github.com:hamalainenilmari/Big-Data-Platform into main
+
+commit eb38340fa9a2183e2f820a3212b3786252a696cc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 23 21:33:35 2025 +0200
+
+    fix misconfigurations from service agreements and manager
+
+commit f1549dd419239b47dbb310d4187f931f22968883
+Author: hamalainenilmari <118058700+hamalainenilmari@users.noreply.github.com>
+Date:   Sun Mar 23 20:21:35 2025 +0200
+
+    Update Assignment-2-Report.md
+    
+    fix typo
+
+commit adf1e2d9de13dc5b85936f77a9fa69d6d2bd8589
+Author: hamalainenilmari <118058700+hamalainenilmari@users.noreply.github.com>
+Date:   Sun Mar 23 20:07:48 2025 +0200
+
+    Update Assignment-2-Report.md
+    
+    add service agreement constraints
+
+commit 27d5c79c27e89f3cd614725db88d12a28b4d20f8
+Author: hamalainenilmari <118058700+hamalainenilmari@users.noreply.github.com>
+Date:   Sun Mar 23 19:54:33 2025 +0200
+
+    Update Assignment-2-Report.md
+    
+    fix typo
+
+commit f12d6e1e6b033032d77f574979623692472b8685
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 23:08:24 2025 +0200
+
+    rename logs
+
+commit eb5f19611ba1e3c9ce95f9dc76826d6d1a52e505
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 23:01:49 2025 +0200
+
+    more info
+
+commit 6098eb52225a4ad974ce3dae7dbaf28601686657
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:59:26 2025 +0200
+
+    add info
+
+commit 3ac5411fad7af9f29521e49a4877fa49ebcf4db0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:56:09 2025 +0200
+
+    add git log
+
+commit 78835642fb689dc9774fc3aa9b46b2995eb0f329
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:54:20 2025 +0200
+
+    add readme infos, final answers
+
+commit e42de342aaacf1bbaaef93e59f55e1d8839b1cd4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:34:42 2025 +0200
+
+    add answers
+
+commit 3765da699c90ba92c2a83b1c710621824f29d117
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:32:44 2025 +0200
+
+    add ny taxi set info
+
+commit e3243305cbb14eeba10b038514fa3d3d1a3e1f8a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:30:59 2025 +0200
+
+    fix negative time bug
+
+commit fc2da132369615b716d6e5eb10223d89eb9cd0cc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:29:49 2025 +0200
+
+    add higher min rows inserted value
+
+commit 62d2bb6aea34698297c3091ed4eaff4fd1cb9d26
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:26:48 2025 +0200
+
+    minor edits
+
+commit ed0dd441e14b520fd2e44903cb66b312bd1fb719
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:18:30 2025 +0200
+
+    add jars
+
+commit 0228bc775a12fa657f4c93a4e482ae635badf437
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 22:15:28 2025 +0200
+
+    jar files
+
+commit 039489939eb07d0dae2f182092a74727e5dec983
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 21:43:31 2025 +0200
+
+    add cassandra host address
+
+commit 98f73711219abd772d4b530664115805fd9b4eb5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 21:39:20 2025 +0200
+
+    restruct
+
+commit a90c7cd6103ffe3c97bb767f53697bedc2f6b6bf
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 21:37:31 2025 +0200
+
+    remove old comment
+
+commit 941e4e3f6f03ec281dc9ad59ed4664fd6c742008
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 20:51:30 2025 +0200
+
+    add rest answers to part 3
+
+commit 92da9b6722c78103b8aa1eb17f76608add09734e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 20:35:27 2025 +0200
+
+    add answers to part 3
+
+commit 565c49f9a7a504c923f939891bb82ae847631e48
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 17:48:03 2025 +0200
+
+    add answers to part 2
+
+commit 52d226f5b38f141c3ff2bb7e322e7840406fb9f6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 16:50:00 2025 +0200
+
+    add real time metrics generation to stream pipeline
+
+commit 385e4be6c7b01bb323e625f04c31f38c77bf4ad9
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 16:40:37 2025 +0200
+
+    add functionality to listen to real time metrics
+
+commit 9b342ad80bc903c2e8950cffb3d3f524a4bcfe7a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 13 16:40:11 2025 +0200
+
+    add start and stop to their own functions
+
+commit 7bc4b1efe9bec417980cbf671e2e096d55576ed5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 17:01:49 2025 +0200
+
+    add answers
+
+commit a1c3ae70a0d992eab6da52226f16024fe6929b97
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 13:16:20 2025 +0200
+
+    add asnwers
+
+commit 83035a3d0e72450b3d2c3e1a5c034099983e0fe8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:38:41 2025 +0200
+
+    restruct
+
+commit af5218ae40c4d14b916d73ab4b5b21c531369bc0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:38:19 2025 +0200
+
+    restruct
+
+commit 3ed41777ced5beeacd9c4109347fd0119771a64d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:37:54 2025 +0200
+
+    restructure logs
+
+commit 065f0e7f31c7fbb9e0b433e8e858c9c8b97cf3aa
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:37:06 2025 +0200
+
+    restructuring
+
+commit f74e452bfe5e3a69bac76f58900924704f42b0f8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:36:47 2025 +0200
+
+    add deploy info
+
+commit 13a9129262070227391d29ec8b4d3c1dded66059
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:36:35 2025 +0200
+
+    minor edits
+
+commit aa10cd6f838caf85ab211368c28ca7819e8fce6d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:36:19 2025 +0200
+
+    fix monitor and manager to handle multiple tenants
+
+commit 7039c4a8f55747156c8a10a529c081caadd945a0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Mar 12 00:35:58 2025 +0200
+
+    edit ny tenant schema
+
+commit 8595eb2b26360c2819b07e3ec2408143a7f95565
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 23:30:02 2025 +0200
+
+    add deployment info
+
+commit df6ab8c909e2c8ab95b467ef127596872acf0b96
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 23:29:51 2025 +0200
+
+    add ny data producer
+
+commit f709685b622551cbd6d3c6a00e1c870681657647
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 23:29:40 2025 +0200
+
+    edit topics
+
+commit 2ebd5dc0e9b5290b80853bfbe41d18d51da2578e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 23:29:31 2025 +0200
+
+    add another topic
+
+commit 481165068a11d64466cd53b8f59f9eb9f9b66156
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 23:29:22 2025 +0200
+
+    edit keyspaces
+
+commit 92889ad5bbe6fcccfeb4bcc5f38de04fa2108344
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 23:29:10 2025 +0200
+
+    add another tenant pipeline
+
+commit b243b8e8a1122d2b33b83bd31fb2cef32a72616d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 22:18:39 2025 +0200
+
+    restructure more to have two tenants
+
+commit e6f99ae976157e8555359178e7f82f10406cfee6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 21:55:14 2025 +0200
+
+    restructure
+
+commit 4c2e733b9356cd67b7c42f1e3b7627ebc02f8cf8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 21:32:28 2025 +0200
+
+    add dotenv to requirements
+
+commit a68427131cfa9739afedd4efb514b5a8a4c1e9b8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 21:32:13 2025 +0200
+
+    final stream ingest pipeline with reporting to monitor
+
+commit 3e7d64f63c0635d428857233e861f6e0e018563f
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 19:46:12 2025 +0200
+
+    add initial stream monitor which gets pipeline reports
+
+commit 64011c2dcf6c4eac9836e1f4ae484ef63ad15203
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 19:45:44 2025 +0200
+
+    add kafka sink to bad data
+
+commit b67f8e55afdbe7ce0836c6f87eaadb8bd92ba1a1
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 17:23:45 2025 +0200
+
+    fix logging
+
+commit 447307035d222a4593145098bc1d43ca166355c4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 12:10:05 2025 +0200
+
+    add keyboard exiting to manager
+
+commit 0e4676e968ee2e14e69832851eff0282a8c41194
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Mar 11 12:09:47 2025 +0200
+
+    fix start and stop calls by running flink execution in a thread, store job so it can be cancelled by cancel() api provided by flink
+
+commit fa24d0cbc4ced36e839668702248edb6496e31e2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 19:04:31 2025 +0200
+
+    fix manager time interval
+
+commit 3b2eda93749f1d691111ace1432851d82e860f1e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 19:04:09 2025 +0200
+
+    add keyboard exit etc
+
+commit b53fa479265d61b0ebff7683fde23f527f7266ed
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 19:03:49 2025 +0200
+
+    modify kafka producer
+
+commit f3b2e716dfd279b311347abeb44b238d70676e2a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 19:03:38 2025 +0200
+
+    fix location
+
+commit c401463fb18d41e841b4d24431b61d2130816773
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 19:03:13 2025 +0200
+
+    add report, deployment stuff
+
+commit 379d86f31d8acfb97486713855a0b92eaf2d53b8
+Merge: 5abb8df 4b3d533
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:50:28 2025 +0200
+
+    Merge branch 'main' of github.com:hamalainenilmari/Big-Data-Platform into main
+
+commit 5abb8dfa3770f56bf7146874772babaa779a344e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:50:16 2025 +0200
+
+    add kafka broker cluster compose file
+
+commit 94afe2dce3f5634ee2f674829c69700d52be3706
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:11:44 2025 +0200
+
+    add small sample of dataset
+
+commit 4b3d5338e02ad9f86cf7fbd32699423569bc0fba
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:11:44 2025 +0200
+
+    minor edits to kafka producer
+
+commit 3378702c6049fb4ed9be06b276cd94cc04349168
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:11:31 2025 +0200
+
+    add kafka example env
+
+commit fdf62a28bd77c04a8afecabdb89475819acb1ea0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:11:21 2025 +0200
+
+    remove redundant parts from stream pipeline
+
+commit 3adce94c283c586e62b33d3b0113a60bbf4f8c54
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:11:07 2025 +0200
+
+    add stream monitor
+
+commit 480f65c39895f1a782c22499c01e60fe0e2ad195
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:10:54 2025 +0200
+
+    add time pipeline stop feature to stream manager
+
+commit 47da2524ca11fee41f787670dc1c2b5b55c09d13
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:10:32 2025 +0200
+
+    add initial kafka readme
+
+commit 9a7a03d378ba5749dc994bcd11168c54439cb869
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 16:10:18 2025 +0200
+
+    modify service agreements
+
+commit 3a6d9838171a94143fd4876bea215828ea97b785
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 13:46:36 2025 +0200
+
+    add answers to part 2, add pictures
+
+commit ccb807c1a54c2c9b2eba7d17281762f5e8e3acf9
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 13:46:18 2025 +0200
+
+    restructure log files
+
+commit ae086dee5c24bb61074f0acbb02ce97dc2e2fd48
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 13:45:51 2025 +0200
+
+    add logging to stream pipeline
+
+commit 62f8fa8b79ddd5a5587fbe27115de739372d7b67
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 10 13:45:32 2025 +0200
+
+    add initial stream ingest manager
+
+commit da616083bed3cd40e6ffc94fe5622c38aab9be58
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:28:52 2025 +0200
+
+    add kafka info from assignment 1
+
+commit f2dbe40823b342c07867db4dbcaee24f191b12a0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:28:32 2025 +0200
+
+    add shell script for concurrent kafka producing
+
+commit cb735c54ac927c72db6bb7100db8c8603155dbf2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:28:15 2025 +0200
+
+    add todo to file
+
+commit ccedeffe091992f7ac5bc0cdb9e42cab6d037349
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:27:57 2025 +0200
+
+    modify sample creator input file location
+
+commit c7b923c849a676f6791927381f20b40f233bf6da
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:27:36 2025 +0200
+
+    add deployment info, add answer to 2.1
+
+commit 26a607f59e36af42b0bd975c042d453cc7466d7a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:26:47 2025 +0200
+
+    modify requirements
+
+commit ab3b5511393876f3b2635d0a678aadb7dbb5c760
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:26:35 2025 +0200
+
+    add kafka producer component from assignment 1
+
+commit 1d1df07059badb64850532c5775dad1219d238d3
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 22:25:45 2025 +0200
+
+    modify stream ingest pipeline to insert kafka data to cassandra
+
+commit 055ebad26e3aed9465fe43242d308732a208be53
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sun Mar 9 14:04:18 2025 +0200
+
+    add initial stream pipeline with flink
+
+commit 1b1c2afcdadec3335f8d3608546e7fd9bc5c049a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 8 10:47:49 2025 +0200
+
+    modify part 1 answers
+
+commit 782eb719d619f7b7f8259342eb15dbb7392e1dbc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Mar 8 10:47:30 2025 +0200
+
+    add batch ingestion platform architecture picture
+
+commit d039bfd83e46b9760221474da047767356ff43de
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 16:55:41 2025 +0200
+
+    add hdfs depoloyment info
+
+commit 896dd9b295dbadc7e17745918f94ef0d5700fb03
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 16:55:29 2025 +0200
+
+    add answers to part 1
+
+commit 2dccbd7e08e25392f8e513f1f49ee77dc86d1995
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 16:55:08 2025 +0200
+
+    edit tenant pipeline to take output storage info as arguments
+
+commit ed0330cdc7634ec55ab3e13bd9b55a52b5f5f30e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 16:54:45 2025 +0200
+
+    add comments & minor edits to batch manager
+
+commit 0618b3ecb0555d502c5104d5d86733b5c5450f2a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 16:54:29 2025 +0200
+
+    add logs about test ingestions
+
+commit 6531f503f9fb14d6a60e7c1fc4e6fe830c2f4a70
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 10:44:39 2025 +0200
+
+    add sample data creator script
+
+commit d5dbf9fca8026bc0083652d41b3295414cd86f22
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Mar 7 10:44:18 2025 +0200
+
+    add logging component, ingestion interval loop
+
+commit 87877dbc02462b9067345853d9ce5a97ecf92c5e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 19:28:57 2025 +0200
+
+    add initial logging features
+
+commit 9e9802b8184ec3099d685cbeff41ccea76e19eba
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 16:43:06 2025 +0200
+
+    add some initial readmes
+
+commit 4f9899df1a37ac2056bc3c2610217070d6def98a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 16:42:52 2025 +0200
+
+    add answers to question 1
+
+commit b86aca843d9f4170d7afb44ce15ce8f4b5406ddb
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 16:42:32 2025 +0200
+
+    modify tenant batchingestpipeline
+
+commit c4dfd1b3ac48dce552d7e3d33cbe8a7bc8c36eb3
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 16:42:15 2025 +0200
+
+    modify batchingest manager to invoke multiple tenants pipelines
+
+commit 03214592736515dc77d29eaa9a10e784e6a5f4b1
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 16:41:44 2025 +0200
+
+    add example service agreement files for 2 tenants
+
+commit 5a9746aa1349e51293a28b62198fa7721c0e98d6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:24:02 2025 +0200
+
+    add initial requirements file
+
+commit 69fdce442057c136581806e0bd43ee37ed6f3f4a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:23:42 2025 +0200
+
+    edit gitignore
+
+commit 1c5b52c7d81cadd8b748ca460f62d8bfe430af6e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:23:30 2025 +0200
+
+    add initial report, deployment info
+
+commit cec2cb284c2f7b64c6d83761408cf0b34f563937
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:23:07 2025 +0200
+
+    add sample source data file
+
+commit e9c2999c2d5574b45e02ab40c542c952fd9c8a95
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:22:47 2025 +0200
+
+    add initial tenant batch ingest pipeline
+
+commit 3e1de593b3959066d3a7bd5d5701accf0ee5ef2a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:22:29 2025 +0200
+
+    add coredms component from previous assignment
+
+commit af5a31a25b2def184a0c3317ff01205887f07b9d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Mar 6 12:22:01 2025 +0200
+
+    add initial batch ingest manager
+
+commit 4cebdbb2533c3ca9594ef4458bcf9dc1d5f6e156
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 3 16:54:41 2025 +0200
+
+    add assignment 2 template
+
+commit e758318cf9b9dbdde909469b081960618affdfd4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Mar 3 16:50:42 2025 +0200
+
+    add assignment 2 template
+
+commit 00364c43f699ef5a9af52b1f3d2ada2b9c150762
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 12:16:20 2025 +0200
+
+    remove duplicates from logs
+
+commit a6647b8e7bf654dabc5435c25076f68ec2591233
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 12:12:01 2025 +0200
+
+    edit poll testing picture
+
+commit 27f8ffb7c0f7e8cbd39c67ec972fb0aaee692d18
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 12:09:34 2025 +0200
+
+    add final performance test to report
+
+commit b5573956e297d2464051f87b16887a360fa4a99c
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 11:10:03 2025 +0200
+
+    edit testing part in report
+
+commit dc762e3294500b8ac242d8fcf094c4dc737e19a5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:36:52 2025 +0200
+
+    add git log
+
+commit 2ca568cb73e868b760a555fe37f5906a17cac3f6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:33:14 2025 +0200
+
+    add code source info
+
+commit 1687bfab7b4febd67d03be62ae441c8862f2322b
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:28:10 2025 +0200
+
+    add git log
+
+commit 58cd585f7d733c96dfc9fd69f345528cad78f8ce
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:24:44 2025 +0200
+
+    add self grading
+
+commit fcfeedc81db72f3caf9427b3d98d5eb3bbfa3f4e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:23:58 2025 +0200
+
+    remove assignment description
+
+commit 7524ba37b682d644d1438a290aa7f7cf0faf5dde
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:23:14 2025 +0200
+
+    format answer
+
+commit 359e0047035248ac3cb946b487176b17ca3f78d3
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:20:03 2025 +0200
+
+    reformat
+
+commit 58174c5538ffb504a70b8ddcaf1fd5fbd6c8fb3b
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:19:10 2025 +0200
+
+    edit header size
+
+commit f81bbb2e733d326e58a9fd3aebd99226243a6f4a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:18:42 2025 +0200
+
+    improve daas explanation
+
+commit e2595601192433b6395196570f6ea31d316eb4f0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:09:27 2025 +0200
+
+    add more data service info
+
+commit 1033837e1e374e34db8f8a56c2ba7ebc7c069bc3
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:05:17 2025 +0200
+
+    format json
+
+commit 3db557d8559ed85017ae23fab49d6cde068703b1
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 10:01:40 2025 +0200
+
+    format json in md
+
+commit 12004bab70ea16e84c6360b59d4b23925d6de2bd
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:54:18 2025 +0200
+
+    edit report
+
+commit bc7f4dd509a97cdfb300a2358680eb1eb790adaf
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:34:55 2025 +0200
+
+    explain replication more
+
+commit a54163dec0014b419534a4095a8627eb5e120eb1
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:21:59 2025 +0200
+
+    add missing service info
+
+commit 34bc07bc5478b5394d1dd15405d61f2b62c68b90
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:20:37 2025 +0200
+
+    add example of analysis
+
+commit 4652d31d9392e0cea8d4e8c62289ac124a13d5b4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:16:56 2025 +0200
+
+    add tenant number info
+
+commit fb65b208b62d7bca4d7dee9a9063f39078b22b90
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:12:06 2025 +0200
+
+    fix typo
+
+commit 5b276edca825c51efc992295123ef0b5385d9033
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:10:20 2025 +0200
+
+    remove redundant log
+
+commit 8c691b4b40046a4aa02e048ca50e8d37b2bfb80c
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:09:13 2025 +0200
+
+    edit listener to be localhost
+
+commit 7ebd90f77189ecbcfadb37dbf3901ea6adab79b9
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:07:24 2025 +0200
+
+    edit infos
+
+commit 32fdb0eab5e26510c1768a99661e830893bd70b1
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:02:36 2025 +0200
+
+    add tenant info
+
+commit 9e05eaed928b08d23336afa16b10c22bb08b96be
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 09:00:12 2025 +0200
+
+    edit deployment texts
+
+commit 84e30d94cac29f68b4cd242486f3855720f6e4e2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Feb 7 08:52:55 2025 +0200
+
+    add date parser to match with pandas version
+
+commit d691a71683efb8fa502f10a189f1bbbbf9f5757c
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 20:40:30 2025 +0200
+
+    add pandas to requirements
+
+commit 64b55fc290394d8564965e8700fb8749755680fc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 20:40:13 2025 +0200
+
+    add more instructions to create sample file
+
+commit 44d955c174a2cda511d4c6f6294e165b59f031b8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 20:40:00 2025 +0200
+
+    edit info
+
+commit c8b292e4c32c9c7abd96e36cde34ee633a900673
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 20:39:47 2025 +0200
+
+    edit instructions
+
+commit 4b377f1fdbd58047daa38d4c54e7bd083fb8cc7e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:07:36 2025 +0200
+
+    add log
+
+commit d5fbd90333618030986c42cd9a4834f3c1272789
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:07:28 2025 +0200
+
+    rename deployment
+
+commit 3631b397c48707bbc1919ee814481bd7ecef6399
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:07:05 2025 +0200
+
+    add example env
+
+commit 181dd2e0be31d1567cc17112a36f862177d7bd96
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:06:47 2025 +0200
+
+    edit report
+
+commit 0448de6bb42782aef2463dac687d4e7e3c5944b2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:06:34 2025 +0200
+
+    add instructions
+
+commit 116fc1f5799a7a39f91984a8747186f866d4f05c
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:05:57 2025 +0200
+
+    add example env
+
+commit bd278644e47da45245677261b59df27b39633852
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 19:05:38 2025 +0200
+
+    add instructions on how to run the platform locally
+
+commit 3fcb17ad6770cd22d89ab8565051824501c398eb
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 14:55:29 2025 +0200
+
+    edit cassandra memory to fit local testing
+
+commit 1bb5626f455ea2c8a477a8b983fd2c6373a4337e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 14:55:15 2025 +0200
+
+    create initial deployment info
+
+commit 1326b7917a70b05455cad8d65f81e0d4c500c94a
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 14:55:02 2025 +0200
+
+    add answers
+
+commit 65c2e9209e517f05241ed9292f432b62d75458bc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 13:22:56 2025 +0200
+
+    add final data row sample
+
+commit b5a43b684117834fe5d7faa0753c0c4e4a7879e8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 13:01:59 2025 +0200
+
+    modify answers
+
+commit 992eb8da79f1e157ffb7fc51cb84b4cf609e6e11
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Feb 6 10:59:52 2025 +0200
+
+    modify part 1 answers
+
+commit 56bdc325dc265529eee0765f6480938d324fbdd4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 21:19:30 2025 +0200
+
+    clean up, remove duplicate data from logs
+
+commit a52bc3ec93a00bd3fa42f438ad531cb585f18922
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 21:19:07 2025 +0200
+
+    edit sample data creator
+
+commit 4badf6799c82da85ac96ab846dde15ab2f458510
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 21:18:49 2025 +0200
+
+    add local docker network to cassandra docker compose
+
+commit cbfe505820d709354c9d2e27e1940dd276aa0794
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 21:18:17 2025 +0200
+
+    add answers, pictures
+
+commit 2b2ef1362e79e001c1e8c353ebb3f7e0eea56c0d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 21:18:01 2025 +0200
+
+    add sample data to gitignore
+
+commit 59dc037ca946ea2d0732e21dc3966f3ea1f9ada8
+Merge: 36ba9af 22b7eba
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 20:05:05 2025 +0200
+
+    Merge branch 'main' of github.com:hamalainenilmari/Big-Data-Platform into main
+
+commit 36ba9afc6a0d1500b8bdafe798c76fbc3d332aed
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Wed Feb 5 20:02:53 2025 +0200
+
+    remove test logs
+
+commit 22b7ebad8d997b7a287b2250ac1e7bb26882daa3
+Merge: dc5fa18 ff60564
+Author: hamalainenilmari <118058700+hamalainenilmari@users.noreply.github.com>
+Date:   Wed Feb 5 20:01:11 2025 +0200
+
+    Merge pull request #1 from hamalainenilmari/logs
+    
+    add logs from dataingest VM
+
+commit ff6056419769d7b1eba307d11836b3c02f31b64e
+Author: bdp_dataingest_vm <no@mail.com>
+Date:   Wed Feb 5 17:50:00 2025 +0000
+
+    add logs from dataingest VM
+
+commit dc5fa18424840e3c10363355f7fa81888b1e72fb
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Feb 4 21:52:46 2025 +0200
+
+    answer 3.4, add new architecture diagram
+
+commit e605c50894edc7276f53dfbce6a1870c19afbd47
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Feb 4 21:02:45 2025 +0200
+
+    add answer to 3.2
+
+commit 4b878effe322268d608ae3a93acf309a80087737
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Feb 4 20:31:55 2025 +0200
+
+    add dataingest component info
+
+commit 6e634b52eb2a80b71358111f99634d23dbf84bf2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Feb 4 20:31:29 2025 +0200
+
+    minor edits
+
+commit 6a4c6e3ffaeb90125912f9c7f42b0e15384588b8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Feb 4 20:31:15 2025 +0200
+
+    add answer to 3.1
+
+commit 28cce233a328cfa96e594e701314d7c0228817de
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Tue Feb 4 11:28:02 2025 +0200
+
+    edit kafka server to contain more brokers, add info
+
+commit 7a1cde301366a2714514865db5180e99c148f10e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 18:27:57 2025 +0200
+
+    add logs
+
+commit 95a424aee7e2519a377a83eb6fa4e0a73027f399
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 18:26:29 2025 +0200
+
+    add performance testing logs
+
+commit e21bb69de7f7c7324a0bfcc19bb20f9c04eb0812
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 18:25:57 2025 +0200
+
+    edit sample data maker
+
+commit 043966a3b7a11723403509ffe519490b5fc48dad
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 18:25:35 2025 +0200
+
+    add comments
+
+commit cfcc1178b43d1f8f3cfc7afd26cb647b60260940
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 18:25:10 2025 +0200
+
+    edit shell scripts to end processes correctly
+
+commit f619fc6ee3a8f00ccc10272c49fbbea8688d85e6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 18:24:49 2025 +0200
+
+    add compatibility for logging when using concurrent processes with shell
+
+commit 04696530da616288f1982012031090c88506b380
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:16:31 2025 +0200
+
+    add row/s log
+
+commit 59c14ef21e537f9250f6d4aedba65344e8bf6e9d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:08:57 2025 +0200
+
+    edit dataset sample creator info
+
+commit 508296144f32007441458bad444191c37c743c5b
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:08:04 2025 +0200
+
+    edit kafka producer arguments
+
+commit 9cdf7d71b49fed50bd8a5bc4a836303ee9c69c65
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:07:46 2025 +0200
+
+    edit requirements
+
+commit 6db3e8a01e5d96e2c28ca56b2d110a327a8de366
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:07:37 2025 +0200
+
+    edit logging
+
+commit ae5777202573c24fcbcd3d42a50ab12ca812b71f
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:04:27 2025 +0200
+
+    edit dataset info
+
+commit 81906063510e3f758eb6ee4d7c080191117a52a8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:04:14 2025 +0200
+
+    edit cloud cassandra memory configurations
+
+commit 3a61be97fe4e96ee7a05e941e0978f8685d97fbc
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 14:03:54 2025 +0200
+
+    add shell scripts for concurrent kafka producing and consuming
+
+commit 77c128bf2805c8be003ab1216f798b0068a13ff0
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 12:55:45 2025 +0200
+
+    add function to stop ingest and log
+
+commit 4394e2ee9e1e6766f34da968c61b5bcd9c229c71
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 11:46:32 2025 +0200
+
+    add timeout to ingesting
+
+commit f596c3d1768ceb358a5e8b7a9eed06fabe31b446
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Feb 3 11:40:41 2025 +0200
+
+    add ingest automation shell scripts, edit configurations for cloud deployment
+
+commit bc434c010e2fd346cc2be349f7c50a68dff5108d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:34:28 2025 +0200
+
+    add dataset info
+
+commit 0ba8c30a3912ba125e10b921f4d4e4bd98a5e8ea
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:34:16 2025 +0200
+
+    add answers
+
+commit 5af960e8b01f487a8c28af99a0d8b539ce69aad2
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:34:04 2025 +0200
+
+    add logging to ingesting
+
+commit 93b423c6021b6872dbbcb229d3ddf5ad80c2117d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:33:46 2025 +0200
+
+    modify repo structure
+
+commit 6d1b09fa4e6d2daf8ee410366169115b8a297cfd
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:33:24 2025 +0200
+
+    add dataset info
+
+commit d7b8cd76ac763a27e5628184fd8253c308ce7b25
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:33:07 2025 +0200
+
+    add dataset info
+
+commit bedf31348345ad6b98a6cdb5f29f8fabcf51ee55
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Sat Feb 1 15:32:47 2025 +0200
+
+    remove version number
+
+commit abdcae9eca30382a1b3454b6efb44debae1b9fb4
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Jan 31 20:14:38 2025 +0200
+
+    answer more
+
+commit 016ea9df35a51d8f23db8e934275cf9332e98ed6
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Jan 31 20:04:48 2025 +0200
+
+    add answers for 2.1,2,3
+
+commit 60f7073aad1f5eb99b472851b5975f3324af9df5
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Jan 31 18:44:57 2025 +0200
+
+    edit number of cassandra seed nodes
+
+commit 0abd6aea43567846f3885599a840be4dd5e65c97
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Fri Jan 31 18:44:28 2025 +0200
+
+    git ignore full data set
+
+commit ebcf67cbd81e1ddd01e3ad7647e9101c7996d470
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Jan 30 21:34:19 2025 +0200
+
+    add answer to 1.5
+
+commit c54f2430f571107040f53c865273ea6d71d32681
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Jan 30 20:10:44 2025 +0200
+
+    add answers to 1.3,4
+
+commit e16eace37efe725d64bc780b405f8786cf1f49b8
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Jan 30 15:41:40 2025 +0200
+
+    add initial implementations for ingest, coredms, tenant
+
+commit ec13b466a4916424b04da0370b99c69e7cc617ad
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Jan 30 14:46:13 2025 +0200
+
+    add sample data, add link to original dataset
+
+commit 2519c88a46f7f0c63c6d1423b5ebdb851314f95d
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Jan 30 14:39:11 2025 +0200
+
+    answer part1.2, add architecture pic
+
+commit a08d349e8cd84942c628073773238e46ae42677e
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Thu Jan 30 14:11:05 2025 +0200
+
+    answer part 1.1
+
+commit 11f3b341b97693eb29a780f32e88cd0c1df195de
+Author: Ilmari Hämäläinen <ilmari.hamalainen@aalto.fi>
+Date:   Mon Jan 27 16:34:55 2025 +0200
+
+    initial commit, add architecture picture, some answers to assignment questions
