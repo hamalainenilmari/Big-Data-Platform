@@ -115,9 +115,9 @@ The generated silver data is sent to the tenant in real-time manner after each w
 
 ### 2.2 Tenantbatchapp
 
-The tenant implementation for batch analytics is the tenantbatchapp component, which is a Spark job. The component takes as input the generated silver data and produces gold data, which is more defined analytical data. The component sums up the fares and number of trips of the silver data. The batch analytics service provided by the platform is implemented with Apache Spark, which is a distributed computing framework for fast and large-scale data processing, especially for batch workloads. The platform hosts a Spark processing engine, and the tenantbatchapps are executed by submitting the application as Spark job to the platform engine. The tenantbatchapp is ran periodically. The component consumes all the latest generated silver data from the HDFS silver data storage. An example configuration could be that tenantstreamapp produces silver data records, which contain taxi trips statistics of an 1 hour window of different locations. Then the batch analytics component could consume the generated silver data every 24 hours, generating more detailed taxi trip statistics, enabling more in-depth, long term analysis.
+The tenant implementation for batch analytics is the tenantbatchapp component, which is a Spark job. The implementation can be found from *code/tenantbatchapp/tenantbatchapp.py*. The component takes as input the generated silver data and produces gold data, which is more defined analytical data. The component sums up the fares and number of trips of the silver data. The batch analytics service provided by the platform is implemented with Apache Spark, which is a distributed computing framework for fast and large-scale data processing, especially for batch workloads. The platform hosts a Spark processing engine, and the tenantbatchapps are executed by submitting the application as Spark job to the platform engine. The tenantbatchapp is ran periodically. The component consumes all the latest generated silver data from the HDFS silver data storage. An example configuration could be that tenantstreamapp produces silver data records, which contain taxi trips statistics of an 1 hour window of different locations. Then the batch analytics component could consume the generated silver data every 24 hours, generating more detailed taxi trip statistics, enabling more in-depth, long term analysis.
 
-The batch analytics component workflow is the following. First the platform checks for new untouchable input silver data from HDFS silver data storage. If new data is not found, the platform will stop the workflow exetution, and wait for predefined time interval, before starting the workflow again. In this small scale context, we will halt for 1 minute, but in production the interval could be for example from 10 minutes to 1 hour. If new input data is found, the workflow stores the file locations, and moves the execution to the tenantbatchapp-component, which gets the input files. Then the tenantbatchapp job is submitted to the Spark engine with the input files. After the batch analytics component has produced the gold data, the final workflow step begins. In this step the platform modifies the processed silver data file names to include a mark, that the file is processed. The file name will be transformed from "silverdata.csv" to "silverdata_processed.csv". This last step makes sure that the tenantbatchapp does not process the same silver data twice with duplicated data and produce incorrect, misleading analytics.
+The batch analytics component workflow is the following. First the platform checks for new untouchable input silver data from HDFS silver data storage. If new data is not found, the platform will stop the workflow exetution, and wait for predefined time interval, before starting the workflow again. In this small scale context, we will halt for 1 minute, but in production the interval could be for example from 10 minutes to 1 hour. If new input data is found, the workflow stores the file locations, and moves the execution to the tenantbatchapp-component, which gets the input files. Then the tenantbatchapp job is submitted to the Spark engine with the input files locations. After the batch analytics component has produced the gold data, the final workflow step begins. In this step the platform modifies the processed silver data file names to include a mark, that the file is processed. The file name will be transformed from "silverdata.csv" to "silverdata_processed.csv". This last step makes sure that the tenantbatchapp does not process the same silver data twice with duplicated data and produce incorrect, misleading analytics.
 
 The underlying workflow orchestrator is implemented with Apache Airflow, which is a platform for automating and managing data pipelines. Airflow works by concepts of directed acyclic graphs with each task containing possible dependencies to others. The batch analytics workflow is defined as Airflow DAG, and it is scheduled to run every minute. Again, of course, in a real production environment this schedule would be different.
 
@@ -266,7 +266,7 @@ In this test we will send data where every second record has no pickup area loca
 |--------------|-------------------|-----------------------------|---------------|----------------------|--------------------|----------------|
 | 1743266880000 | 58                | 0.9666666666666667          | 29            | 0.5                  | 29                 | 0              |
 
-We can see that even though every second record is missing, pickup area location, a crucial value, the platform processes the streaming input without inceared processing time.
+We can see that even though every second record is missing, pickup area location, a crucial value, the platform processes the streaming input without increased processing time.
 
 **Test 4:**
 
@@ -278,7 +278,7 @@ Lastly, we will send data where every row is missing (expect for start time so w
 
 We can see that every row is correctly discarded. We sent 20 messages a second to the platform, and the records processed per second was only 8.8, which means that the processing time of the component decreased a lot. This indicates that processing mismatching schema of input data increases the platform load. In this kind of cases its important that we have the feature to send an alert to the tenant, so they can fix the problem without the platform having to freeze their component.
 
-We also tested sending data that is missing start timestamp, which is also essential value as it is used for timestamping and windowing. This data error does not currently get logged in current implementation, as the data is discarded right away because it cant be assigned a timestamp.
+We also tested sending data that is missing start timestamp, which is also essential value as it is used for timestamping and windowing. This data error does not currently get logged in current implementation, as the data is discarded right away because it cant be assigned a timestamp. The tests prove that the tenantstreamapp can handle bad data without failing or stopping.
 
 ### 2.5 Performance with tenantstreamap parallellism configurations
 
@@ -318,7 +318,7 @@ Tenant 2 metrics:
 |---------------|--------------------|------------------------------|----------------|--------------|--------------------|------------------|
 | 1743272580000 | 1031               | 17.183333333333334           | 0              | 1.0          | 0                  | 0                |
 
-We can see that the records processing speed slowed very little, but no real impact. This kind of difference can also be due to Kafka etc. No differences in CPU usage.
+No notable differences in CPU usage. Also the processing speed says relatively the same.
 
 **Test 3:**
 
@@ -356,7 +356,7 @@ Tenant 2 metrics:
 
 In this case we can see the data processing speed decreased a lot, with the component able to process only half of received data in a time.
 
-There are several possible reasons why the higher parallellism decreases the platform data processing speed. It can be due to task scheduling and coordination overhead increasement and resource usage (cpu, memory, networks) increasement. Also in this case where we had only 1 Kafka broker and run everything locally, we can not get very good results. We can assume, that with better infrastructure some degree of parallellism would speed up the data processing.
+There are several possible reasons why the higher parallellism decreases the platform data processing speed. It can be due to task scheduling and coordination overhead increasement and resource usage (cpu, memory, networks) increasement. Also in this case where we had only 1 Kafka broker and run everything locally, we can not get very good results. We can assume, that with better infrastructure some degree of parallellism would speed up the data processing. Because of running the platform only locally and having limited hardware (due to lack of GCP credits), we will stick with the parallellism of 1.
 
 ## Part 3 - Extension
 
