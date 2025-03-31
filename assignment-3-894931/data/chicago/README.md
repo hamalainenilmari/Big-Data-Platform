@@ -8,4 +8,4 @@ Download the set in CSV-format. Edit the code/tenant/chicago/kafka_producer.py t
 
 The dataset contains: 6.48M rows and 23 columns
 
-sampleData.csv contains 10 rows of the dataset
+Sample.csv contains 10 rows of the dataset
