@@ -378,6 +378,8 @@ The workflow would be the following. Based on the method for detecting the end o
 
 ![architecture with bounded data producing](../images/bounded_produce_arc.png)
 
+Another possible design would be that the whole workflow is implemented with Airflow. When the tenant wants to start the streaming data analytics and sending the data, the workflow would start the streaming component. Then based on the trigger mechanism (e.g. count based), the workflow would execute the batch analytics component.
+
 ### 3.3 Critical condition detection architecture
 
 The streaming analytics component could detect a critical condition from the real time data stream being ingested, for example very high rate of alerts. An alert could be e.g. bad format data or anomalies in the data. The streamapp would have configurations, which define the limits these alerts, which being exceeded would trigger the alert mechanism. The tenantstreamapp would signal batch analytics component to perform another execution of batch analytics of the produced silver data. The result of this would be stored in a cloud storage, and an alert to the corresponding tenant would be sent. The tenant could then fetch the results from the cloud storage and analyze what is the reason behind these problems.
@@ -385,8 +387,6 @@ The streaming analytics component could detect a critical condition from the rea
 The workflow could be implemented with Apache Airflow. The workflow would be listening to alerts from defined Kafka alert topic. After receiving an alert, the workflow would continue to second tasks, which would be to execute the batch analytis of the silver data of specific tenant based on the alert. The third task would be to send the batch analytics results to the cloud data storage and send an alert to the tenant that there are problems with the input data and the location of the results.
 
 ![architecure with alert storage](../images/alert.png)
-
-Another possible design would be that the whole workflow is implemented with Airflow. When the tenant wants to start the streaming data analytics and sending the data, the workflow would start the streaming component. Then based on the trigger mechanism (e.g. count based), the workflow would execute the batch analytics component.
 
 ### 3.4 Different schemas
 
