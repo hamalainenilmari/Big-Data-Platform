@@ -1,3 +1,0 @@
-HADOOP_PATH=/home/ilmarih/bdp_25_tech/hadoop-3.4.1
-SPARK_PATH=/home/ilmarih/bdp_25_tech/spark-3.5.5-bin-hadoop3
-BATCH_APP_PATH=/home/ilmarih/bdp_25/assignment-3-894931/code/tenantstreamapp/tenantstreamapp.py
