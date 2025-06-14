@@ -20,3 +20,6 @@ From *code/* you can find all the implementations of the platform:
 * *tenant*: contains example tenant implementation, with kafka producer
 
 Each folder contains more information about itself.
+
+Architecture of the platform in this part:
+![Platform architecture](images/architecture.png)

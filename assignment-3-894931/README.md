@@ -22,3 +22,6 @@ From *code/* you can find all the implementations of the platform:
 * *tenantstreamapp*: contains stream analytics processing component
 
 Each folder contains more information about itself.
+
+Platform architecture:
+![Platform architecture](images/architecture.png)

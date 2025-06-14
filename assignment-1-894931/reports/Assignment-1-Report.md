@@ -28,7 +28,7 @@ Tenants use Kafka Producer Python library provided by [Confluent](https://develo
 The services not developed to the platform at this point include external data processing and analytics components.
 For example the taxi service provider tenant would want analysis about indemand location areas, which an analysis component could show. Additionally, proper security and logging (data lineage, metadata, VMs HW usage) mechanisms are not developed. There is also no component yet implemented for tenants to query the data they have stored.
 
-![Platform architecture](../architecture.png)
+![Platform architecture](../images/architecture.png)
 
 ### 3. Configuration of cluster of nodes in coredms & avoiding single point-of-failure
 
@@ -123,7 +123,7 @@ Trip ID,Taxi ID,Trip Start Timestamp,Trip End Timestamp,Trip Seconds,Trip Miles,
 
 The final data unit to be stored after ingesting the source data and doing simple data processing is the following:
 
-![dataunit](../taxitrip_row.png)
+![dataunit](../images/taxitrip_row.png)
 
 From the raw source data unimportant columns Pickup Census Tract, Dropoff Census Tract, Pickup Centroid Location, Dropoff Centroid Location are dropped. Also timestamps are modified from format "01/19/2024 05:00:00 PM" to format "2024-01-19 17:00:00:00.00000+0000" for consistent database formatting.
 
@@ -165,7 +165,7 @@ Each log file contains statistics about each concurrent kafka consumer's data in
 We can see, that the most radical effect is when increasing the number of concurrent Kafka Consumers happens when increasing
 from one to 5. After 5 consumers, adding more instances does not give any real boost when receiving 3750 rows of data in a second.
 
-![Kafka chart](../kafka_runtime_chart.png)
+![Kafka chart](../images/kafka_runtime_chart.png)
 
 **Different poll time of consumers:**
 
@@ -188,7 +188,7 @@ For this test we had:
 No dramatic time differences. The changes in runtimes may be affected by network, latencies etc.
 What we can say is, that in this case having a bit longer poll interval can benefit the platform, as the CPU usage wont be so high.
 
-![poll time](../poll_performance.png)
+![poll time](../images/poll_performance.png)
 
 **Different write consistencies:**
 
@@ -214,7 +214,7 @@ Consistency options provide tradeoff between availability, latency and data cons
 | Quorum        | ingest10.log  |
 | All           | ingest11.log |
 
-![consistency effect on performance](../consistency_performance.png)
+![consistency effect on performance](../images/consistency_performance.png)
 
 As expected from the performance analysis, consistency of all has the highest runtime and smallest rows inserted/s rate. Loosest consistencies any and one had approximately 33 % faster ingestion compared to all-consistency.
 Our chosen consistency quorum was approx. 13 % faster than the consistency all. As we can see, with lower consistency we would increase the throughput speed.
@@ -233,7 +233,7 @@ was approximately 37.5 % compared to the smaller dataset. Number of Kafka errors
 helped the components to stay running. Cassandra fails were must probably from the individual incorrect data types in source data as before.
 
 The peak CPU usage of both dataingest and coredms VMs raised to up to little over 70 %.
-![VM CPU usages](../cpu_usage.png)
+![VM CPU usages](../images/cpu_usage.png)
 
 We can see that both components are becoming a bottleneck in the same ratio when input data amount grows.
 To prevent the dataingest-consumers and coredms cluster from getting overloaded and the VMs CPUs overload, we could scale both components horizontally. By using technologies like Kubernetes, we could add more parallel dataingest and coredms components to keep the throughput fast. Also some kind of mechanism would be needed to make sure that the dataingest does not
@@ -371,7 +371,7 @@ by the mysimdp-dataingest. The daas would provide APIs for tenants to interact w
 
 The daas would also provide APIs for reading the data. This would require a new component for querying the coredms and returning the results to the API. The daas-APIs would take incoming requests, validate them and then forward them. The daas-component would also enable integration of other services such as security mechanisms, for example providing authentication methods for tenants by API keys, tokens or user credentials etc. Mysimbdp-daas would abstract the underlying technologies and implementations of the platform from the external users.
 
-![Platform architecture with daas](../architecture_daas.png)
+![Platform architecture with daas](../images/architecture_daas.png)
 
 ### 5. Hot space and cold space
 

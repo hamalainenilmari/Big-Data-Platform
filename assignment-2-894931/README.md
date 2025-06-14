@@ -19,3 +19,13 @@ From *code/* you can find all the implementations of the platform:
 * *tenant*: contains example tenant implementations as with kafka producers
 
 Each folder contains more information about itself.
+
+Batch Ingestion and Processing architecture:
+![Platform architecture batch](images/batch_architecture.png)
+
+Stream Ingestion and Processing architecture:
+![Platform architecture real-time](images/realtime_architecture.png)
+
+Hybrid/Lambda architecture:
+![Platform architecture lambda](images/fullmonitoring_architecture.png)
+
