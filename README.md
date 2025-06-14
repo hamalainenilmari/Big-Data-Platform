@@ -19,7 +19,7 @@ Each assignment’s design and implementation can be found in its respective sub
 - Apache Flink
 - Apache Airflow
 - Docker & Docker Compose
-- Python libraries such as PySpark and Pandas
+- Python libraries such as PySpark, Pyflink and Pandas
 
 Deployments were carried out on **Google Cloud Platform**. The primary programming language was **Python** with some use of **Bash** scripts.
 
